@@ -1,0 +1,200 @@
+{% extends 'expdata/base_onecpd.html' %}
+
+
+{% block table1 %}
+<h3>Basic Information</h3>
+<table class="pure-table">
+    <tr>
+        <th>MolID</th>
+        <th>PubChemID</th>
+        <th>Name</th>
+        <th>Formula</th>
+        <th>Mol Weight (g/mol)</th>
+        <th>Charge</th>
+        <th>CAS</th>
+        <th>InChiKey</th>
+        <th>SMILES</th>
+        <th>IUPAC Name</th>
+        <th>Source</th>
+        <th>Note</th>
+
+    </tr>
+    {% for p in cpds %}
+        {% if forloop.counter|divisibleby:2 %}
+            <tr>
+        {% else %}
+            <tr class="pure-table-odd">
+        {% endif %}
+
+        <td>{{ p.pk }}</td>
+        <td><a href="https://pubchem.ncbi.nlm.nih.gov/compound/{{ p.PubChemID }}"  target="_blank">{{ p.PubChemID }}</a></td>
+        <td>{{ p.Name }}</td>
+        <td>{{ p.Formula }}</td>
+        <td>{{ p.MolecularWeight }}</td>
+        <td>{{ p.Charge }}</td>
+        <td>{{ p.CASRegNumber }}</td>
+        <td>{{ p.InChIKey }}</td>
+        <td>{{ p.SMILES }}</td>
+        <td>{{ p.IUPACName }}</td>
+        <td>{{ p.Source }}</td>
+        <td>{{ p.Note }}</td>
+
+    </tr>
+    {% endfor %}
+</table>
+<br>
+<br>
+{% endblock %}
+
+
+{% block table2 %}
+<h3>Solvation Free Energy</h3>
+<table class="pure-table">
+    <tr>
+        <th>MolID</th>
+        <th>Name</th>
+        <th>&#916;Gsolv (kcal/mol)</th>
+        <th>Reference</th>
+    </tr>
+    {% for p in dgsolvs %}
+
+        {% if forloop.counter|divisibleby:2 %}
+            <tr>
+        {% else %}
+            <tr class="pure-table-odd">
+        {% endif %}
+
+        <td>{{ p.MolID }}</td>
+        <td>{{ p.MolID.Name }}</td>
+        <td>{{ p.dGsolv }}</td>
+        <td>{{ p.dGsolvReference }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<br>
+<br>
+{% endblock %}
+
+
+{% block table3 %}
+<h3>pKa</h3>
+<table class="pure-table">
+    <tr>
+        <th>MolID</th>
+        <th>Name</th>
+        <th>Species</th>
+        <th>pKa</th>
+        <th>T (&deg;C)</th>
+        <th>Ionic Strength (M)</th>
+        <th>Electrolyte</th>
+        <th>Ref. for pKa</th>
+        <th>&#916;<sub>r</sub>H&deg; (kcal/mol)</th>
+        <th>&#916;<sub>r</sub>S&deg; (kcal/mol)</th>
+        <th>&#916;<sub>r</sub>G&deg; (kcal/mol)</th>
+        <th>Ref. for Thermal</th>
+    </tr>
+    {% for p in pkas %}
+
+        {% if forloop.counter|divisibleby:2 %}
+            <tr>
+        {% else %}
+            <tr class="pure-table-odd">
+        {% endif %}
+
+        <td>{{ p.MolID }}</td>
+        <td>{{ p.MolID.Name }}</td>
+        <td>{{ p.Species }}</td>
+        <td>{{ p.pKa }}</td>
+        <td>{{ p.TemperatureC }}</td>
+        <td>{{ p.IonicStrength }}</td>
+        <td>{{ p.Electrolyte }}</td>
+        <td>{{ p.pKaReference }}</td>
+        <td>{{ p.dHr }}</td>
+        <td>{{ p.dSr }}</td>
+        <td>{{ p.dGr }}</td>
+        <td>{{ p.ThermalReference }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<br>
+<br>
+{% endblock %}
+
+
+{% block table4 %}
+<h3>Stability Constants</h3>
+<table class="pure-table">
+    <tr>
+        <th>MolID</th>
+        <th>Name</th>
+        <th>Metal</th>
+        <th>Constant</th>
+        <th>Species</th>
+        <th>Reactants</th>
+        <th>T (&deg;C)</th>
+        <th>Ionic Strength (M)</th>
+        <th>Electrolyte</th>
+        <th>log&#946; (or logK)</th>
+        <th>&#916;<sub>r</sub>H&deg; (kcal/mol)</th>
+        <th>&#916;<sub>r</sub>S&deg; (kcal/mol)</th>
+        <th>&#916;<sub>r</sub>G&deg; (kcal/mol)</th>
+        <th>Ref. for Thermal</th>
+    </tr>
+    {% for p in stabilities %}
+
+        {% if forloop.counter|divisibleby:2 %}
+            <tr>
+        {% else %}
+            <tr class="pure-table-odd">
+        {% endif %}
+
+        <td>{{ p.MolID }}</td>
+        <td>{{ p.MolID.Name }}</td>
+        <td>{{ p.Metal }}</td>
+        {% if p.Constant == 'B' %}
+            <td>log&#946;</td>
+        {% else %}
+            <td>log{{ p.Constant }}</td>
+        {% endif %}
+        <td>{{ p.Species }}</td>
+        <td>{{ p.Reactants }}</td>
+        <td>{{ p.TemperatureC }}</td>
+        <td>{{ p.IonicStrength }}</td>
+        <td>{{ p.Electrolyte }}</td>
+        <td>{{ p.LogBorK }}</td>
+        <td>{{ p.dHr }}</td>
+        <td>{{ p.dSr }}</td>
+        <td>{{ p.dGr }}</td>
+        <td>{{ p.ThermalReference }}</td>
+
+    </tr>
+    {% endfor %}
+</table>
+<br>
+<br>
+{% endblock %}
+
+
+{% block table5 %}
+<h3>Reference</h3>
+<table class="pure-table">
+    <tr>
+        <th>RefID</th>
+        <th>Reference</th>
+    </tr>
+    {% for p in refs %}
+
+        {% if forloop.counter|divisibleby:2 %}
+            <tr>
+        {% else %}
+            <tr class="pure-table-odd">
+        {% endif %}
+
+        <td>{{ p.RefID }}</td>
+        <td>{{ p.Reference }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<br>
+<br>
+{% endblock %}

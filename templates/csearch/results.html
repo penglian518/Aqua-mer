@@ -1,0 +1,68 @@
+{% extends 'base_index.html' %}
+{% load static %}
+
+
+{% block content %}
+<!-- 3Dmol.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/1.3.0/3Dmol-min.js"></script>
+
+<!-- nav box on the left -->
+{% include 'csearch/memu.html' %}
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 4. Results</div>
+<div id=main>
+
+    <p>Job {{ Item.JobID }} is finished, click <a href="/csearch/download/{{ Item.JobID }}">HERE</a> to download the structure files.</p>
+    <p>You can also redo clustering, click <a href="/csearch/reclustering/{{ Item.JobID }}">HERE</a>.</p>
+    <p><center><b>The most stable structures</b></center></p>
+    <table style="width:100%">
+        <tr>
+            <th> 1 </th>
+            <th> 2 </th>
+            <th> 3 </th>
+            <th> 4 </th>
+            <th> 5 </th>
+        </tr>
+    <tr>
+        <td>
+            <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+             data-href='/csearch/results/{{ Item.JobID }}/xyz/0'
+             data-backgroundcolor='0xffffff' data-type="xyz"
+             data-select1="all" data-style1='stick'></div>
+        </td>
+        <td>
+            <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+             data-href='/csearch/results/{{ Item.JobID }}/xyz/1'
+             data-backgroundcolor='0xffffff' data-type="xyz"
+             data-select1="all" data-style1='stick'></div>
+        </td>
+        <td>
+            <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+             data-href='/csearch/results/{{ Item.JobID }}/xyz/2'
+             data-backgroundcolor='0xffffff' data-type="xyz"
+             data-select1="all" data-style1='stick'></div>
+        </td>
+        <td>
+            <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+             data-href='/csearch/results/{{ Item.JobID }}/xyz/3'
+             data-backgroundcolor='0xffffff' data-type="xyz"
+             data-select1="all" data-style1='stick'></div>
+        </td>
+        <td>
+            <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+             data-href='/csearch/results/{{ Item.JobID }}/xyz/4'
+             data-backgroundcolor='0xffffff' data-type="xyz"
+             data-select1="all" data-style1='stick'></div>
+        </td>
+    </tr>
+
+    </table>
+    <br>
+    <center><img src="{{ chart }}" /></center>
+    <br>
+
+
+</div></div>
+{% endblock %}

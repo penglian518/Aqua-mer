@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  {% include 'head.html' %}
+
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.css">
+    <script
+            src="https://code.jquery.com/jquery-1.12.3.js"
+			integrity="sha256-1XMpEtA4eKXNNpXcJ1pmMPs8JV+nwLdEqwiJeCQEkyc="
+			crossorigin="anonymous">
+
+    </script>
+    <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.js"></script>
+
+</head>
+
+<body>
+  <!-- header and topnav -->
+  {% include 'body_header.html' %}
+
+  <!-- body -->
+  <div id="body">
+    <div id="main">
+
+        {% block table1 %}
+        {% endblock %}
+
+        {% block table2 %}
+        {% endblock %}
+
+        {% block table3 %}
+        {% endblock %}
+
+        {% block table4 %}
+        {% endblock %}
+
+        {% block table5 %}
+        {% endblock %}
+
+    </div>
+  </div>
+
+  <!-- footer -->
+  {% include 'body_footer.html' %}
+
+</body>
+</html>
+
+
+

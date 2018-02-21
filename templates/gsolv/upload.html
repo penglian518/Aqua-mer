@@ -1,0 +1,36 @@
+{% extends 'base_index.html' %}
+{% load static %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'gsolv/memu.html' %}
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 1. Upload a compound</div>
+<div id=main>
+
+
+    <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST'>
+        {% csrf_token %}
+
+        <table>
+        {{ form }}
+        </table>
+
+        <br>
+        <button type="button" onclick="window.location.href='/gsolv/smiles'" class="btn btn-default" style="height:25px;width:90px">Back</button>
+
+        <button type="submit" class="btn btn-default" style="height:25px;width:90px">Next</button>
+
+    </form>
+    <br>
+    <br>
+
+
+
+</div>
+</div>
+
+{% endblock %}

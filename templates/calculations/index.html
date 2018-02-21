@@ -1,0 +1,42 @@
+{% extends 'calculations/base_index.html' %}
+{% load calculations_extras %}
+
+
+{% block table %}
+<h2>Ongoing calculations:</h2>
+
+<table id="cals" class="hover compact pure-table sortable">
+    <thead>
+        <tr>
+            <th>QM levels</th>
+            {% for h in ReactionGroups %}
+                <th>{{ h }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+
+    <tbody>
+    {% for p in CurrentCalculations %}
+        {% if forloop.counter|divisibleby:2 %}
+        <tr>
+        {% else %}
+        <tr class="pure-table-odd">
+        {% endif %}
+            <td><a href="/Cal/level/{{ p.level }}">{{ p.level }}</a></td>
+            {% for h in ReactionGroups %}
+                {% if p|get_item:h != '-' %}
+                    <td><a href="/Cal/reactiongroup/{{ p.level }}/{{ h }}/">{{ p|get_item:h }}</a></td>
+                {% else %}
+                    <td>{{ p|get_item:h }}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<br>
+<br>
+{% endblock %}
+
+
+

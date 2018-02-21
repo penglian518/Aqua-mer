@@ -1,0 +1,39 @@
+{% extends 'base_index.html' %}
+{% load static %}
+
+
+{% block content %}
+<meta http-equiv="refresh" content="30" >
+
+<!-- nav box on the left -->
+{% include 'gsolv/memu.html' %}
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 4. Results</div>
+<div id=main>
+
+
+<div>The job {{ Item.JobID }} is running. Will check again in <span id="countdown"></span> seconds...
+     <br>
+     <br>
+    Remember the job ID, if you'd like to close the browser and check your results later.
+</div>
+
+    <br>
+    <br>
+
+
+</div></div>
+
+
+<script type="text/JavaScript">
+(function countdown(remaining) {
+    if(remaining <= 0)
+        location.reload(true);
+    document.getElementById('countdown').innerHTML = remaining;
+    setTimeout(function(){ countdown(remaining - 1); }, 1000);
+})(30); // 5 seconds
+</script>
+
+{% endblock %}

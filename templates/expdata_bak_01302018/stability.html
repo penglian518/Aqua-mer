@@ -1,0 +1,99 @@
+{% extends 'expdata/base_tables.html' %}
+
+
+{% block table1 %}
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('#stability').DataTable();
+    } );
+</script>
+
+<h2>Stability Constants</h2>
+<table id="stability" class="display compact pure-table sortable">
+    <thead>
+        <tr>
+            <th>MolID</th>
+            <th>Name</th>
+            <th>Metal</th>
+            <th>Constant</th>
+            <th>Species</th>
+            <th>Reactants</th>
+            <th>T (&deg;C)</th>
+            <th>Ionic Strength (M)</th>
+            <th>Electrolyte</th>
+            <th>log<i>&#946;</i> (or log<i>K</i>)</th>
+            <th>&#916;<sub>r</sub>H&deg; (kcal/mol)</th>
+            <th>&#916;<sub>r</sub>S&deg; (kcal/mol)</th>
+            <th>&#916;<sub>r</sub>G&deg; (kcal/mol)</th>
+            <th>Ref. for Thermal</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for p in stabilities %}
+        {% if forloop.counter|divisibleby:2 %}
+        <tr>
+        {% else %}
+        <tr class="pure-table-odd">
+        {% endif %}
+            <td><a href="/cpd/id/{{ p.MolID }}">{{ p.MolID }}</a></td>
+            <td>{{ p.MolID.Name }}</td>
+            <td>{{ p.Metal }}</td>
+            {% if p.Constant == 'B' %}
+                <td>log&#946;</td>
+            {% else %}
+                <td>log{{ p.Constant }}</td>
+            {% endif %}
+            <td>{{ p.Species }}</td>
+            <td>{{ p.Reactants }}</td>
+            <td>{{ p.TemperatureC }}</td>
+            <td>{{ p.IonicStrength }}</td>
+            <td>{{ p.Electrolyte }}</td>
+            <td>{{ p.LogBorK }}</td>
+            <td>{{ p.dHr }}</td>
+            <td>{{ p.dSr }}</td>
+            <td>{{ p.dGr }}</td>
+            <td>{{ p.ThermalReference }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<br>
+<br>
+{% endblock %}
+
+
+{% block table2 %}
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('#ref').DataTable({
+        paging: false,
+        searching: false,
+        ordering: false
+    });
+    } );
+</script>
+
+<h2>Reference</h2>
+<table id="ref" class="display compact pure-table">
+    <thead>
+        <tr>
+            <th>RefID</th>
+            <th>Reference</th>
+        </tr>
+    </thead>
+        <tbody>
+        {% for p in refs %}
+            {% if forloop.counter|divisibleby:2 %}
+            <tr>
+            {% else %}
+            <tr class="pure-table-odd">
+            {% endif %}
+            <td>{{ p.RefID }}</td>
+            <td>{{ p.Reference }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<br>
+<br>
+{% endblock %}

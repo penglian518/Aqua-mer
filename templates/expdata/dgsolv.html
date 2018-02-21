@@ -1,0 +1,75 @@
+{% extends 'expdata/base_tables.html' %}
+
+
+{% block table1 %}
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('#dgsolv').DataTable();
+    } );
+</script>
+
+<h2>Solvation Free Energy</h2>
+<table id="dgsolv" class="display pure-table sortable">
+    <thead>
+        <tr>
+            <th>MolID</th>
+            <th>Name</th>
+            <th>&#916;G<sub>solv</sub> (kcal/mol)</th>
+            <th>Reference</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for p in dgsolvs %}
+        {% if forloop.counter|divisibleby:2 %}
+        <tr>
+        {% else %}
+        <tr class="pure-table-odd">
+        {% endif %}
+            <td><a href="/expdata/cpd/id/{{ p.MolID }}">{{ p.MolID }}</a></td>
+            <td>{{ p.MolID.Name }}</td>
+            <td>{{ p.dGsolv }}</td>
+            <td>{{ p.dGsolvReference }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<br>
+<br>
+{% endblock %}
+
+
+{% block table2 %}
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('#ref').DataTable({
+        paging: false,
+        searching: false,
+        ordering: false
+    });
+    } );
+</script>
+
+<h2>Reference</h2>
+<table id="ref" class="display compact pure-table">
+    <thead>
+        <tr>
+            <th>RefID</th>
+            <th>Reference</th>
+        </tr>
+    </thead>
+        <tbody>
+        {% for p in refs %}
+            {% if forloop.counter|divisibleby:2 %}
+            <tr>
+            {% else %}
+            <tr class="pure-table-odd">
+            {% endif %}
+            <td>{{ p.RefID }}</td>
+            <td>{{ p.Reference }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<br>
+<br>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'phreeqcdb/base_tables.html' %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'phreeqcdb/memu.html' %}
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">SURFACE_MASTER_SPECIES</div>
+<div id=main>
+<h3>Annotation <a href="https://wwwbrr.cr.usgs.gov/projects/GWC_coupled/phreeqc/html/final-61.html#58106"> (More) </a></h3>
+<table id="annotation" class="display compact pure-table">
+    <thead>
+        <tr>
+            <th align="left">Keyword</th>
+            <th align="left">Explanation</th>
+        </tr>
+    </thead>
+        <tbody>
+            <tr><td>Surface binding site</td><td>Name of a surface binding site. It must begin with a capital letter, followed by zero or more lower case letters. Underscores ("_") plus one or more lower case letters are used to differentiate types of binding sites on a single surface. Multiple binding sites can be defined for each surface.</td></tr>
+            <tr><td>Surface master specie</td><td>Formula for the surface master species, usually the OH-form of the binding site.</td></tr>
+        </tbody>
+</table>
+
+    <br>
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('#master').DataTable({
+        "lengthMenu": [[15, 50, -1], [15, 50, "All"]],
+        "pageLength": 15,
+    });
+    } );
+</script>
+
+<h3>Surface master species</h3>
+<table id="master" class="display pure-table sortable">
+    <thead>
+        <tr>
+            <th align="left">Surface binding site</th>
+            <th align="left">Surface master specie</th>
+            <th align="left">Reference</th>
+            <th align="left">Note</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for p in all_master %}
+        {% if forloop.counter|divisibleby:2 %}
+        <tr>
+        {% else %}
+        <tr class="pure-table-odd">
+        {% endif %}
+            <td>{{ p.BindingSite }}</td>
+            <td>{{ p.SurfaceMaster }}</td>
+            <td>{{ p.Ref }}</td>
+            <td>{{ p.Note }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+    <p>
+
+    <br>
+
+<h3>Reference</h3>
+<table id="ref" class="display compact pure-table">
+    <thead>
+        <tr>
+            <th align="left">RefID</th>
+            <th align="left">Reference</th>
+        </tr>
+    </thead>
+        <tbody>
+        {% for p in refs %}
+            {% if forloop.counter|divisibleby:2 %}
+            <tr>
+            {% else %}
+            <tr class="pure-table-odd">
+            {% endif %}
+            <td>{{ p.RefID }}</td>
+            <td>{{ p.Reference }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div></div>
+{% endblock %}

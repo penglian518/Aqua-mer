@@ -1,0 +1,25 @@
+{% if master %}
+ <tr>
+                <td>{{ master.Element }}</td>
+                <td>{{ master.Species }}</td>
+                <td>{{ master.Alkalinity }}</td>
+                <td>{{ master.GFWorFormula }}</td>
+                <td>{{ master.GFWforElement }}</td>
+                <td>{{ master.Note }}</td>
+                <td>{{ master.Ref }}</td>
+
+                <td><input type='button' onclick="$(this).closest('tr').remove();" value="remove" style="color:blue"></td>
+
+            </tr>
+{% else %}
+            <tr style="color:red">
+                <td>{{ ele }}</td>
+                <td>{{ ele }}</td>
+                <td> ---- </td>
+                <td> ---- </td>
+                <td> ---- </td>
+                <td>"Parameter missing !"</td>
+                <td> ---- </td>
+                <td><input type='button' onclick="$(this).closest('tr').remove();" value="remove" style="color:blue"></td>
+            </tr>
+{% endif %}

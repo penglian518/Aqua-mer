@@ -1,0 +1,111 @@
+{% extends 'phreeqcdb/base_tables.html' %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'phreeqcdb/memu.html' %}
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">PHASES</div>
+<div id=main>
+<h3>Annotation <a href="https://wwwbrr.cr.usgs.gov/projects/GWC_coupled/phreeqc/html/final-48.html#84418"> (More) </a></h3>
+<table id="annotation" class="display compact pure-table">
+    <thead>
+        <tr>
+            <th align="left">Keyword</th>
+            <th align="left">Explanation</th>
+        </tr>
+    </thead>
+        <tbody>
+            <tr><td>Phase Name</td><td>Alphanumeric name of phase, no spaces are allowed.</td></tr>
+            <tr><td>Reaction</td><td>Dissolution reaction for phase to aqueous species. Any aqueous species, including
+                e<sup>-</sup> , may be used in the dissolution reaction. The chemical formula for the defined phase must be the first chemical formula on the left-hand side of the equation. The dissolution reaction must precede any identifiers related to the phase. The stoichiometric coefficient for the phase in the chemical reaction must be 1.0.</td></tr>
+            <tr><td>log <i>K</i></td><td>log <i>K</i> at 25 C for the reaction. Log K must be 0.0 for primary master species.</td></tr>
+            <tr><td>&#916;H</td><td>Enthalpy of reaction at 25 C for the reaction.</td></tr>
+            <tr><td>Units</td><td>Units for &#916;H.</td></tr>
+            <tr><td>A1 - A5</td><td>Parameters used in the analytical expression that defines log <i>K</i> as a functino of temperature,
+                    e.g. log<sub>10</sub><i>K</i> = A1 + A2*T + A3/T + A4*log<sub>10</sub><i>T</i> + A5/T<sup>2</sup>, where T is in Kelvin.</td></tr>
+        </tbody>
+</table>
+
+    <br>
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('#phases').DataTable({
+        "lengthMenu": [[15, 50, -1], [15, 50, "All"]],
+        "pageLength": 15,
+    });
+    } );
+</script>
+
+<h3>Phases</h3>
+<table id="phases" class="display pure-table sortable">
+    <thead>
+        <tr>
+            <th align="left">Phase name</th>
+            <th align="left">Reaction</th>
+            <th align="left">log <i>K</i></th>
+            <th align="left">&#916;H</th>
+            <th align="left">Units</th>
+            <th align="left">A1</th>
+            <th align="left">A2</th>
+            <th align="left">A3</th>
+            <th align="left">A4</th>
+            <th align="left">A5</th>
+            <th align="left">Reference</th>
+            <th align="left">Note</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for p in all_phases %}
+        {% if forloop.counter|divisibleby:2 %}
+        <tr>
+        {% else %}
+        <tr class="pure-table-odd">
+        {% endif %}
+            <td>{{ p.PhaseName }}</td>
+            <td>{{ p.Reaction }}</td>
+            <td>{{ p.LogK }}</td>
+            <td>{{ p.DeltaH }}</td>
+            <td>{{ p.DeltaHUnits }}</td>
+            <td>{{ p.AEA1 }}</td>
+            <td>{{ p.AEA2 }}</td>
+            <td>{{ p.AEA3 }}</td>
+            <td>{{ p.AEA4 }}</td>
+            <td>{{ p.AEA5 }}</td>
+            <td>{{ p.Ref }}</td>
+            <td>{{ p.Note }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+    <p>
+
+    <br>
+
+<h3>Reference</h3>
+<table id="ref" class="display compact pure-table">
+    <thead>
+        <tr>
+            <th align="left">RefID</th>
+            <th align="left">Reference</th>
+        </tr>
+    </thead>
+        <tbody>
+        {% for p in refs %}
+            {% if forloop.counter|divisibleby:2 %}
+            <tr>
+            {% else %}
+            <tr class="pure-table-odd">
+            {% endif %}
+            <td>{{ p.RefID }}</td>
+            <td>{{ p.Reference }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div></div>
+{% endblock %}

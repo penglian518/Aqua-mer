@@ -1,0 +1,119 @@
+{% extends 'phreeqcdb/base_tables.html' %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'phreeqcdb/memu.html' %}
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">SOLUTION_SPECIES</div>
+<div id=main>
+
+<h3>Annotation <a href="https://wwwbrr.cr.usgs.gov/projects/GWC_coupled/phreeqc/html/final-58.html#61994"> (More) </a></h3>
+<table id="annotation" class="display compact pure-table">
+    <thead>
+        <tr>
+            <th align="left">Keyword</th>
+            <th align="left">Explanation</th>
+        </tr>
+    </thead>
+        <tbody>
+            <tr><td>Reaction</td><td>Association reaction for aqueous species.</td></tr>
+            <tr><td>log <i>K</i></td><td>log <i>K</i> at 25 C for the reaction. Log K must be 0.0 for primary master species.</td></tr>
+            <tr><td>&#916;H</td><td>Enthalpy of reaction at 25 C for the reaction.</td></tr>
+            <tr><td>Units</td><td>Units for &#916;H.</td></tr>
+            <tr><td>A1 - A5</td><td>Parameters used in the analytical expression that defines log <i>K</i> as a functino of temperature,
+                    e.g. log<sub>10</sub><i>K</i> = A1 + A2*T + A3/T + A4*log<sub>10</sub><i>T</i> + A5/T<sup>2</sup>, where T is in Kelvin.</td></tr>
+            <tr><td>Gamma (a) </td><td><i>Debye-Huckel a</i>, parameter a in the WATEQ activity-coefficient equation (Truesdell and Jones, 1974).</td></tr>
+            <tr><td>Gamma (b) </td><td><i>Debye-Huckel b</i>, parameter a in the WATEQ activity-coefficient equation (Truesdell and Jones, 1974).</td></tr>
+            <tr><td>Check</td><td>If false, indicates the reaction equation should not be checked for charge and elemental balance.</td></tr>
+            <tr><td>Mole Balance</td><td>Chemical formula defining the stoichiometry of the species.</td></tr>
+        </tbody>
+</table>
+
+    <br>
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('#species').DataTable({
+        "lengthMenu": [[15, 50, -1], [15, 50, "All"]],
+        "pageLength": 15,
+    });
+    } );
+</script>
+
+<h3>Solution Species</h3>
+<table id="species" class="display pure-table sortable">
+    <thead>
+        <tr>
+            <th align="left">Reaction</th>
+            <th align="left">log <i>K</i></th>
+            <th align="left">&#916;H</th>
+            <th align="left">Units</th>
+            <th align="left">A1</th>
+            <th align="left">A2</th>
+            <th align="left">A3</th>
+            <th align="left">A4</th>
+            <th align="left">A5</th>
+            <th align="left">Gamma (a)</th>
+            <th align="left">Gamma (b)</th>
+            <th align="left">Check</th>
+            <th align="left">Mole balance</th>
+            <th align="left">Reference</th>
+            <th align="left">Note</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for p in all_species %}
+        {% if forloop.counter|divisibleby:2 %}
+        <tr>
+        {% else %}
+        <tr class="pure-table-odd">
+        {% endif %}
+            <td>{{ p.Reaction }}</td>
+            <td>{{ p.LogK }}</td>
+            <td>{{ p.DeltaH }}</td>
+            <td>{{ p.DeltaHUnits }}</td>
+            <td>{{ p.AEA1 }}</td>
+            <td>{{ p.AEA2 }}</td>
+            <td>{{ p.AEA3 }}</td>
+            <td>{{ p.AEA4 }}</td>
+            <td>{{ p.AEA5 }}</td>
+            <td>{{ p.GammaA }}</td>
+            <td>{{ p.GammaB }}</td>
+            <td>{{ p.NoCheck }}</td>
+            <td>{{ p.MoleBalance }}</td>
+            <td>{{ p.Ref }}</td>
+            <td>{{ p.Note }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+    <p>
+
+    <br>
+<h3>Reference</h3>
+<table id="ref" class="display compact pure-table">
+    <thead>
+        <tr>
+            <th align="left">RefID</th>
+            <th align="left">Reference</th>
+        </tr>
+    </thead>
+        <tbody>
+        {% for p in refs %}
+            {% if forloop.counter|divisibleby:2 %}
+            <tr>
+            {% else %}
+            <tr class="pure-table-odd">
+            {% endif %}
+            <td>{{ p.RefID }}</td>
+            <td>{{ p.Reference }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div></div>
+{% endblock %}

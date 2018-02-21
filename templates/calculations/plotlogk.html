@@ -1,0 +1,21 @@
+{% extends 'calculations/base_plotlogk.html' %}
+
+{% block table %}
+
+<!--
+<h2>Prediction (logK = {{ logkCal }})</h2>
+{{ chartCal.as_html }}
+<br>
+-->
+
+<h2>log<i>K</i> Prediction: {{ logkCal }}; Experiment: {{ logkExp }}</h2>
+{{ chartExp.as_html }}
+
+{% endblock %}
+
+
+
+
+
+
+

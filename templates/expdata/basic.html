@@ -1,0 +1,54 @@
+{% extends 'expdata/base_tables.html' %}
+
+{% block table1 %}
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('#basic').DataTable();
+    } );
+</script>
+
+<h2>Basic Information</h2>
+<table id="basic" class="display compact pure-table sortable">
+    <thead>
+        <tr>
+            <th>MolID</th>
+            <th>PubChemID</th>
+            <th>Name</th>
+            <th>Formula</th>
+            <th>Mol Weight (g/mol)</th>
+            <th>Charge</th>
+            <th>CAS</th>
+            <th>InChiKey</th>
+            <th>SMILES</th>
+            <th>IUPAC Name</th>
+            <th>Source</th>
+            <th>Note</th>
+
+        </tr>
+    </thead>
+    <tbody>
+    {% for p in cpds %}
+        {% if forloop.counter|divisibleby:2 %}
+        <tr>
+        {% else %}
+        <tr class="pure-table-odd">
+        {% endif %}
+            <td><a href="/expdata/cpd/id/{{ p.pk }}">{{ p.pk }}</a></td>
+            <td><a href="https://pubchem.ncbi.nlm.nih.gov/compound/{{ p.PubChemID }}"  target="_blank">{{ p.PubChemID }}</a></td>
+            <td>{{ p.Name }}</td>
+            <td>{{ p.Formula }}</td>
+            <td>{{ p.MolecularWeight }}</td>
+            <td>{{ p.Charge }}</td>
+            <td>{{ p.CASRegNumber }}</td>
+            <td>{{ p.InChIKey }}</td>
+            <td>{{ p.SMILES }}</td>
+            <td>{{ p.IUPACName }}</td>
+            <td>{{ p.Source }}</td>
+            <td>{{ p.Note }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<br>
+<br>
+{% endblock %}

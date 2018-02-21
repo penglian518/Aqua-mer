@@ -1,0 +1,88 @@
+{% extends 'phreeqcdb/base_tables.html' %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'phreeqcdb/memu.html' %}
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">RATES</div>
+<div id=main>
+
+<h3>Annotation <a href="https://wwwbrr.cr.usgs.gov/projects/GWC_coupled/phreeqc/html/final-50.html#97907"> (More) </a></h3>
+<table id="annotation" class="display compact pure-table">
+    <thead>
+        <tr>
+            <th align="left">Keyword</th>
+            <th align="left">Explanation</th>
+        </tr>
+    </thead>
+        <tbody>
+            <tr><td>Rate expression</td><td>Alphanumeric character string that identifies the rate expression, no spaces are allowed.</td></tr>
+            <tr><td>Numbered Basic statement</td><td>A valid Basic language statement that must be numbered. The statements are evaluated in numerical order. The sequence of statements must extrapolate the rate of reaction over the time subinterval given by the internally defined variable TIME. The last statement must be " SAVE expression ", where the value of expression is the moles of reaction that occur during time subinterval TIME. Statements and functions that are available through the Basic interpreter are listed in tables 8 and 9. Parameters defined in the KINETICS data block are also available through the array PARM.</td></tr>
+        </tbody>
+</table>
+
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('#species').DataTable({
+        "lengthMenu": [[15, 50, -1], [15, 50, "All"]],
+        "pageLength": 15,
+    });
+    } );
+</script>
+
+<h3>Rates</h3>
+<table id="species" class="display pure-table sortable">
+    <thead>
+        <tr>
+            <th align="left">Rate expression</th>
+            <th align="left">Numbered Basic statement</th>
+            <th align="left">Reference</th>
+            <th align="left">Note</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for p in all_rates %}
+        {% if forloop.counter|divisibleby:2 %}
+        <tr>
+        {% else %}
+        <tr class="pure-table-odd">
+        {% endif %}
+            <td>{{ p.Name }}</td>
+            <td>{{ p.BasicStatement | linebreaks }}</td>
+            <td>{{ p.Ref }}</td>
+            <td>{{ p.Note | linebreaks }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+    <p>
+
+    <br>
+<h3>Reference</h3>
+<table id="ref" class="display compact pure-table">
+    <thead>
+        <tr>
+            <th align="left">RefID</th>
+            <th align="left">Reference</th>
+        </tr>
+    </thead>
+        <tbody>
+        {% for p in refs %}
+            {% if forloop.counter|divisibleby:2 %}
+            <tr>
+            {% else %}
+            <tr class="pure-table-odd">
+            {% endif %}
+            <td>{{ p.RefID }}</td>
+            <td>{{ p.Reference }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div></div>
+{% endblock %}

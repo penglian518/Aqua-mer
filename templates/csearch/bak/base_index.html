@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>AQUA-MER</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+  {% load static %}
+  <link rel="stylesheet" type="text/css" media="screen" href="{% static 'css/basic.css' %}" />
+  <link rel="stylesheet" type="text/css" media="print" href="{% static 'css/basic_print.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/lightbox.css' %}" type="text/css" />
+  <script src="{% static 'js/prototype.js' %}" type="text/javascript"></script>
+  <script src="{% static 'js/lightbox.js' %}"  type="text/javascript"></script>
+</head>
+
+<body>
+
+<div id="header">
+<a href="/csearch" class="logo"><img src="{% static 'img/logo.png' %}" border=0 width=275 height=63></a>
+<a href="http://www.ornl.gov/"><img src="{% static 'img/ornl.png' %}" border=0 width=261 height=63 align="right"></a>
+<a href="http://www.utk.edu/"><img src="{% static 'img/utk.png' %}" border=0 width=183 height=63 align="right"></a>
+</div>
+
+<div id="topnav">
+  <a href="/">Home</a> ||
+  <a href="/csearch">Conformational Search</a> ||
+  <a href="/">Solvation Free Energy</a> ||
+  <a href="/">p<i>K</i><sub>a</sub> Calculation</a> ||
+  <a href="/">log K Calculation</a> ||
+  <a href="/">Hg Speciation</a> ||
+  <a href="/">Experimental Data</a>
+</div>
+
+<div id="oneliner">
+</div>
+
+
+
+
+
+<div id="body">
+  <div id="col1" style="padding-bottom: 20">
+
+    <div id="menu">
+      <h3>Conformational Search</h3>
+      <ul>
+        <li><a href="/csearch/upload">1. Upload a compound</a></li>
+        <li><a href="/csearch/parameters">2. Searching parameters</a></li>
+        <li><a href="/csearch/review">3. Review & submit</a></li>
+        <li><a href="/csearch/results">4. Results & download</a></li>
+        <li><h3>Analysis</h3></li>
+        <li><a href="/csearch/reclustering">1. Redo clustering</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  {% block content %}
+  {% endblock %}
+</div>
+
+
+
+<!-- footer -->
+<div id=footer>
+<div style="float: left">
+  <a href="http://cmb.ornl.gov/" target="_blank"><img src="{% static 'img/cmb_logo.png' %}" border=0 height=35></a>
+</div>
+
+Contact us
+<br>
+Copyright(c) 2006-2017 by CMB @ UT/ORNL <br>
+
+</div>
+
+</body>
+
+</html>

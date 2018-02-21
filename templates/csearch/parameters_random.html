@@ -1,0 +1,33 @@
+{% extends 'base_index.html' %}
+{% load static %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'csearch/memu.html' %}
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 2.1 Searching Parameters -- Random Search</div>
+<div id=main>
+
+
+    <form enctype="multipart/form-data" method='POST'>
+        {% csrf_token %}
+        <table>
+        {{ form }}
+        </table>
+
+        <br>
+        <br>
+        <button type="submit" class="btn btn-default" style="height:25px;width:90px">Next</button>
+
+    </form>
+
+
+    <br>
+    <br>
+
+
+</div></div>
+{% endblock %}

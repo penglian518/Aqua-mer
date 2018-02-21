@@ -1,0 +1,38 @@
+{% if objs %}
+
+        {% for obj in objs  %}
+            <tr>
+                <td>{{ master.Element }}</td>
+                <td>{{ master.Species }}</td>
+
+                <td>{{ obj.Reaction }}</td>
+                <td>{{ obj.LogK }}</td>
+                {% if obj.DeltaH != 0.0 %}
+                    <td>{{ obj.DeltaH }} {{ obj.DeltaHUnits }}</td>
+                {% else %}
+                    <td> ---- </td>
+                {% endif %}
+
+                {% if obj.GammaA != 0.0 or obj.GammaB != 0.0 %}
+                    <td>{{ obj.GammaA }} {{ obj.GammaB }}</td>
+                {% else %}
+                    <td> ---- </td>
+                {% endif %}
+                <td>{{ obj.Ref }}</td>
+                <td><input type='button' onclick="$(this).closest('tr').remove();" value="remove" style="color:blue"></td>
+
+            </tr>
+        {% endfor %}
+{% else %}
+            <tr style="color:red">
+                <td>{{ ele }}</td>
+                <td>{{ ele }}</td>
+
+                <td>"Parameter missing !"</td>
+                <td> ---- </td>
+                <td> ---- </td>
+                <td> ---- </td>
+                <td> ---- </td>
+                <td><input type='button' onclick="$(this).closest('tr').remove();" value="remove" style="color:blue"></td>
+            </tr>
+{% endif %}

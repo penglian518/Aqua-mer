@@ -1,0 +1,99 @@
+{% extends 'phreeqcdb/base_tables.html' %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'phreeqcdb/memu.html' %}
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">SOLUTION_MASTER_SPECIES</div>
+<div id=main>
+
+<h3>Annotation <a href="https://wwwbrr.cr.usgs.gov/projects/GWC_coupled/phreeqc/html/final-57.html#19910"> (More) </a></h3>
+<table id="annotation" class="display compact pure-table">
+    <thead>
+        <tr>
+            <th align="left">Keyword</th>
+            <th align="left">Explanation</th>
+        </tr>
+    </thead>
+        <tbody>
+            <tr><td>Element</td><td>An element name or an element name followed by a valence state in parentheses. The element name must begin with a capital letter, followed by zero or more lower case letters or underscores ("_").</td></tr>
+            <tr><td>Species</td><td>Formula for the master species, including its charge.</td></tr>
+            <tr><td>Alkalinity</td><td>Alkalinity contribution of the master species.</td></tr>
+            <tr><td>GFW_or_Formula</td><td>Default value used to convert input data in mass units to mole units for the element or element valence.
+                    Either gram formula weight or formula is required, but these items are mutually exclusive.</td></tr>
+            <tr><td>GFW_for_Element</td><td>This field is required for primary master species and must be the gram formula weight for the pure element, not for an aqueous species.</td></tr>
+        </tbody>
+</table>
+<br>
+
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('#master').DataTable({
+        "lengthMenu": [[15, 50, -1], [15, 50, "All"]],
+        "pageLength": 15,
+    });
+    } );
+</script>
+
+<h3>Solution master species</h3>
+<table id="master" class="display pure-table sortable">
+    <thead>
+        <tr>
+            <th align="left">Element</th>
+            <th align="left">Species</th>
+            <th align="left">Alkalinity</th>
+            <th align="left">GFW_or_Formula</th>
+            <th align="left">GFW_for_Element</th>
+            <th align="left">Reference</th>
+            <th align="left">Note</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for p in all_master %}
+        {% if forloop.counter|divisibleby:2 %}
+        <tr>
+        {% else %}
+        <tr class="pure-table-odd">
+        {% endif %}
+            <td>{{ p.Element }}</td>
+            <td>{{ p.Species }}</td>
+            <td>{{ p.Alkalinity }}</td>
+            <td>{{ p.GFWorFormula }}</td>
+            <td>{{ p.GFWforElement | default_if_none:'' }}</td>
+            <td>{{ p.Ref }}</td>
+            <td>{{ p.Note }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+    <p>
+
+    <br>
+<h3>Reference</h3>
+<table id="ref" class="display compact pure-table">
+    <thead>
+        <tr>
+            <th align="left">RefID</th>
+            <th align="left">Reference</th>
+        </tr>
+    </thead>
+        <tbody>
+        {% for p in refs %}
+            {% if forloop.counter|divisibleby:2 %}
+            <tr>
+            {% else %}
+            <tr class="pure-table-odd">
+            {% endif %}
+            <td>{{ p.RefID }}</td>
+            <td>{{ p.Reference }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div></div>
+{% endblock %}

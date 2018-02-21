@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+
+<head>
+  {% include 'head.html' %}
+</head>
+
+<body>
+  <!-- header and topnav -->
+  {% include 'body_header.html' %}
+
+  <!-- oneline messager -->
+  <div id="oneliner"></div>
+
+  <!-- body -->
+  <div id="body">
+    {% block content %}
+    {% endblock %}
+  </div>
+
+  <!-- footer -->
+  {% include 'body_footer.html' %}
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+{% extends 'calculations/base_onelevel.html' %}
+
+{% block table %}
+
+<table id="reaction_groups" class="hover compact pure-table sortable">
+    <thead>
+        <tr>
+            <th>Group of reactions</th>
+            <th>Number of reactions</th>
+            <th>Mean signed error (MSE)</th>
+            <th>Mean unsigned error (MUE)</th>
+            <th>Standard deviation (SD)</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for p in ReactionGroups %}
+        {% if forloop.counter|divisibleby:2 %}
+        <tr>
+        {% else %}
+        <tr class="pure-table-odd">
+        {% endif %}
+            <td><a href="/Cal/reactiongroup/{{ QMLevel }}/{{ p.Name }}">{{ p.Name }}</a></td>
+            <td>{{ p.nReactions }}</td>
+            <td>{{ p.MSE }}</td>
+            <td>{{ p.MUE }}</td>
+            <td>{{ p.SD }}</td>
+
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<br>
+<br>
+{% endblock %}
+
+
+
+
+
+
+

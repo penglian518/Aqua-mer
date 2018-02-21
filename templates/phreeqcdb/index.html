@@ -1,0 +1,55 @@
+{% extends 'base_index.html' %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'phreeqcdb/memu.html' %}
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Phreeqc Database</div>
+<div id=main>
+
+    <h3><a href="/phreeqcdb/master/">Solution master species</a></h3>
+    This table contains the elements in the SOLUTION_MASTER_SPECIES of the Phreeqc database.
+    <br>
+    Currently, {{ NumElements }} compounds in total.
+
+    <h3><a href="/phreeqcdb/species/">Solution species</a></h3>
+    This table contains the elements in the SOLUTION_SPECIES of the Phreeqc database.
+    <br>
+    Currently, {{ NumSpecies }} compounds in total.
+
+    <h3><a href="/phreeqcdb/phases/">Phases</a></h3>
+    This table contains the elements in the PHASES of the Phreeqc database.
+    <br>
+    Currently, {{ NumPhases }} compounds in total.
+
+    <h3><a href="/phreeqcdb/surfacemaster/">Surface master species</a></h3>
+    This table contains the elements in the SURFACE_MASTER_SPECIES of the Phreeqc database.
+    <br>
+    Currently, {{ NumSurfaceMasters }} compounds in total.
+
+    <h3><a href="/phreeqcdb/surfacespecies/">Surface species</a></h3>
+    This table contains the elements in the SURFACE_SPECIES of the Phreeqc database.
+    <br>
+    Currently, {{ NumSurfaceSpecies }} compounds in total.
+
+    <h3><a href="/phreeqcdb/exchangemaster/">Exchange master species</a></h3>
+    This table contains the elements in the EXCHANGE_MASTER_SPECIES of the Phreeqc database.
+    <br>
+    Currently, {{ NumExchangeMasters }} compounds in total.
+
+    <h3><a href="/phreeqcdb/exchanespecies/">Exchange species</a></h3>
+    This table contains the elements in the Exchange_SPECIES of the Phreeqc database.
+    <br>
+    Currently, {{ NumExchangeSpecies }} compounds in total.
+
+    <h3><a href="/phreeqcdb/rates/">Rates</a></h3>
+    This table contains the elements in the RATES of the Phreeqc database.
+    <br>
+    Currently, {{ NumRates }} compounds in total.
+    
+</div></div>
+{% endblock %}

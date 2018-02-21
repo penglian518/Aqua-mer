@@ -1,0 +1,32 @@
+{% extends 'base_index.html' %}
+{% load static %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'csearch/memu.html' %}
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 2. Searching Parameters</div>
+<div id=main>This step provides three algorithms to perform conformation search.
+    Each algorithm requires different parameters. You will be asked to provide them accordingly.
+    <br>
+    <br>
+    <b>1) Random search.</b> Generate N conformations by randomly rotating the single bonds and than minimize. <br><br>
+    <b>2) Replica exchange.</b> Perform an MD simulation with replica exchange technique to search the conformations
+    in gas phase, implicit solvent and explicit solvent models. <br><br>
+    <b>3) Random DFT.</b> Similar to 1) method but will minimize with DFT methods. Suitable for compound with metal atoms <br><br>
+
+    <br>
+    <b>Please start from <a href="/csearch/upload">"Step 1. Upload a compound"</a></b>
+    <br>
+
+</div>
+
+    <br>
+    <br>
+
+
+</div></div>
+{% endblock %}

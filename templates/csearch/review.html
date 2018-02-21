@@ -1,0 +1,67 @@
+{% extends 'base_index.html' %}
+{% load static %}
+{% load filename %}
+
+
+{% block content %}
+<!-- 3Dmol.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/1.3.0/3Dmol-min.js"></script>
+
+<!-- nav box on the left -->
+{% include 'csearch/memu.html' %}
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 3. Review & Submit</div>
+<div id=main>
+
+<table id="basic" class="hover compact pure-table sortable">
+    <thead>
+        <tr>
+            <th>Parameter</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    <tr><td>Input Molecule</td>
+        <td>
+            <div style="height: 150px; width: 250px; position: relative;" class='viewer_3Dmoljs'
+             data-href='/csearch/inputcoor/{{ Item.JobID }}'
+             data-backgroundcolor='0xffffff' data-type="xyz"
+             data-select1="all" data-style1='stick'></div>
+        </td>
+    </tr>
+    <tr><td>JobID</td><td>{{ Item.JobID }}</td></tr>
+    {% if Item.UploadedFile %}
+        <tr><td>File name</td><td>{{ Item.UploadedFile | filename }}</td></tr>
+        <tr><td>File type</td><td>{{ Item.UploadedFileType }}</td></tr>
+    {% else %}
+        <tr><td>File name</td><td>{{ Item.SmilesStr }}</td></tr>
+        <tr><td>File type</td><td>smi</td></tr>
+    {% endif %}
+    <tr><td><br></td><td></td></tr>
+
+    {% if Item.CSearchType == 'Random' %}
+        <tr><td>Method</td><td>Random Search</td></tr>
+        <tr><td>Forcefield</td><td>{{ Item.RandomForcefield }}</td></tr>
+        <tr><td>Total number of rotamers to generate</td><td>{{ Item.RandomNRotamers }}</td></tr>
+        <tr><td>Max minimization steps for each rotamer</td><td>{{ Item.RandomNSteps }}</td></tr>
+        <tr><td>eps value used by DBScan clustering</td><td>{{ Item.RandomEPS }}</td></tr>
+        <tr><td>Minimum number of samples allowed for a cluster</td><td>{{ Item.RandomNMinSamples }}</td></tr>
+    {% endif %}
+
+    </tbody>
+</table>
+    <br>
+
+    <button type="submit" class="btn btn-default" style="height:25px;width:90px"
+            onclick="location.href='/csearch/results/{{ Item.JobID }}'">Submit</button>
+
+    <br>
+    <br>
+
+
+
+</div></div>
+{% endblock %}

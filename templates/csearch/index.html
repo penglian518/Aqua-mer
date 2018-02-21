@@ -1,0 +1,46 @@
+{% extends 'base_index.html' %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'csearch/memu.html' %}
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Instructions</div>
+<div id=main>
+    Steps for  conformational search:<p>
+    <p><b>Step 1. Upload your compound.</b>
+        You can draw your compound and paste the SMILES into the input box, or you can upload the compound. <p>
+    <p><b>Step 2. Select type and related parameters for conformational search.</b>
+        Several different types of conformational search are available. (See bellow) The related parameters are required
+        for different algorithms.<p>
+    <p><b>Step 3. Review & submit.</b>
+        Before submission, you can review your molecule, the searching algorithm, and the parameters.<p>
+    <p><b>Step 4. Download the results.</b>
+        Once the job is finished, you can view your results. You can download the structures or redo a quick cluster
+        analysis based on the results.<p>
+    <p><b>Notice:</b> Once the compound is uploaded, a unique job ID will be assigned. With the job ID, you can check your
+        results and redo cluster analysis quickly.</p>
+    <br>
+    <br>
+
+    Types of conformational search are available:<p>
+    <p><b>A. Random search</b><p>
+    <p>This algorithm searches the conformational space by rotating single bonds in the molecule randomly.
+    Geometry optimization using molecular forcefields will performed after the rotation. <p>
+    <p><b>B. Random search with DFT minimization (under construction)</b> <p>
+    <p>Similar to the Random search algorithm, except DFT  will be applied to do the geometry optimization. <p>
+    <p><b>C. Replica exchange (under construction)</b> <p>
+    <p>This algorithm will run molecular dynamics simulations to sampling the conformations.
+    Explicit solvent, implicit solvent, and in gas phase are available. <p>
+
+    <br>
+
+    <b>Please start from <a href="/csearch/upload">"Step 1. Upload a compound"</a></b>
+    <br>
+
+
+</div></div>
+{% endblock %}

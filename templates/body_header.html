@@ -1,0 +1,22 @@
+{% load static %}
+<div id="header">
+    <a href="/" class="logo"><img src="{% static 'img/logo.png' %}" border=0 width=275 height=63></a>
+    <a href="https://energy.gov/"><img src="{% static 'img/doe.png' %}" border=0 height=63 align="right"></a>
+    <a href="http://www.ornl.gov/"><img src="{% static 'img/ornl.png' %}" border=0 width=261 height=63 align="right"></a>
+    <a href="http://www.utk.edu/"><img src="{% static 'img/utk.png' %}" border=0 width=183 height=63 align="right"></a>
+</div>
+
+<div id="topnav">
+    <div class="dropdown"><a href="/faq">FAQ</a></div>
+    <div class="dropdown">Association Constants
+        <div class="dropdown-content">
+            <a href="/expdata">Experimental Constants</a>
+            <a href="/expdata">Calculated Constants</a>
+            <a href="/phreeqcdb">Phreeqc Database</a>
+            <a href="/toolkit">Toolkit for log <i>K</i> Calculation</a>
+        </div>
+    </div>
+    <div class="dropdown"><a href="/hgspeci">Hg Speciation</a></div>
+    <div class="dropdown"><a href="/">Home</a></div>
+
+</div>

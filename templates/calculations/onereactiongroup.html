@@ -1,0 +1,103 @@
+{% extends 'calculations/base_onereactiongroup.html' %}
+
+{% load static %}
+
+{% load La_to_L %}
+
+{% block table %}
+<h3>Prediction error for this table:</h3>
+Mean signed error (MSE): {{ Errors.MSE }}<br>
+Mean unsigned error (MUE): {{ Errors.MUE }}<br>
+Standard deviation (SD): {{ Errors.SD }}<br>
+<br>
+
+<figure>
+{% if LinearFig  %}
+    <img src="/static/calculations/{{ PATHtoLevel }}/fig/linear_dG_explogK_{{Errors.Name}}.png" height="400">
+{% endif %}
+
+{% if LinearFig1  %}
+    <img src="/static/calculations/{{ PATHtoLevel }}/fig/linear_callogK_explogK_{{Errors.Name}}.png" height="400">
+{% endif %}
+</figure>
+
+<table id="reactions" class="hover compact pure-table sortable">
+    <thead>
+        <tr>
+            <th>Reactions</th>
+            <th>Constant</th>
+            <th>Calculated</th>
+            <th>Experimental</th>
+            <th>Difference</th>
+            <th>Reactants (a.u.)</th>
+            <th>Products (a.u.)</th>
+            <th>Speciation</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for r in ReactionsResults %}
+        {% if forloop.counter|divisibleby:2 %}
+        <tr>
+        {% else %}
+        <tr class="pure-table-odd">
+        {% endif %}
+            <td>{{ r.Reaction | La_to_L }}</td>
+            <td>{{ r.Constant }}</td>
+            {% if r.Constant == 'Gsolv' %}
+                <td>{{ r.deltaG | floatformat:2 }}</td>
+                <td>{{ r.Experimental | floatformat:2 }}</td>
+                <td>{{ r.CalsubExp | floatformat:2}}</td>
+            {% else %}
+                <td>{{ r.Calculated | floatformat:2 }}</td>
+                <td>{{ r.Experimental | floatformat:2 }}</td>
+                <td>{{ r.Difference | floatformat:2}}</td>
+            {% endif %}
+            <td>{{ r.Reactants | La_to_L }}</td>
+            <td>{{ r.Products | La_to_L }}</td>
+            <td><a href="/Cal/plot/{{ r.Calculated | floatformat:3 }}_{{ r.Experimental | floatformat:3}}">plot</a></td>
+
+        </tr>
+
+
+        {% if forloop.counter|divisibleby:2 %}
+        <tr>
+        {% else %}
+        <tr class="pure-table-odd">
+        {% endif %}
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+
+            <!--             -->
+            <td>
+                {% for n in  r.ReactantsBSafeNames %}
+                    <img src="/static/calculations/{{ PATHtoLevel }}/fig/{{n}}_opted.png" height="60">
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                {% endfor %}
+            </td>
+
+            <td>
+                {% for n in  r.ProductsBSafeNames %}
+                    <img src="/static/calculations/{{ PATHtoLevel }}/fig/{{n}}_opted.png" height="60">
+                    &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                {% endfor %}
+            </td>
+            <td></td>
+
+        </tr>
+
+    {% endfor %}
+    </tbody>
+</table>
+<br>
+<br>
+{% endblock %}
+
+
+
+
+
+
+

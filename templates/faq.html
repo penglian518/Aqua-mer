@@ -1,0 +1,50 @@
+{% extends 'base_index.html' %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+<div id="col1" style="padding-bottom: 20">
+  <div id="menu">
+    <h3><i>AQUA-MER</i></h3>
+    <ul>
+      <li><a href="/csearch/">Conformational Search</a></li>
+      <li><a href="/">Solvation Free Energy</a></li>
+      <li><a href="/">p<i>K</i><sub>a</sub> Calculation</a></li>
+      <li><a href="/">log K Calculation</a></li>
+      <li><a href="/">Hg Speciation</a></li>
+      <li><a href="/expdata">Experimental Data</a></li>
+      <li><a href="/faq">FAQ</a></li>
+
+    </ul>
+  </div>
+</div>
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Frequently Asked Questions</div>
+<div id=main>
+    <p><b>1. What is <i>AQUA-MER</i> aqueous speciation database? </b></p>
+    <p><i>AQUA-MER</i> is the first online database focus on Hg speciation in the environmental water systems.
+      It collects experimental data, including <b>solvation free energy</b>, <b>p<i>K</i><sub>a</sub></b> of low molecular weight organic/inorganic
+      compounds in aqueous phase, and <b>stability constant (log K)</b> of these compounds when interact with Hg.
+    </p>
+
+    <p><b>2. What can I do with <i>AQUA-MER</i>? </b></p>
+    <p><i>AQUA-MER</i> provides a
+      bunch of online tools to calculate the solvation free energy, p<i>K</i><sub>a</sub>, and stability constant with
+      <i>ab initio</i> methods, such as density functional theory (DFT). When the experimental data are not available,
+      calculated constants could be applied to perform the Hg speciation and do the modeling as well.
+    </p>
+
+    <p><b>3. Who is behind <i>AQUA-MER</i>? </b></p>
+    <p><i>AQUA-MER</i> is owned by <a href="http://cmb.ornl.gov">Center for Molecular Biophysics (CMB)</a> of University of
+        Tennessee/Oak Ridge National Laboratory (UT/ORNL). It is supported by the Subsurface Biogeochemical Research (SBR)
+        Program of Department of Energy (DOE).
+    </p>
+
+    <p><b>4. How can I use <i>AQUA-MER</i>? </b></p>
+
+
+
+</div></div>
+{% endblock %}

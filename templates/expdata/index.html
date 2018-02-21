@@ -1,0 +1,49 @@
+{% extends 'base_index.html' %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+  <div id="col1" style="padding-bottom: 20">
+    <div id="menu">
+      <h3>Experimental Data</h3>
+      <ul>
+        <li><a href="/expdata/basic/">1. Basic information</a></li>
+        <li><a href="/expdata/dgsolv/">2. Solvation free energy</a></li>
+        <li><a href="/expdata/pka/">3. p<i>K</i><sub>a</sub></a></li>
+        <li><a href="/expdata/stability/">4. Stability Constant</a></li>
+      </ul>
+    </div>
+  </div>
+
+<!-- content on the right -->
+<div id="content">
+    <div id="title">Experimental Data -- Summary</div>
+    <div id="main">
+
+        <h3><a href="/expdata/basic/">Basic Information</a></h3>
+        This table lists the basic information of the compounds we have collected in the database.
+        <br>
+        Currently, {{ NumBasicInfo }} compounds in total.
+
+        <h3><a href="/expdata/stability/">Stability Constants (log <i>K</i>)</a></h3>
+        This table contains Stability Constants for organic and inorganic compounds.
+        <br>
+        Currently, {{Numstabilities}} Stability Constants records for {{ NumBasicInfo }} compounds in total.
+
+        <h3><a href="/expdata/dgsolv/">Solvation Free Energy</a></h3>
+        This table contains Solvation Free Energy record for organic and inorganic compounds.
+        <br>
+        Currently, {{Numdgsolv}} Solvation Free Energy records for {{ NumBasicInfo }} compounds in total.
+
+
+        <h3><a href="/expdata/pka/">Proton Disassociation Constant (p<i>K</i><sub>a</sub>)</a></h3>
+        This table contains p<i>K</i><sub>a</sub> record for organic and inorganic compounds.
+        <br>
+        Currently, {{Numpka}} p<i>K</i><sub>a</sub> records for {{ NumBasicInfo }} compounds in total.
+
+    </div>
+</div>
+{% endblock %}
+
+
+

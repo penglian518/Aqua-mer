@@ -1,0 +1,44 @@
+{% extends 'expdata/base_index.html' %}
+
+{% block cpdtable %}
+<h3><a href="/basic/">Table 1. Basic Information</a></h3>
+This table lists the basic information of the compounds we have collected in the database.
+<br>
+Currently, {{ NumBasicInfo }} compounds in total.
+<br>
+<br>
+{% endblock %}
+
+
+{% block dgsolvtable %}
+<h3><a href="/dgsolv/">Table 2. Solvation Free Energy</a></h3>
+This table contains Solvation Free Energy record for organic and inorganic compounds.
+<br>
+Currently, {{Numdgsolv}} Solvation Free Energy records for {{ NumBasicInfo }} compounds in total.
+<br>
+<br>
+{% endblock %}
+
+
+{% block pkatable %}
+<h3><a href="/pka/">Table 3. p<i>K</i><sub>a</sub></a></h3>
+This table contains p<i>K</i><sub>a</sub> record for organic and inorganic compounds.
+<br>
+Currently, {{Numpka}} p<i>K</i><sub>a</sub> records for {{ NumBasicInfo }} compounds in total.
+<br>
+<br>
+{% endblock %}
+
+
+{% block Stabilitytable %}
+<h3><a href="/stability/">Table 4. Stability Constants</a></h3>
+This table contains Stability Constants for organic and inorganic compounds.
+<br>
+Currently, {{Numstabilities}} Stability Constants records for {{ NumBasicInfo }} compounds in total.
+<br>
+<br>
+{% endblock %}
+
+
+
+

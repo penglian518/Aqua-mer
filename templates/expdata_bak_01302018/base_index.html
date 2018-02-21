@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Database of CMB UT/ORNL</title>
+</head>
+<body>
+{% load static %}
+<link rel="stylesheet" href="https://yui-s.yahooapis.com/pure/0.6.0/pure-min.css">
+
+
+<h1><center><a href="/">Welcome to <i>AQUA-MER</i> Aqueous Speciation Database</a></center></h1>
+<h2>Current compounds we have:</h2>
+
+{% block cpdtable %}
+{% endblock %}
+
+{% block dgsolvtable %}
+{% endblock %}
+
+{% block pkatable %}
+{% endblock %}
+
+{% block Stabilitytable %}
+{% endblock %}
+
+
+<!--   -->
+
+<h2><a href="/Cal/">Current predictions</a></h2>
+
+
+
+</body>
+</html>
