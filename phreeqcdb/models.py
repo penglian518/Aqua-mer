@@ -11,10 +11,10 @@ from django.utils.translation import gettext_lazy as _
 # Create your models here.
 @python_2_unicode_compatible  # only if you need to support Python 2
 class SolutionMasterSpecies(models.Model):
-    Element = models.CharField(max_length=20, blank=True, default='')
-    Species = models.CharField(max_length=20, blank=True, default='')
+    Element = models.CharField(max_length=50, blank=True, default='')
+    Species = models.CharField(max_length=50, blank=True, default='')
     Alkalinity = models.FloatField(blank=True, default=0.0)
-    GFWorFormula = models.CharField(max_length=20, blank=True, default='0.0')
+    GFWorFormula = models.CharField(max_length=50, blank=True, default='0.0')
     GFWforElement = models.FloatField(blank=True, null=True)
 
     Note = models.CharField(max_length=200, blank=True, default='')

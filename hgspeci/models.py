@@ -69,12 +69,12 @@ class SPElementsForm(ModelForm):
         # turn on required for concentration field
         self.fields['Concentration'].required = True
 
-
     class Meta:
         model = SPElements
         fields = ['JobID', 'Element', 'Concentration', 'PE', 'PPB', 'PPBFormula', 'Others']
         widgets = {
             'JobID': forms.HiddenInput(),
+            'Element': forms.TextInput(attrs={'class': 'dyn-input'}),
         }
         labels = {
             'PPBFormula': _('Formula for PPB'),
@@ -83,20 +83,32 @@ class SPElementsForm(ModelForm):
 
 
 @python_2_unicode_compatible  # only if you need to support Python 2
-class SPMaster(models.Model):
-    SPJobID = models.ForeignKey('HgSpeciJob', on_delete=models.CASCADE, default=0, related_name='nested')
+class SPMasterSpecies(models.Model):
+    SPJobID = models.ForeignKey('HgSpeciJob', on_delete=models.CASCADE, default=0, related_name='spmaster')
     JobID = models.PositiveIntegerField(blank=True, default=0)
-    Element = models.CharField(max_length=50, blank=True, default='')
-    Concentration = models.FloatField(blank=True)
-    PE = models.BooleanField(blank=True, default=False)
-    PPB = models.BooleanField(blank=True, default=False)
-    PPBFormula = models.CharField(max_length=50, blank=True, default='')
-    Others = models.CharField(max_length=50, blank=True, default='')
+    Element = models.CharField(max_length=50, blank=False, default='')
+    Species = models.CharField(max_length=50, blank=False, default='')
+    Alkalinity = models.FloatField(blank=False, default=0.0)
+    GFWorFormula = models.CharField(max_length=50, blank=False, default='0.0')
+    GFWforElement = models.FloatField(blank=True, null=True)
+
+    Note = models.CharField(max_length=200, blank=True, default='')
 
     def __str__(self):
         return str(self.pk)
 
 
+class SPMasterSpeciesForm(ModelForm):
+
+    class Meta:
+        model = SPMasterSpecies
+        fields = ['JobID', 'Element', 'Species', 'Alkalinity', 'GFWorFormula', 'GFWforElement', 'Note']
+        widgets = {
+            'JobID': forms.HiddenInput(),
+        }
+        labels = {
+            'GFWorFormula': _('GFW or Formula'),
+        }
 
 
 
