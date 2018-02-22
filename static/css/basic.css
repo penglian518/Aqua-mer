@@ -8,6 +8,24 @@ body {
     margin:           0;
 }
 
+.rcorners1 {
+    border-radius: 25px;
+    border: 2px solid #c1e5f5;
+    padding: 0px;
+}
+
+.rcorners2 {
+    border-radius: 25px;
+    border: 2px solid #2196F2;
+    padding: 10px;
+}
+
+.rcorners3 {
+    border-radius: 25px;
+    border: 2px solid #73AD21;
+    padding: 10px;
+}
+
 #header {
     background-color: #EAEAEA;
     border-bottom:    solid 1px #505050;
@@ -546,4 +564,3 @@ video {
 * html #thumbstat {
     margin-left: 8px;
 }
-

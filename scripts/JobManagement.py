@@ -1,11 +1,11 @@
 import os, shutil, subprocess, logging
-
+from .PhreeqcInput import PhreeqcInput
 
 class JobManagement:
     def __init__(self):
         self.DjangoHome = '/home/p6n/workplace/website/cyshg'
         self.obabel = '/home/p6n/anaconda2/bin/obabel'
-        self.CsearchJobLocation = 'media/csearch/jobs'
+        self.JobLocation = 'media'
 
 
 
@@ -50,7 +50,8 @@ class JobManagement:
     def CSearchJobPrepare(self, obj, JobType='csearch'):
         # get basic info
         job_id = obj.JobID
-        job_dir = '%s/%s/%s' % (self.DjangoHome, self.CsearchJobLocation, obj.JobID)
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
 
         try:
             os.makedirs(job_dir)
@@ -90,11 +91,11 @@ class JobManagement:
                 obj.FailedReason = 'Could not generate commandline file (CSearch.run)'
         return
 
-
     def CSearchJobReclustering(self, obj, JobType='csearch'):
         # get basic info
         job_id = obj.JobID
-        job_dir = '%s/%s/%s' % (self.DjangoHome, self.CsearchJobLocation, obj.JobID)
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
 
         try:
             os.makedirs(job_dir)
@@ -135,7 +136,6 @@ class JobManagement:
                 obj.FailedReason = 'Could not generate commandline file (CSearch.run)'
         return
 
-
     def CSearchJobExec(self, obj, JobType='csearch'):
         '''
         Currently, run the jobs on this computer.
@@ -143,8 +143,8 @@ class JobManagement:
         '''
         # get basic info
         job_id = obj.JobID
-        job_dir = '%s/%s/%s' % (self.DjangoHome, self.CsearchJobLocation, obj.JobID)
-
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
 
         os.chdir(job_dir)
         runCSearch = subprocess.Popen('sh CSearch.run', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -171,3 +171,30 @@ class JobManagement:
         return
 
 
+    def HgspeciJobPrepare(self, obj, JobType='hgspeci'):
+        # get basic info
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+
+        try:
+            os.makedirs(job_dir)
+        except:
+            pass
+
+        phreeqc = PhreeqcInput()
+        try:
+            phreeqc.genInputFile(obj=obj, outdir=job_dir)
+        except:
+            obj.FailedReason = 'Could not generate input file for phreeqc.'
+
+        try:
+            phreeqc.genDatabaseFile(obj=obj, outdir=job_dir)
+        except:
+            obj.FailedReason = 'Could not generate database file for phreeqc.'
+
+        try:
+            phreeqc.genJobScript(obj=obj, outdir=job_dir)
+        except:
+            obj.FailedReason = 'Could not generate job script for running phreeqc.'
+
+        return

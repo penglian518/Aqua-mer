@@ -50,7 +50,7 @@ class HgSpeciJob(models.Model):
 
 @python_2_unicode_compatible  # only if you need to support Python 2
 class SPElements(models.Model):
-    SPJobID = models.ForeignKey('HgSpeciJob', on_delete=models.CASCADE, default=0, related_name='nested')
+    SPJobID = models.ForeignKey('HgSpeciJob', on_delete=models.CASCADE, default=0, related_name='spelements')
     JobID = models.PositiveIntegerField(blank=True, default=0)
     Element = models.CharField(max_length=50, blank=True, default='')
     Concentration = models.FloatField(blank=True)
@@ -90,7 +90,7 @@ class SPMasterSpecies(models.Model):
     Species = models.CharField(max_length=50, blank=False, default='')
     Alkalinity = models.FloatField(blank=False, default=0.0)
     GFWorFormula = models.CharField(max_length=50, blank=False, default='0.0')
-    GFWforElement = models.FloatField(blank=True, null=True)
+    GFWforElement = models.FloatField(blank=True, default=0.0)
 
     Note = models.CharField(max_length=200, blank=True, default='')
 
@@ -99,7 +99,6 @@ class SPMasterSpecies(models.Model):
 
 
 class SPMasterSpeciesForm(ModelForm):
-
     class Meta:
         model = SPMasterSpecies
         fields = ['JobID', 'Element', 'Species', 'Alkalinity', 'GFWorFormula', 'GFWforElement', 'Note']
@@ -108,6 +107,71 @@ class SPMasterSpeciesForm(ModelForm):
         }
         labels = {
             'GFWorFormula': _('GFW or Formula'),
+        }
+
+        # TODO, if the user leave with blank, fill with default value!
+        def clean_field(self):
+            data = self.cleaned_data['field']
+            if not data:
+                data = 'default value'
+            return data
+
+
+@python_2_unicode_compatible  # only if you need to support Python 2
+class SPSolutionSpecies(models.Model):
+    Units = (
+        ('kJ/mol', 'kJ'),
+        ('kcal/mol', 'kcal'),
+        ('J/mol', 'J'),
+        ('cal/mol', 'cal'),
+    )
+    SPJobID = models.ForeignKey('HgSpeciJob', on_delete=models.CASCADE, default=0, related_name='spspecies')
+    JobID = models.PositiveIntegerField(blank=True, default=0)
+    Reaction = models.CharField(max_length=200, blank=False, default='')
+    LogK = models.FloatField(blank=False, default=0.0)
+    DeltaH = models.FloatField(blank=True, null=True, default=0.0)
+    DeltaHUnits = models.CharField(choices=Units, max_length=10, default='kJ/mol')
+    AEA1 = models.FloatField(blank=True, null=True, default=0.0, help_text='Analytical A1')
+    AEA2 = models.FloatField(blank=True, null=True, default=0.0)
+    AEA3 = models.FloatField(blank=True, null=True, default=0.0)
+    AEA4 = models.FloatField(blank=True, null=True, default=0.0)
+    AEA5 = models.FloatField(blank=True, null=True, default=0.0)
+    GammaA = models.FloatField(blank=True, null=True, default=0.0)
+    GammaB = models.FloatField(blank=True, null=True, default=0.0)
+    NoCheck = models.BooleanField(blank=True, default=False)
+    MoleBalance = models.CharField(max_length=50, blank=True, null=True, default='')
+
+    Note = models.CharField(max_length=200, blank=True, null=True, default='')
+
+    def __str__(self):
+        return str(self.pk)
+
+class SPSolutionSpeciesForm(ModelForm):
+    class Meta:
+        model = SPSolutionSpecies
+        fields = ['JobID', 'Reaction', 'LogK', 'DeltaH', 'DeltaHUnits', 'AEA1', 'AEA2', 'AEA3', 'AEA4', 'AEA5',
+                  'GammaA', 'GammaB', 'NoCheck', 'MoleBalance', 'Note']
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'LogK': forms.TextInput(attrs={'size': 7}),
+            'DeltaH': forms.TextInput(attrs={'size': 7}),
+            'AEA1': forms.TextInput(attrs={'size': 5}),
+            'AEA2': forms.TextInput(attrs={'size': 5}),
+            'AEA3': forms.TextInput(attrs={'size': 5}),
+            'AEA4': forms.TextInput(attrs={'size': 5}),
+            'AEA5': forms.TextInput(attrs={'size': 5}),
+            'GammaA': forms.TextInput(attrs={'size': 7}),
+            'GammaB': forms.TextInput(attrs={'size': 7}),
+            'MoleBalance': forms.TextInput(attrs={'size': 10}),
+            'Note': forms.TextInput(attrs={'size': 10}),
+        }
+        labels = {
+            'DeltaHUnits': _('Unit'),
+            'AEA1': _('A1'),
+            'AEA2': _('A2'),
+            'AEA3': _('A3'),
+            'AEA4': _('A4'),
+            'AEA5': _('A5'),
         }
 
 
