@@ -7,12 +7,14 @@ from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
 from django.forms import inlineformset_factory
 from .models import HgSpeciJob, SPElements, SPElementsForm, ParameterForm
-from .models import SPMasterSpecies, SPMasterSpeciesForm, SPSolutionSpecies, SPSolutionSpeciesForm
+from .models import SPMasterSpecies, SPMasterSpeciesForm, SPSolutionSpecies, SPSolutionSpeciesForm, QueryForm
 from phreeqcdb.models import SolutionMasterSpecies, SolutionSpecies
 
 from scripts.JobManagement import JobManagement
 import threading
 import base64, os, datetime
+import pandas as pd
+import numpy as np
 
 # Create your views here.
 
@@ -174,15 +176,114 @@ def input_solutionspecies(request, JobID):
 
 def review(request, JobID):
     item = get_object_or_404(HgSpeciJob, JobID=JobID)
-
-    jobmanger = JobManagement()
-    jobmanger.HgspeciJobPrepare(obj=item)
-
     return render(request, 'hgspeci/review.html', {'JobID': JobID, 'Item': item})
 
 def review_doc(request):
     return render(request, 'hgspeci/review_doc.html')
 
+
+def results(request, JobID, JobType='hgspeci'):
+    # if the job hasn't been started, start the job.
+    # if the job is running, check every 5 seconds.
+    # if the job has finished, display the results.
+    item = get_object_or_404(HgSpeciJob, JobID=JobID)
+
+    if item.CurrentStatus == '0':
+        # the job is 'to be start', submit the job and jump to '1'
+
+        # a function to start the job
+        #### call some function here ####
+        # a. generate input file
+        # b. submit the job
+
+        # prepare the necessary file for phreeqc
+        jobmanger = JobManagement()
+        jobmanger.HgspeciJobPrepare(obj=item, JobType=JobType)
+
+        # run the calculations in background
+        Exec_thread = threading.Thread(target=jobmanger.JobExec, kwargs={"obj": item, 'JobType': JobType})
+        Exec_thread.start()
+
+
+        # change the status in the database
+        item.CurrentStatus = '1'
+        item.Successful = True
+        item.FailedReason = ''
+        item.save()
+        # redirect to the result page
+        return redirect('/hgspeci/results/%d' % int(item.JobID))
+
+    if item.CurrentStatus == '1':
+        # the job is 'running', keep checking the status
+        return render(request, 'hgspeci/results_jobrunning.html', {'JobID': JobID, 'Item': item})
+    if item.CurrentStatus == '2':
+        # the job is finished, display the results.
+
+        # collect results
+        jobmanger = JobManagement()
+        jobmanger.HgspeciCollectResults(obj=item, JobType=JobType)
+
+        # plot the results
+
+
+        job_dir = get_job_dir(JobID)
+        csv = '%s/phreeqc-out.csv' % job_dir
+        try:
+            df = pd.DataFrame.from_csv(csv)
+        except:
+            pass
+
+        species = [str(i) for i in df.Species.values]
+        pHs = [float(i) for i in df.columns.values[1:]]
+
+        data = []
+        for idx in range(len(df)):
+            di = {'name': df.ix[idx].values[0], 'data':[float(i) for i in df.ix[idx].values[1:]]}
+            di['color'] = '#'+''.join(np.random.permutation([i for i in '0123456789ABCDEF'])[:6])
+            data.append(di)
+
+        return render(request, 'hgspeci/results.html', {'JobID': JobID, 'Item': item, 'species': species, 'pHs': pHs, 'data': data})
+    if item.CurrentStatus == '3':
+        # there is some error in the job, display the error message.
+        return render(request, 'hgspeci/results_error.html', {'JobID': JobID, 'Item': item})
+
+def results_doc(request):
+    if request.method == 'POST':
+        # user filled form
+        form = QueryForm(request.POST)
+        if form.is_valid():
+            model_instance = form.save(commit=False)
+
+            # if the JobID is not valid, go back to the initial state
+            try:
+                int(model_instance.JobID)
+            except:
+                return render(request, 'hgspeci/results_doc.html', {'form': form})
+
+            # show the result, if the JobID is available in the system
+            return redirect('/hgspeci/results/%d' % int(model_instance.JobID))
+
+    else:
+        # the initial form
+        form = QueryForm(initial={"JobID": ""})
+
+
+    return render(request, 'hgspeci/results_doc.html', {'form': form})
+
+def download(request, JobID, JobType='hgspeci'):
+    item = get_object_or_404(HgSpeciJob, JobID=JobID)
+
+    if item.CurrentStatus == '2':
+        # the job is finished, display the results.
+        job_dir = get_job_dir(JobID)
+        output_zip = '%s/%s-%s.zip' % (job_dir, JobType, JobID)
+        if os.path.exists(output_zip):
+            with open(output_zip, 'rb') as fh:
+                response = HttpResponse(fh.read(), content_type="application/x-zip-compressed")
+                response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(output_zip)
+                return response
+
+    raise Http404
 
 
 # function for ajax query
@@ -214,3 +315,11 @@ def query_solutionspecies(request, ele):
     response_dict['objs'] = objs
     return render(request, 'hgspeci/solutionspecies.html', response_dict)
 
+# public functions
+def get_job_dir(JobID, JobType='hgspeci'):
+    DjangoHome = '/home/p6n/workplace/website/cyshg'
+    JobLocation = 'media/%s/jobs' % JobType
+
+    job_dir = '%s/%s/%s' % (DjangoHome, JobLocation, JobID)
+
+    return job_dir

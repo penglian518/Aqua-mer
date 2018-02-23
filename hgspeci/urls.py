@@ -13,4 +13,8 @@ urlpatterns = [
     url(r'^ajax/query_solutionspecies/(?P<ele>.*)/$', views.query_solutionspecies, name='query_solutionspecies'),
     url(r'^review/(?P<JobID>[0-9]+)/$', views.review, name='review'),
     url(r'^review/$', views.review_doc, name='review_doc'),
+    url(r'^results/(?P<JobID>[0-9]+)$', views.results, name='results'),
+    url(r'^results/$', views.results_doc, name='results_doc'),
+    url(r'^download/(?P<JobID>[0-9]+)$', views.download, name='download'),
+
 ]

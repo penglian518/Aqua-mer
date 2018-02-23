@@ -1,5 +1,5 @@
 import os, shutil, subprocess, logging
-from .PhreeqcInput import PhreeqcInput
+from .PhreeqcPrepare import PhreeqcPrepare
 
 class JobManagement:
     def __init__(self):
@@ -7,8 +7,7 @@ class JobManagement:
         self.obabel = '/home/p6n/anaconda2/bin/obabel'
         self.JobLocation = 'media'
 
-
-
+    #### public functions ####
     def Convert2XYZ(self, obj, JobType='csearch'):
         # get basic info
         job_id = obj.JobID
@@ -47,6 +46,68 @@ class JobManagement:
             out, err = cmd.communicate()
         return
 
+    def JobExec(self, obj, JobType='csearch'):
+        '''
+        Currently, run the jobs on this computer.
+
+        '''
+        # get basic info
+        job_id = obj.JobID
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+        os.chdir(job_dir)
+
+        if JobType in ['csearch']:
+            jobscript = 'CSearch.run'
+        elif JobType in ['hgspeci']:
+            jobscript = 'runPhreeqc.sh'
+        else:
+            obj.FailedReason = 'Could not find script file (%s) for JobType (%s)' % (jobscript, JobType)
+            # change the job status in DB to '3' error
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+            obj.save()
+            logging.warn(err)
+            return
+
+        runJob = subprocess.Popen('sh %s' % jobscript, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+
+        # execute the script (CSearch.run)
+        try:
+            # run the calculation
+            err, out = runJob.communicate()
+
+            # make archive file for download
+            try:
+                if JobType in ['csearch']:
+                    shutil.make_archive('%s-%d' % (JobType, job_id), 'zip', '%s-%d' % (JobType, job_id))
+                elif JobType in ['hgspeci']:
+                    shutil.make_archive('%s-%d' % (JobType, job_id), 'zip', '.')
+            except:
+                obj.FailedReason = 'Could not create zip file (%s-%d.zip).' % (JobType, job_id)
+                # change the job status in DB to '3' error
+                obj.CurrentStatus = '3'
+                obj.Successful = False
+                obj.save()
+                logging.warn(err)
+
+            # change the job status in DB to '2' finished
+            obj.CurrentStatus = '2'
+            obj.Successful = True
+            obj.FailedReason = ''
+            obj.save()
+        except:
+            obj.FailedReason = 'Could not run the script file (%s)' % jobscript
+            # change the job status in DB to '3' error
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+            obj.save()
+            logging.warn(err)
+
+        return
+
+
+    #### Csearch ####
     def CSearchJobPrepare(self, obj, JobType='csearch'):
         # get basic info
         job_id = obj.JobID
@@ -89,6 +150,10 @@ class JobManagement:
                 exe_filehandle.close()
             except:
                 obj.FailedReason = 'Could not generate commandline file (CSearch.run)'
+                obj.CurrentStatus = '3'
+                obj.Successful = False
+                obj.save()
+                logging.warn(err)
         return
 
     def CSearchJobReclustering(self, obj, JobType='csearch'):
@@ -134,43 +199,14 @@ class JobManagement:
                 exe_filehandle.close()
             except:
                 obj.FailedReason = 'Could not generate commandline file (CSearch.run)'
-        return
-
-    def CSearchJobExec(self, obj, JobType='csearch'):
-        '''
-        Currently, run the jobs on this computer.
-
-        '''
-        # get basic info
-        job_id = obj.JobID
-        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
-        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
-
-        os.chdir(job_dir)
-        runCSearch = subprocess.Popen('sh CSearch.run', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-
-        # execute the script (CSearch.run)
-        try:
-            # run the calculation
-            err, out = runCSearch.communicate()
-
-            # make archive file for download
-            shutil.make_archive('%s-%d' % (JobType, job_id), 'zip', '%s-%d' % (JobType, job_id))
-
-            # change the job status in DB to '2' finished
-            obj.CurrentStatus = '2'
-            obj.save()
-        except:
-            obj.FailedReason = 'Could not run the script file (CSearch.run)'
-            # change the job status in DB to '3' error
-            obj.CurrentStatus = '3'
-            obj.save()
-
-            logging.warn(err)
-
+                obj.CurrentStatus = '3'
+                obj.Successful = False
+                obj.save()
+                logging.warn(err)
         return
 
 
+    #### Hgspeci ####
     def HgspeciJobPrepare(self, obj, JobType='hgspeci'):
         # get basic info
         JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
@@ -181,20 +217,50 @@ class JobManagement:
         except:
             pass
 
-        phreeqc = PhreeqcInput()
+        phreeqc = PhreeqcPrepare()
         try:
             phreeqc.genInputFile(obj=obj, outdir=job_dir)
+            obj.Successful = True
         except:
             obj.FailedReason = 'Could not generate input file for phreeqc.'
-
+            obj.CurrentStatus = '3'
+            obj.Successful = False
         try:
             phreeqc.genDatabaseFile(obj=obj, outdir=job_dir)
+            obj.Successful = True
         except:
             obj.FailedReason = 'Could not generate database file for phreeqc.'
-
+            obj.CurrentStatus = '3'
+            obj.Successful = False
         try:
             phreeqc.genJobScript(obj=obj, outdir=job_dir)
+            obj.Successful = True
         except:
             obj.FailedReason = 'Could not generate job script for running phreeqc.'
+            obj.CurrentStatus = '3'
+            obj.Successful = False
 
+        obj.save()
+        return
+
+    def HgspeciCollectResults(self, obj, JobType='hgspeci'):
+        # get basic info
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+
+        try:
+            os.makedirs(job_dir)
+        except:
+            pass
+
+        phreeqc = PhreeqcPrepare()
+        try:
+            phreeqc.collectResults(obj=obj, outdir=job_dir, outFile='phreeqc-out.csv')
+            obj.Successful = True
+        except:
+            obj.FailedReason = 'Could not collect the speciation data from the output file.'
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
+        obj.save()
         return

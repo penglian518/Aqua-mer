@@ -1,6 +1,6 @@
 {% extends 'base_index.html' %}
 {% load static %}
-
+{% load phreeqcfilters %}
 
 {% block content %}
 <!-- nav box on the left -->
@@ -10,10 +10,51 @@
 <div id="content">
 <div id="title">Step 2. Review & Submit</div>
 <div id=main>
+    <br>
+    <div id="phreeqcinput">
+        <p>Title {{ Item.SPTitle }}</p>
+        <p>SOLUTION 1</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;units {{ Item.SPUnit }}</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;pH {{ Item.SPpHMin }} {{ Item.SPpHMax}} {{ Item.SPpHIncrease}}</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;temp {{ Item.SPTemperature }}</p>
+        {% for ele in Item.spelements.all %}
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;{{ ele.Element }} {{ ele.Concentration }} {{ ele.PE | elements:"pe" }} {{ ele.PPB | elements:"ppb" }} {{ ele.PPBFormula }} {{ ele.Others }}</p>
+        {% endfor %}
+        {% if Item.spmaster.all %}
+            <p>SOLUTION_MASTER_SPECIES</p>
+            {% for ms in Item.spmaster.all %}
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;{{ ms.Element }} {{ ms.Species }} {{ ms.Alkalinity }} {{ ms.GFWorFormula }} {{ ms.GFWforElement }}</p>
+            {% endfor %}
+        {% endif %}
+        {% if Item.spspecies.all %}
+            <p>SOLUTION_SPECIES</p>
+            {% for ms in Item.spspecies.all %}
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;{{ ms.Reaction }}</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;log_k {{ ms.LogK }}</p>
+                {% if ms.DeltaH > 0 %}
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delta_h {{ ms.DeltaH }} {{ ms.DeltaHUnits }}</p>
+                {% endif %}
+                {% if ms.AEA1|folatadd:ms.AEA2|folatadd:ms.AEA3|folatadd:ms.AEA4|folatadd:ms.AEA5 > 0 %}
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-a_e {{ ms.AEA1 }} {{ ms.AEA2 }} {{ ms.AEA3 }} {{ ms.AEA4 }} {{ ms.AEA5 }}</p>
+                {% endif %}
+                {% if ms.GammaA|folatadd:ms.GammaB  > 0 %}
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-gamma {{ ms.GammaA }} {{ ms.GammaB }}</p>
+                {% endif %}
+                {% if ms.NoCheck %}
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-no_check</p>
+                {% endif %}
+                {% if ms.MoleBalance %}
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-mole_balance {{ ms.MoleBalance }}</p>
+                {% endif %}
 
+            {% endfor %}
+        {% endif %}
+
+    </div>
     <br>
+    <button type="submit" class="btn btn-default" style="height:25px;width:90px"
+            onclick="location.href='/hgspeci/results/{{ Item.JobID }}'">Submit</button>
     <br>
-    <b>Will display the review result here</b>
     <br>
 
 </div>

@@ -204,3 +204,14 @@ class ParameterForm(ModelForm):
             'SPTitle': forms.TextInput(attrs={'size': 40}),
 
         }
+
+
+class QueryForm(ModelForm):
+    class Meta:
+        model = HgSpeciJob
+        fields = ['JobID']
+        labels = {
+            'JobID': _('Job ID'),
+
+        }
+

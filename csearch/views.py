@@ -113,6 +113,7 @@ def review(request, JobID):
 def review_doc(request):
     return render(request, 'csearch/review_doc.html')
 
+
 def results(request, JobID, JobType='csearch'):
     # if the job hasn't been started, start the job.
     # if the job is running, check every 5 seconds.
@@ -135,13 +136,15 @@ def results(request, JobID, JobType='csearch'):
             jobmanger.CSearchJobPrepare(obj=item)
 
         # run the calculations in background
-        Exec_thread = threading.Thread(target=jobmanger.CSearchJobExec, kwargs={"obj": item})
+        Exec_thread = threading.Thread(target=jobmanger.JobExec, kwargs={"obj": item, 'JobType':JobType})
         Exec_thread.start()
 
 
 
         # change the status in the database
         item.CurrentStatus = '1'
+        item.Successful = True
+        item.FailedReason = ''
         item.save()
         # redirect to the result page
         return redirect('/csearch/results/%d' % int(item.JobID))
@@ -165,7 +168,6 @@ def results(request, JobID, JobType='csearch'):
     if item.CurrentStatus == '3':
         # there is some error in the job, display the error message.
         return render(request, 'csearch/results_error.html', {'JobID': JobID, 'Item': item})
-
 
 def results_doc(request):
 
