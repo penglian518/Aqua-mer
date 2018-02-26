@@ -15,6 +15,7 @@ import threading
 import base64, os, datetime
 import pandas as pd
 import numpy as np
+from decimal import Decimal
 
 # Create your views here.
 
@@ -223,26 +224,85 @@ def results(request, JobID, JobType='hgspeci'):
         jobmanger = JobManagement()
         jobmanger.HgspeciCollectResults(obj=item, JobType=JobType)
 
-        # plot the results
-
-
+        # get data for plotting the results
         job_dir = get_job_dir(JobID)
-        csv = '%s/phreeqc-out.csv' % job_dir
+
+        csv = '%s/phreeqc-molality.csv' % job_dir
         try:
             df = pd.DataFrame.from_csv(csv)
         except:
             pass
 
+        # get species and pH values
         species = [str(i) for i in df.Species.values]
         pHs = [float(i) for i in df.columns.values[1:]]
+        # generate a random color code
+        colors = ['#'+''.join(np.random.permutation([i for i in '0123456789ABCDEF'])[:6]) for i in range(len(df))]
 
-        data = []
+        # for molality
+        data_molality = []
         for idx in range(len(df)):
-            di = {'name': df.ix[idx].values[0], 'data':[float(i) for i in df.ix[idx].values[1:]]}
-            di['color'] = '#'+''.join(np.random.permutation([i for i in '0123456789ABCDEF'])[:6])
-            data.append(di)
+            di = {'name': df.ix[idx].values[0], 'data':['%.2E' % Decimal(float(i)) for i in df.ix[idx].values[1:]]}
+            di['color'] = colors[idx]
+            data_molality.append(di)
 
-        return render(request, 'hgspeci/results.html', {'JobID': JobID, 'Item': item, 'species': species, 'pHs': pHs, 'data': data})
+        # for activity
+        csv = '%s/phreeqc-activity.csv' % job_dir
+        try:
+            df = pd.DataFrame.from_csv(csv)
+        except:
+            pass
+        data_activity = []
+        for idx in range(len(df)):
+            di = {'name': df.ix[idx].values[0], 'data':['%.2E' % Decimal(float(i)) for i in df.ix[idx].values[1:]]}
+            di['color'] = colors[idx]
+            data_activity.append(di)
+
+        # for logmolality
+        csv = '%s/phreeqc-logmolality.csv' % job_dir
+        try:
+            df = pd.DataFrame.from_csv(csv)
+        except:
+            pass
+        data_logmolality = []
+        for idx in range(len(df)):
+            di = {'name': df.ix[idx].values[0], 'data':['%.2E' % Decimal(float(i)) for i in df.ix[idx].values[1:]]}
+            di['color'] = colors[idx]
+            data_logmolality.append(di)
+
+        # for logactivity
+        csv = '%s/phreeqc-logactivity.csv' % job_dir
+        try:
+            df = pd.DataFrame.from_csv(csv)
+        except:
+            pass
+        data_logactivity = []
+        for idx in range(len(df)):
+            di = {'name': df.ix[idx].values[0], 'data':['%.2E' % Decimal(float(i)) for i in df.ix[idx].values[1:]]}
+            di['color'] = colors[idx]
+            data_logactivity.append(di)
+
+        # for gamma
+        csv = '%s/phreeqc-gamma.csv' % job_dir
+        try:
+            df = pd.DataFrame.from_csv(csv)
+        except:
+            pass
+        data_gamma = []
+        for idx in range(len(df)):
+            di = {'name': df.ix[idx].values[0], 'data':['%.2E' % Decimal(float(i)) for i in df.ix[idx].values[1:]]}
+            di['color'] = colors[idx]
+            data_gamma.append(di)
+
+        return render(request, 'hgspeci/results.html',
+                      {'JobID': JobID, 'Item': item, 'species': species, 'pHs': pHs,
+                       'data_molality': data_molality,
+                       'data_activity': data_activity,
+                       'data_logmolality': data_logmolality,
+                       'data_logactivity': data_logactivity,
+                       'data_gamma': data_gamma,
+                       })
+
     if item.CurrentStatus == '3':
         # there is some error in the job, display the error message.
         return render(request, 'hgspeci/results_error.html', {'JobID': JobID, 'Item': item})

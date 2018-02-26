@@ -255,7 +255,7 @@ class JobManagement:
 
         phreeqc = PhreeqcPrepare()
         try:
-            phreeqc.collectResults(obj=obj, outdir=job_dir, outFile='phreeqc-out.csv')
+            phreeqc.collectResults(obj=obj, outdir=job_dir)
             obj.Successful = True
         except:
             obj.FailedReason = 'Could not collect the speciation data from the output file.'

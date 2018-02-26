@@ -78,22 +78,52 @@ class PhreeqcPrepare:
 
         return
 
-    def collectResults(self, obj, outdir, outFile='phreeqc-out.csv'):
+    def collectResults(self, obj, outdir):
         pHrange = np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)
         pphaser = PhreeqcParser()
-        df_species = pd.DataFrame()
         for ph in pHrange:
             phreeqcout = '%s/pH-%s.out' % (outdir, str(ph))
             df = pphaser.getSpeciesData(phreeqcout)
             if ph == obj.SPpHMin:
-                df_species = df[['Species']]
+                df_molality_out = df[['Species']]
+                df_activity_out = df[['Species']]
+                df_logmolality_out = df[['Species']]
+                df_logactivity_out = df[['Species']]
+                df_gamma_out = df[['Species']]
+                df_molev_out = df[['Species']]
+
             df_molality = df[['Molality']]
             df_molality.columns = [ph]
-            df_species = pd.concat([df_species, df_molality], axis=1)
+            df_molality_out = pd.concat([df_molality_out, df_molality], axis=1)
+
+            df_activity = df[['Activity']]
+            df_activity.columns = [ph]
+            df_activity_out = pd.concat([df_activity_out, df_activity], axis=1)
+
+            df_logmolality = df[['LogMolality']]
+            df_logmolality.columns = [ph]
+            df_logmolality_out = pd.concat([df_logmolality_out, df_logmolality], axis=1)
+
+            df_logactivity = df[['LogActivity']]
+            df_logactivity.columns = [ph]
+            df_logactivity_out = pd.concat([df_logactivity_out, df_logactivity], axis=1)
+
+            df_gamma = df[['Gamma']]
+            df_gamma.columns = [ph]
+            df_gamma_out = pd.concat([df_gamma_out, df_gamma], axis=1)
+
+            df_molev = df[['moleV']]
+            df_molev.columns = [ph]
+            df_molev_out = pd.concat([df_molev_out, df_molev], axis=1)
 
         # write out the species data
-        df_species.to_csv('%s/%s' % (outdir, outFile))
-        return df_species
+        df_molality_out.to_csv('%s/phreeqc-molality.csv' % outdir)
+        df_activity_out.to_csv('%s/phreeqc-activity.csv' % outdir)
+        df_logmolality_out.to_csv('%s/phreeqc-logmolality.csv' % outdir)
+        df_logactivity_out.to_csv('%s/phreeqc-logactivity.csv' % outdir)
+        df_gamma_out.to_csv('%s/phreeqc-gamma.csv' % outdir)
+        df_molev_out.to_csv('%s/phreeqc-molev.csv' % outdir)
+        return
 
 
 

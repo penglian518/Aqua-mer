@@ -22,134 +22,364 @@
     </style>
 
     <p>Job {{ Item.JobID }} is finished, click <a href="/hgspeci/download/{{ Item.JobID }}">HERE</a> to download the output files.</p>
-    <p><center><b>The most stable structures</b></center></p>
     <br>
+    <p><center><b>Speciation plot of {{ Item.SPTitle }}</b></center></p>
 
-    <div style="width:80%;">
+    <div style="width:100%;">
         <canvas id="canvas"></canvas>
     </div>
     <br>
-    <button id="randomizeData">Randomize Data</button>
-    <button id="addDataset">Add Dataset</button>
-    <button id="removeDataset">Remove Dataset</button>
-    <button id="addData">Add Data</button>
-    <button id="removeData">Remove Data</button>
+    <br>
+    <p><center>
+        <button id="bn_molality">Molality</button>
+        <button id="bn_activity">Activity</button>
+        <button id="bn_logmolality">Log Molality</button>
+        <button id="bn_logactivity">Log Activity</button>
+        <button id="bn_gamma">Log Gamma</button>
+    </center></p>
 
     <script>
-        //TODO, optimize this figure!
-        var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        var config = {
+        var config_molality = {
             type: 'line',
+
             data: {
                 labels: {{ pHs|safe }},
                 datasets: [
-                {% for d in data %}
-                {
-                    label: '{{ d.name }}',
-                    backgroundColor:  '{{ d.color }}',
-                    borderColor: '{{ d.color }}',
-                    data: {{ d.data|safe }},
-                    fill: false,
-                },
-                {% endfor %}
-                ]
-            },
+                    {% for d in data_molality %}
+                        {
+                            label: '{{ d.name }}',
+                            backgroundColor:  '{{ d.color }}',
+                            borderColor: '{{ d.color }}',
+                            data: {{ d.data|safe }},
+                            fill: false,
+                        },
+                    {% endfor %}
+                            ]
+                    },
+
             options: {
                 responsive: true,
                 title:{
                     display:true,
-                    text:'Chart.js Line Chart'
-                },
+                    text:'Molality V.S. pH'
+                        },
+                legend: {position: 'top'},
                 tooltips: {
                     mode: 'index',
                     intersect: false,
-                },
-                hover: {
-                    mode: 'nearest',
-                    intersect: true
-                },
+                    position: 'nearest',
+                    itemSort: (a, b, data) => b.yLabel - a.yLabel,
+                        },
                 scales: {
                     xAxes: [{
                         display: true,
                         scaleLabel: {
                             display: true,
-                            labelString: 'Month'
-                        }
-                    }],
+                            labelString: 'pH value'
+                                }
+                            }],
                     yAxes: [{
                         display: true,
                         scaleLabel: {
                             display: true,
-                            labelString: 'Value'
-                        }
-                    }]
+                            labelString: 'Molality'
+                                }
+                            }]
+                    }
                 }
-            }
-        };
+            };
+
+        var config_activity = {
+            type: 'line',
+
+            data: {
+                labels: {{ pHs|safe }},
+                datasets: [
+                    {% for d in data_activity %}
+                        {
+                            label: '{{ d.name }}',
+                            backgroundColor:  '{{ d.color }}',
+                            borderColor: '{{ d.color }}',
+                            data: {{ d.data|safe }},
+                            fill: false,
+                        },
+                    {% endfor %}
+                            ]
+                    },
+
+            options: {
+                responsive: true,
+                title:{
+                    display:true,
+                    text:'Activity V.S. pH'
+                        },
+                legend: {position: 'top'},
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                    position: 'nearest',
+                    itemSort: (a, b, data) => b.yLabel - a.yLabel,
+                        },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'pH value'
+                                }
+                            }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Activity'
+                                }
+                            }]
+                    }
+                }
+            };
+
+        var config_logmolality = {
+            type: 'line',
+
+            data: {
+                labels: {{ pHs|safe }},
+                datasets: [
+                    {% for d in data_logmolality %}
+                        {
+                            label: '{{ d.name }}',
+                            backgroundColor:  '{{ d.color }}',
+                            borderColor: '{{ d.color }}',
+                            data: {{ d.data|safe }},
+                            fill: false,
+                        },
+                    {% endfor %}
+                            ]
+                    },
+
+            options: {
+                responsive: true,
+                title:{
+                    display:true,
+                    text:'Log Molality V.S. pH'
+                        },
+                legend: {position: 'top'},
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                    position: 'nearest',
+                    itemSort: (a, b, data) => b.yLabel - a.yLabel,
+                        },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'pH value'
+                                }
+                            }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Log Molality'
+                                }
+                            }]
+                    }
+                }
+            };
+
+        var config_logactivity = {
+            type: 'line',
+
+            data: {
+                labels: {{ pHs|safe }},
+                datasets: [
+                    {% for d in data_logactivity %}
+                        {
+                            label: '{{ d.name }}',
+                            backgroundColor:  '{{ d.color }}',
+                            borderColor: '{{ d.color }}',
+                            data: {{ d.data|safe }},
+                            fill: false,
+                        },
+                    {% endfor %}
+                            ]
+                    },
+
+            options: {
+                responsive: true,
+                title:{
+                    display:true,
+                    text:'Log Activity V.S. pH'
+                        },
+                legend: {position: 'top'},
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                    position: 'nearest',
+                    itemSort: (a, b, data) => b.yLabel - a.yLabel,
+                        },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'pH value'
+                                }
+                            }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Log Activity'
+                                }
+                            }]
+                    }
+                }
+            };
+
+
+        var config_gamma = {
+            type: 'line',
+
+            data: {
+                labels: {{ pHs|safe }},
+                datasets: [
+                    {% for d in data_gamma %}
+                        {
+                            label: '{{ d.name }}',
+                            backgroundColor:  '{{ d.color }}',
+                            borderColor: '{{ d.color }}',
+                            data: {{ d.data|safe }},
+                            fill: false,
+                        },
+                    {% endfor %}
+                            ]
+                    },
+
+            options: {
+                responsive: true,
+                title:{
+                    display:true,
+                    text:'Log Gamma V.S. pH'
+                        },
+                legend: {position: 'top'},
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                    position: 'nearest',
+                    itemSort: (a, b, data) => b.yLabel - a.yLabel,
+                        },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'pH value'
+                                }
+                            }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Log Gamma'
+                                }
+                            }]
+                    }
+                }
+            };
+
+        var config_molev = {
+            type: 'line',
+
+            data: {
+                labels: {{ pHs|safe }},
+                datasets: [
+                    {% for d in data_molev %}
+                        {
+                            label: '{{ d.name }}',
+                            backgroundColor:  '{{ d.color }}',
+                            borderColor: '{{ d.color }}',
+                            data: {{ d.data|safe }},
+                            fill: false,
+                        },
+                    {% endfor %}
+                            ]
+                    },
+
+            options: {
+                responsive: true,
+                title:{
+                    display:true,
+                    text:'mole V V.S. pH'
+                        },
+                legend: {position: 'top'},
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                    position: 'nearest',
+                    itemSort: (a, b, data) => b.yLabel - a.yLabel,
+                        },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'pH value'
+                                }
+                            }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'mole V'
+                                }
+                            }]
+                    }
+                }
+            };
+
+
+
+
+
 
         window.onload = function() {
             var ctx = document.getElementById("canvas").getContext("2d");
-            window.myLine = new Chart(ctx, config);
-        };
-
-        document.getElementById('randomizeData').addEventListener('click', function() {
-            config.data.datasets.forEach(function(dataset) {
-                dataset.data = dataset.data.map(function() {
-                    return randomScalingFactor();
-                });
-
-            });
-
-            window.myLine.update();
-        });
-
-        var colorNames = Object.keys(window.chartColors);
-        document.getElementById('addDataset').addEventListener('click', function() {
-            var colorName = colorNames[config.data.datasets.length % colorNames.length];
-            var newColor = window.chartColors[colorName];
-            var newDataset = {
-                label: 'Dataset ' + config.data.datasets.length,
-                backgroundColor: newColor,
-                borderColor: newColor,
-                data: [],
-                fill: false
+            window.myLine = new Chart(ctx, config_molality);
             };
 
-            for (var index = 0; index < config.data.labels.length; ++index) {
-                newDataset.data.push(randomScalingFactor());
-            }
-
-            config.data.datasets.push(newDataset);
-            window.myLine.update();
+        document.getElementById('bn_molality').addEventListener('click', function() {
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myLine = new Chart(ctx, config_molality);
         });
 
-        document.getElementById('addData').addEventListener('click', function() {
-            if (config.data.datasets.length > 0) {
-                var month = MONTHS[config.data.labels.length % MONTHS.length];
-                config.data.labels.push(month);
-
-                config.data.datasets.forEach(function(dataset) {
-                    dataset.data.push(randomScalingFactor());
-                });
-
-                window.myLine.update();
-            }
+        document.getElementById('bn_activity').addEventListener('click', function() {
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myLine = new Chart(ctx, config_activity);
         });
 
-        document.getElementById('removeDataset').addEventListener('click', function() {
-            config.data.datasets.splice(0, 1);
-            window.myLine.update();
+        document.getElementById('bn_logmolality').addEventListener('click', function() {
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myLine = new Chart(ctx, config_logmolality);
         });
 
-        document.getElementById('removeData').addEventListener('click', function() {
-            config.data.labels.splice(-1, 1); // remove the label first
-
-            config.data.datasets.forEach(function(dataset, datasetIndex) {
-                dataset.data.pop();
-            });
-
-            window.myLine.update();
+        document.getElementById('bn_logactivity').addEventListener('click', function() {
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myLine = new Chart(ctx, config_logactivity);
         });
+
+        document.getElementById('bn_gamma').addEventListener('click', function() {
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myLine = new Chart(ctx, config_gamma);
+        });
+
+        document.getElementById('bn_molev').addEventListener('click', function() {
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myLine = new Chart(ctx, config_molev);
+        });
+
 
     </script>
 
