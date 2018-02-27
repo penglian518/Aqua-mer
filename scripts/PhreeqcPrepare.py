@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import shutil, os
+
 
 class PhreeqcPrepare:
     def __init__(self):
@@ -10,7 +12,7 @@ class PhreeqcPrepare:
         '''
         Requires not null in database!
         '''
-        pHrange = np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)
+        pHrange = list(np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)) + [obj.SPpHMax]
 
         for ph in pHrange:
             fout = open('%s/pH-%s.phrq' % (outdir, str(ph)), 'w')
@@ -68,7 +70,7 @@ class PhreeqcPrepare:
         return
 
     def genJobScript(self, obj, outdir):
-        pHrange = np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)
+        pHrange = list(np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)) + [obj.SPpHMax]
 
         fout = open('%s/runPhreeqc.sh' % outdir, 'w')
         for ph in pHrange:
@@ -79,52 +81,56 @@ class PhreeqcPrepare:
         return
 
     def collectResults(self, obj, outdir):
-        pHrange = np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)
+        for t in ['Molality', 'Activity', 'LogMolality', 'LogActivity', 'Gamma']:
+            try:
+                self.collectResultsfromPhreeqc(obj=obj, outdir=outdir, datatype=t)
+            except Exception as e:
+                print 'Failed to extract %s data from phreeqc output file!\n%s\n' % (t, e)
+        return
+
+    def collectResultsfromPhreeqc(self, obj, outdir, datatype='molality'):
+        pHrange = list(np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)) + [obj.SPpHMax]
         pphaser = PhreeqcParser()
+        columns = ['Species']
+        df_out = pd.DataFrame()
+
         for ph in pHrange:
             phreeqcout = '%s/pH-%s.out' % (outdir, str(ph))
             df = pphaser.getSpeciesData(phreeqcout)
+            df_column = pd.DataFrame()
+            columns += [ph]
+
             if ph == obj.SPpHMin:
-                df_molality_out = df[['Species']]
-                df_activity_out = df[['Species']]
-                df_logmolality_out = df[['Species']]
-                df_logactivity_out = df[['Species']]
-                df_gamma_out = df[['Species']]
-                df_molev_out = df[['Species']]
+                df_out = df[['Species']]
 
-            df_molality = df[['Molality']]
-            df_molality.columns = [ph]
-            df_molality_out = pd.concat([df_molality_out, df_molality], axis=1)
+            if datatype.lower() in ['molality']:
+                df_column = df[['Species', 'Molality']]
+            if datatype.lower() in ['activity']:
+                df_column = df[['Species', 'Activity']]
+            if datatype.lower() in ['logmolality']:
+                df_column = df[['Species', 'LogMolality']]
+            if datatype.lower() in ['logactivity']:
+                df_column = df[['Species', 'LogActivity']]
+            if datatype.lower() in ['gamma']:
+                df_column = df[['Species', 'Gamma']]
+            if datatype.lower() in ['molev']:
+                df_column = df[['Species', 'moleV']]
 
-            df_activity = df[['Activity']]
-            df_activity.columns = [ph]
-            df_activity_out = pd.concat([df_activity_out, df_activity], axis=1)
-
-            df_logmolality = df[['LogMolality']]
-            df_logmolality.columns = [ph]
-            df_logmolality_out = pd.concat([df_logmolality_out, df_logmolality], axis=1)
-
-            df_logactivity = df[['LogActivity']]
-            df_logactivity.columns = [ph]
-            df_logactivity_out = pd.concat([df_logactivity_out, df_logactivity], axis=1)
-
-            df_gamma = df[['Gamma']]
-            df_gamma.columns = [ph]
-            df_gamma_out = pd.concat([df_gamma_out, df_gamma], axis=1)
-
-            df_molev = df[['moleV']]
-            df_molev.columns = [ph]
-            df_molev_out = pd.concat([df_molev_out, df_molev], axis=1)
+            df_out = df_out.merge(df_column, how='left', on='Species')
+        df_out.columns = columns
 
         # write out the species data
-        df_molality_out.to_csv('%s/phreeqc-molality.csv' % outdir)
-        df_activity_out.to_csv('%s/phreeqc-activity.csv' % outdir)
-        df_logmolality_out.to_csv('%s/phreeqc-logmolality.csv' % outdir)
-        df_logactivity_out.to_csv('%s/phreeqc-logactivity.csv' % outdir)
-        df_gamma_out.to_csv('%s/phreeqc-gamma.csv' % outdir)
-        df_molev_out.to_csv('%s/phreeqc-molev.csv' % outdir)
-        return
+        outfile = '%s/speciation-%s.csv' % (outdir, datatype.lower())
+        df_out.to_csv(outfile)
 
+        dir_download = '%s-%d' % ('hgspeci', obj.JobID)
+        try:
+            os.makedirs(dir_download)
+        except:
+            pass
+        shutil.copy(outfile, '%s/%s/' % (outdir, dir_download))
+
+        return
 
 
 
@@ -157,5 +163,6 @@ class PhreeqcParser:
         species = [l.strip().split() for l in rawdata if l.startswith(' ')]
         df = pd.DataFrame(species)
         df.columns = ['Species', 'Molality', 'Activity', 'LogMolality', 'LogActivity', 'Gamma', 'moleV']
+        df = df.drop_duplicates()
 
         return df

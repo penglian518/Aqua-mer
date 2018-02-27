@@ -220,18 +220,19 @@ def results(request, JobID, JobType='hgspeci'):
     if item.CurrentStatus == '2':
         # the job is finished, display the results.
 
-        # collect results
-        jobmanger = JobManagement()
-        jobmanger.HgspeciCollectResults(obj=item, JobType=JobType)
 
         # get data for plotting the results
         job_dir = get_job_dir(JobID)
 
-        csv = '%s/phreeqc-molality.csv' % job_dir
+        csv = '%s/speciation-molality.csv' % job_dir
         try:
             df = pd.DataFrame.from_csv(csv)
+            df = df[df.Species != 'H2O']
+            df.index = range(len(df))
         except:
-            pass
+            item.Successful = False
+            item.FailedReason = 'Could not find file %s' % os.path.basename(csv)
+            return render(request, 'hgspeci/results_error.html', {'JobID': JobID, 'Item': item})
 
         # get species and pH values
         species = [str(i) for i in df.Species.values]
@@ -247,9 +248,11 @@ def results(request, JobID, JobType='hgspeci'):
             data_molality.append(di)
 
         # for activity
-        csv = '%s/phreeqc-activity.csv' % job_dir
+        csv = '%s/speciation-activity.csv' % job_dir
         try:
             df = pd.DataFrame.from_csv(csv)
+            df = df[df.Species != 'H2O']
+            df.index = range(len(df))
         except:
             pass
         data_activity = []
@@ -259,9 +262,11 @@ def results(request, JobID, JobType='hgspeci'):
             data_activity.append(di)
 
         # for logmolality
-        csv = '%s/phreeqc-logmolality.csv' % job_dir
+        csv = '%s/speciation-logmolality.csv' % job_dir
         try:
             df = pd.DataFrame.from_csv(csv)
+            df = df[df.Species != 'H2O']
+            df.index = range(len(df))
         except:
             pass
         data_logmolality = []
@@ -271,9 +276,11 @@ def results(request, JobID, JobType='hgspeci'):
             data_logmolality.append(di)
 
         # for logactivity
-        csv = '%s/phreeqc-logactivity.csv' % job_dir
+        csv = '%s/speciation-logactivity.csv' % job_dir
         try:
             df = pd.DataFrame.from_csv(csv)
+            df = df[df.Species != 'H2O']
+            df.index = range(len(df))
         except:
             pass
         data_logactivity = []
@@ -283,9 +290,11 @@ def results(request, JobID, JobType='hgspeci'):
             data_logactivity.append(di)
 
         # for gamma
-        csv = '%s/phreeqc-gamma.csv' % job_dir
+        csv = '%s/speciation-gamma.csv' % job_dir
         try:
             df = pd.DataFrame.from_csv(csv)
+            df = df[df.Species != 'H2O']
+            df.index = range(len(df))
         except:
             pass
         data_gamma = []
@@ -337,11 +346,15 @@ def download(request, JobID, JobType='hgspeci'):
         # the job is finished, display the results.
         job_dir = get_job_dir(JobID)
         output_zip = '%s/%s-%s.zip' % (job_dir, JobType, JobID)
-        if os.path.exists(output_zip):
-            with open(output_zip, 'rb') as fh:
-                response = HttpResponse(fh.read(), content_type="application/x-zip-compressed")
-                response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(output_zip)
-                return response
+        if not os.path.exists(output_zip):
+            jobmanger = JobManagement()
+            jobmanger.Zip4Downlaod(obj=item, JobType=JobType)
+
+        with open(output_zip, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/x-zip-compressed")
+            response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(output_zip)
+            return response
+
 
     raise Http404
 

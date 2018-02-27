@@ -77,19 +77,16 @@ class JobManagement:
             # run the calculation
             err, out = runJob.communicate()
 
-            # make archive file for download
-            try:
-                if JobType in ['csearch']:
-                    shutil.make_archive('%s-%d' % (JobType, job_id), 'zip', '%s-%d' % (JobType, job_id))
-                elif JobType in ['hgspeci']:
-                    shutil.make_archive('%s-%d' % (JobType, job_id), 'zip', '.')
-            except:
-                obj.FailedReason = 'Could not create zip file (%s-%d.zip).' % (JobType, job_id)
-                # change the job status in DB to '3' error
-                obj.CurrentStatus = '3'
-                obj.Successful = False
-                obj.save()
-                logging.warn(err)
+            # collect the resutls
+            if JobType in ['hgspeci']:
+                try:
+                    self.HgspeciCollectResults(obj=obj, JobType=JobType)
+                except:
+                    obj.FailedReason = 'Could not collect the results for (%s)' % str(job_id)
+                    # change the job status in DB to '3' error
+                    obj.CurrentStatus = '3'
+                    obj.Successful = False
+                    obj.save()
 
             # change the job status in DB to '2' finished
             obj.CurrentStatus = '2'
@@ -105,6 +102,28 @@ class JobManagement:
             logging.warn(err)
 
         return
+
+    def Zip4Downlaod(self, obj, JobType='csearch'):
+        '''
+        create the zip file for download
+        '''
+        # get basic info
+        job_id = obj.JobID
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+        os.chdir(job_dir)
+
+        # make archive file for download
+        dir_download = '%s-%d' % (JobType, job_id)
+        try:
+            shutil.make_archive('%s-%d' % (JobType, job_id), 'zip', dir_download)
+        except:
+            obj.FailedReason = 'Could not create zip file (%s-%d.zip).' % (JobType, job_id)
+            # change the job status in DB to '3' error
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+            obj.save()
+            logging.warn(err)
 
 
     #### Csearch ####
@@ -258,9 +277,7 @@ class JobManagement:
             phreeqc.collectResults(obj=obj, outdir=job_dir)
             obj.Successful = True
         except:
-            obj.FailedReason = 'Could not collect the speciation data from the output file.'
-            obj.CurrentStatus = '3'
-            obj.Successful = False
+            print 'Could not collect the speciation data from the output file.'
 
         obj.save()
         return

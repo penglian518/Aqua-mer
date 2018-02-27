@@ -265,11 +265,14 @@ def download(request, JobID, JobType='csearch'):
         # the job is finished, display the results.
         job_dir = get_job_dir(JobID)
         output_zip = '%s/%s-%s.zip' % (job_dir, JobType, JobID)
-        if os.path.exists(output_zip):
-            with open(output_zip, 'rb') as fh:
-                response = HttpResponse(fh.read(), content_type="application/x-zip-compressed")
-                response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(output_zip)
-                return response
+        if not os.path.exists(output_zip):
+            jobmanger = JobManagement()
+            jobmanger.Zip4Downlaod(obj=item, JobType=JobType)
+
+        with open(output_zip, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/x-zip-compressed")
+            response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(output_zip)
+            return response
 
     raise Http404
 

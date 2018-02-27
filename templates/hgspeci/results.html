@@ -21,14 +21,13 @@
     }
     </style>
 
-    <p>Job {{ Item.JobID }} is finished, click <a href="/hgspeci/download/{{ Item.JobID }}">HERE</a> to download the output files.</p>
+    <p>Job {{ Item.JobID }} is finished, click <a href="/hgspeci/download/{{ Item.JobID }}">HERE</a> to download the results.</p>
     <br>
     <p><center><b>Speciation plot of {{ Item.SPTitle }}</b></center></p>
 
     <div style="width:100%;">
         <canvas id="canvas"></canvas>
     </div>
-    <br>
     <br>
     <p><center>
         <button id="bn_molality">Molality</button>
@@ -290,57 +289,6 @@
                 }
             };
 
-        var config_molev = {
-            type: 'line',
-
-            data: {
-                labels: {{ pHs|safe }},
-                datasets: [
-                    {% for d in data_molev %}
-                        {
-                            label: '{{ d.name }}',
-                            backgroundColor:  '{{ d.color }}',
-                            borderColor: '{{ d.color }}',
-                            data: {{ d.data|safe }},
-                            fill: false,
-                        },
-                    {% endfor %}
-                            ]
-                    },
-
-            options: {
-                responsive: true,
-                title:{
-                    display:true,
-                    text:'mole V V.S. pH'
-                        },
-                legend: {position: 'top'},
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    position: 'nearest',
-                    itemSort: (a, b, data) => b.yLabel - a.yLabel,
-                        },
-                scales: {
-                    xAxes: [{
-                        display: true,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'pH value'
-                                }
-                            }],
-                    yAxes: [{
-                        display: true,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'mole V'
-                                }
-                            }]
-                    }
-                }
-            };
-
-
 
 
 
@@ -351,33 +299,33 @@
             };
 
         document.getElementById('bn_molality').addEventListener('click', function() {
+            window.myLine.destroy();
             var ctx = document.getElementById("canvas").getContext("2d");
             window.myLine = new Chart(ctx, config_molality);
         });
 
         document.getElementById('bn_activity').addEventListener('click', function() {
+            window.myLine.destroy();
             var ctx = document.getElementById("canvas").getContext("2d");
             window.myLine = new Chart(ctx, config_activity);
         });
 
         document.getElementById('bn_logmolality').addEventListener('click', function() {
+            window.myLine.destroy();
             var ctx = document.getElementById("canvas").getContext("2d");
             window.myLine = new Chart(ctx, config_logmolality);
         });
 
         document.getElementById('bn_logactivity').addEventListener('click', function() {
+            window.myLine.destroy();
             var ctx = document.getElementById("canvas").getContext("2d");
             window.myLine = new Chart(ctx, config_logactivity);
         });
 
         document.getElementById('bn_gamma').addEventListener('click', function() {
+            window.myLine.destroy();
             var ctx = document.getElementById("canvas").getContext("2d");
             window.myLine = new Chart(ctx, config_gamma);
-        });
-
-        document.getElementById('bn_molev').addEventListener('click', function() {
-            var ctx = document.getElementById("canvas").getContext("2d");
-            window.myLine = new Chart(ctx, config_molev);
         });
 
 
