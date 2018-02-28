@@ -4,8 +4,6 @@ from .models import SolutionMasterSpecies, SolutionSpecies, Phases, SurfaceMaste
                     ExchangeMasterSpecies, ExchangeSpecies, Rates, Refs
 
 # Create your views here.
-
-
 def index(request):
     NumElements = SolutionMasterSpecies.objects.count()
     NumSpecies = SolutionSpecies.objects.count()

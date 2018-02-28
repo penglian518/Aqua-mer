@@ -13,6 +13,7 @@ class PhreeqcPrepare:
         Requires not null in database!
         '''
         pHrange = list(np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)) + [obj.SPpHMax]
+        pHrange = [round(i, 2) for i in pHrange]
 
         for ph in pHrange:
             fout = open('%s/pH-%s.phrq' % (outdir, str(ph)), 'w')
@@ -71,6 +72,7 @@ class PhreeqcPrepare:
 
     def genJobScript(self, obj, outdir):
         pHrange = list(np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)) + [obj.SPpHMax]
+        pHrange = [round(i, 2) for i in pHrange]
 
         fout = open('%s/runPhreeqc.sh' % outdir, 'w')
         for ph in pHrange:
@@ -90,6 +92,7 @@ class PhreeqcPrepare:
 
     def collectResultsfromPhreeqc(self, obj, outdir, datatype='molality'):
         pHrange = list(np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)) + [obj.SPpHMax]
+        pHrange = [round(i, 2) for i in pHrange]
         pphaser = PhreeqcParser()
         columns = ['Species']
         df_out = pd.DataFrame()

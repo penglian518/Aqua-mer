@@ -1,5 +1,5 @@
 {% extends 'base_index.html' %}
-
+{% load static %}
 
 {% block content %}
 <!-- nav box on the left -->
@@ -15,15 +15,26 @@
         <br>
         a. Input physical conditions (units, pH range, pe, density, temperatures, redox ...)
         <br>
-        b. Input master species (provide those in database, and the option to add your own data.
-    If add your own data, provide the option to add the "Solution Species" and "Phases")
+        b. Input elements in the solution (will provide related parameters in the database, and the option to add parameters by the users.)
     <br><b>Tips:</b>
         While inputting the elements, it will searching the database automatically. If the related parameters are available,
         it will display them in the bellow. Otherwise, the user can provide their own parameters. <p>
+    <p><div class="video-box">
+        <video id="video" controls autoplay src="{% static 'video/hgspeci-input.webm' %}"></video>
+        </div>
+    </p>
+    <br>
     <p><b>Step 2. Review & submit.</b>
         Before submission, you can review your input parameters and parameters from database.<p>
-    <p><b>Step 3. Download the results.</b>
+    <p><div class="video-box"><img src="{% static 'img/hgspeci-review.png' %}" border=0 width="100%" max-height="500px"></div></p>
+    <br>
+    <p><b>Step 3. View and download the results.</b>
         Once the job is finished, you can view your results and download them.<p>
+    <p><div class="video-box">
+        <video id="video" controls autoplay src="{% static 'video/hgspeci-result.webm' %}"></video>
+        </div>
+    </p>
+
     <p><b>Notice:</b> Once the compound is uploaded, a unique job ID will be assigned. With the job ID, you can check your
         results and redo analysis quickly.</p>
     <br>

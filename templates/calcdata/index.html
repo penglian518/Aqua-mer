@@ -1,0 +1,25 @@
+{% extends 'base_index.html' %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'calcdata/memu.html' %}
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Data from theoretical calculations</div>
+<div id=main>
+
+    <h3><a href="/calcdata/master/">Solution master species</a></h3>
+    This table contains the elements in the SOLUTION_MASTER_SPECIES of the Phreeqc database.
+    <br>
+    Currently, {{ NumElements }} compounds in total.
+
+    <h3><a href="/calcdata/species/">Solution species</a></h3>
+    This table contains the elements in the SOLUTION_SPECIES of the Phreeqc database.
+    <br>
+    Currently, {{ NumSpecies }} compounds in total.
+
+</div></div>
+{% endblock %}

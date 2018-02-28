@@ -86,7 +86,8 @@ body {
     border-bottom:    solid 1px #505050;
     font-weight:      bold;
     font-size:        1.1em;
-    overflow:        hidden;
+    overflow:         hidden;
+    width:            -moz-available;
 
 }
 
