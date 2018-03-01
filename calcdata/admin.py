@@ -5,7 +5,7 @@ from .models import CalcSolutionMasterSpecies, CalcSolutionSpecies, Refs
 
 class CalcSolutionMasterSpeciesAdmin(admin.ModelAdmin):
     model = CalcSolutionMasterSpecies
-    list_display = ('Element', 'Species', 'Alkalinity', 'GFWorFormula', 'GFWforElement', 'Ref', 'CreatedDate', 'Note')
+    list_display = ('Element', 'Species', 'Alkalinity', 'GFWorFormula', 'GFWforElement', 'Charge', 'PubChemID', 'IUPACName', 'SMILES', 'XYZ', 'Ref', 'CreatedDate', 'Note')
 
 class CalcSolutionSpeciesAdmin(admin.ModelAdmin):
     model = CalcSolutionSpecies

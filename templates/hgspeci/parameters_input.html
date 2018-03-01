@@ -81,6 +81,11 @@
                     <br>
                     <button type="button" onclick="toggleIfrm('ifrmdiv-master')" class="btn btn-default" style="height:25px;width:200px">Add new master specie</button>
                     <div id="ifrmdiv-master" style="display:none">
+                        <div>
+                            <p><b>Tips for customizing elements & species (<a href="https://wwwbrr.cr.usgs.gov/projects/GWC_coupled/phreeqc/html/final-57.html#19910", target="_blank">Details</a>):</b><br>
+                            <b>Element</b> -- An element name or an element name followed by a valence state in parentheses. The element name must begin with a capital letter, followed by zero or more lower case letters or underscores ("_").<br>
+                            <b>Species</b> -- Formula for the master species, including its charge. If the element name does not contain a valence state in parentheses, the corresponding master species is a primary master species. If the element name does contain a valence state in parentheses, the master species is a secondary master species. The master species must be defined in the SOLUTION_SPECIES data block.</p>
+                        </div>
                         <iframe id="ifrm-master" width="1000px" seamless onload="resizeIframe(this)" src="/hgspeci/input_masterspecies/{{ JobID }}"></iframe>
                     </div>
                 </div>

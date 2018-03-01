@@ -9,15 +9,23 @@ from django.utils.translation import gettext_lazy as _
 # Create your models here.
 @python_2_unicode_compatible  # only if you need to support Python 2
 class CalcSolutionMasterSpecies(models.Model):
-    Element = models.CharField(max_length=50, blank=True, default='')
-    Species = models.CharField(max_length=50, blank=True, default='')
+    Element = models.CharField(max_length=100, blank=True, default='')
+    Species = models.CharField(max_length=100, blank=True, default='')
     Alkalinity = models.FloatField(blank=True, default=0.0)
-    GFWorFormula = models.CharField(max_length=50, blank=True, default='0.0')
+    GFWorFormula = models.CharField(max_length=100, blank=True, default='0.0')
     GFWforElement = models.FloatField(blank=True, null=True)
+
+    Charge = models.IntegerField(blank=True, default=0)
+    PubChemID = models.PositiveIntegerField(blank=True, null=True)
+    IUPACName = models.CharField(max_length=200, blank=True, default='')
+    SMILES = models.CharField(max_length=200, blank=True, default='')
+    XYZ = models.CharField(max_length=200, blank=True, default='')
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
     CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    Source = models.CharField(max_length=200, blank=True, default='')
+
 
     def __str__(self):
         return str(self.Element)
