@@ -1,0 +1,53 @@
+{% extends 'calcdata/base_tables.html' %}
+
+
+{% block content %}
+<!-- 3Dmol.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/1.3.0/3Dmol-min.js"></script>
+
+<!-- nav box on the left -->
+{% include 'calcdata/memu.html' %}
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">SOLUTION_MASTER_SPECIES</div>
+<div id=main>
+
+    <div style="height: 300px; width: 300px; position: relative; float: left" class='viewer_3Dmoljs'
+             data-href='/calcdata/xyz/{{ Item.id }}'
+             data-backgroundcolor='0xffffff' data-type="xyz"
+             data-select1="all" data-style1='stick'>
+    </div>
+    <div style="height: 300px;">
+        <table>
+            <thead>
+                <th>Properties</th><th>Value</th>
+            </thead>
+
+            <tbody>
+                <tr><td>Element</td><td>{{ Item.Element }}</td></tr>
+                <tr><td>Species</td><td>{{ Item.Species }}</td></tr>
+                <tr><td>Alkalinity</td><td>{{ Item.Alkalinity }}</td></tr>
+                <tr><td>GFW_or_Formula</td><td>{{ Item.GFWorFormula }}</td></tr>
+                <tr><td>GFW_for_Element</td><td>{{ Item.GFWforElement | default_if_none:'' }}</td></tr>
+                <tr><td>PubChem CID</td>
+                    {% if Item.PubChemID %}
+                        <td><a target="_blank" href="https://pubchem.ncbi.nlm.nih.gov/compound/{{ Item.PubChemID }}">{{ Item.PubChemID }}</a></td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                </tr>
+                <tr><td>IUPAC name</td><td>{{ Item.IUPACName }}</td></tr>
+                <tr><td>SMILES</td><td>{{ Item.SMILES }}</td></tr>
+                <tr><td>Coordinates</td><td><a target="_blank" href="/calcdata/xyz/{{ Item.id }}">Download</a></td></tr>
+                <tr><td>Reference</td><td>{{ Item.Ref}}</td></tr>
+                <tr><td>Note</td><td>{{ Item.Note }}</td></tr>
+
+            </tbody>
+        </table>
+
+    </div>
+
+</div></div>
+{% endblock %}

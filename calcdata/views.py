@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse
 
 from .models import CalcSolutionMasterSpecies, CalcSolutionSpecies
 
@@ -34,3 +35,21 @@ def species(request):
 
     return render(request, 'calcdata/species.html',
                   {'all_species': all_species, 'refs': list(set(all_refs))})
+
+def xyz(request, ID):
+    DjangoHome = '/home/p6n/workplace/website/cyshg'
+
+    item = get_object_or_404(CalcSolutionMasterSpecies, id=ID)
+
+    # get refs
+    xyzfile = '%s/%s' % (DjangoHome, item.XYZ)
+
+    fcon = ''.join(open(xyzfile).readlines())
+
+    return HttpResponse(fcon, content_type='text/plain')
+
+def viewxyz(request, ID):
+    item = get_object_or_404(CalcSolutionMasterSpecies, id=ID)
+
+    return render(request, 'calcdata/viewxyz.html',
+                  {'Item': item})

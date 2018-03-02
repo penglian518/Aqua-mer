@@ -52,6 +52,10 @@
             <th align="left">Alkalinity</th>
             <th align="left">GFW_or_Formula</th>
             <th align="left">GFW_for_Element</th>
+            <th align="left">Structure</th>
+            <th align="left">PubChem CID</th>
+            <th align="left">IUPAC name</th>
+            <th align="left">SMILES</th>
             <th align="left">Reference</th>
             <th align="left">Note</th>
         </tr>
@@ -68,6 +72,14 @@
             <td>{{ p.Alkalinity }}</td>
             <td>{{ p.GFWorFormula }}</td>
             <td>{{ p.GFWforElement | default_if_none:'' }}</td>
+            <td><a target="_blank" href="/calcdata/viewxyz/{{ p.id }}">Show</a></td>
+            {% if p.PubChemID %}
+                <td><a target="_blank" href="https://pubchem.ncbi.nlm.nih.gov/compound/{{ p.PubChemID }}">{{ p.PubChemID }}</a></td>
+            {% else %}
+                <td></td>
+            {% endif %}
+            <td>{{ p.IUPACName }}</td>
+            <td>{{ p.SMILES }}</td>
             <td>{{ p.Ref }}</td>
             <td>{{ p.Note }}</td>
         </tr>

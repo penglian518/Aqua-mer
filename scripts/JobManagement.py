@@ -240,10 +240,11 @@ class JobManagement:
         try:
             phreeqc.genInputFile(obj=obj, outdir=job_dir)
             obj.Successful = True
-        except:
-            obj.FailedReason = 'Could not generate input file for phreeqc.'
+        except Exception as e:
+            obj.FailedReason = 'Could not generate input file for phreeqc'
             obj.CurrentStatus = '3'
             obj.Successful = False
+            print 'Could not generate input file: %s' % e
         try:
             phreeqc.genDatabaseFile(obj=obj, outdir=job_dir)
             obj.Successful = True
