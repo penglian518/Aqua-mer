@@ -34,7 +34,7 @@ PRJ_DIR = 'calculations/projects/mercury_complex'
 def index(request):
 
     #prjs = os.listdir('calculations/projects')
-    cals = sorted([i for i in os.listdir('%s/output' % PRJ_DIR) if os.path.isdir('%s/output/%s' % (PRJ_DIR, i))])
+    cals = sorted([i for i in os.listdir('%s/output/' % PRJ_DIR) if os.path.isdir('%s/output/%s' % (PRJ_DIR, i))])
     #return HttpResponse(cwd)
 
     # list all the reaction groups to display on index page

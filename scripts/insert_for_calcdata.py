@@ -128,9 +128,14 @@ if __name__ == '__main__':
     # insert pKa results calculated for the Thiols
     method = 'M062X_631+Gdp_SDD_SMD_SAS_Alpha0485'
     outputDir = '%s/output/%s' % (ins.BaseDirforCalc, method)
-    csv = '%s/phreeqc/properties.csv' % outputDir
 
-    Basename = 'Thiol'
+    #Basename = 'Thiol'
+    Basename = 'Acid'
+    ReactionSet = 'logK_Namazian_w0.csv'
+    csv = '%s/phreeqc/%s' % (outputDir, ReactionSet)
+    csvlogk = '%s/csv/%s' % (outputDir, ReactionSet)
+
+
     relativeXYZDir = 'calcdata/data/%s/%s/xyz' % (Basename, method)
     absXYZDir = '%s/%s' % (ins.BaseDir, relativeXYZDir)
 
@@ -138,11 +143,11 @@ if __name__ == '__main__':
     #ins.insert_solution_master_species(csv, Basename=Basename, xyzDir=relativeXYZDir)
 
     # inster solution species
-    csvlogk = '%s/csv/logK_Thapa_w0.csv' % outputDir
-    ins.insert_solution_species(csv=csv, csvlogk=csvlogk)
+    #ins.insert_solution_species(csv=csv, csvlogk=csvlogk)
+
 
     # copy xyz files to the website
-    '''
+
     try:
         os.makedirs(absXYZDir)
     except:
@@ -150,4 +155,3 @@ if __name__ == '__main__':
     df = pd.DataFrame.from_csv(csv)
     for mol in df.Source:
         shutil.copy('%s/output/%s/xyz/%s.xyz' % (ins.BaseDirforCalc, method, mol), '%s/%s.xyz' % (absXYZDir, mol))
-    '''
