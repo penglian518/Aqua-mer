@@ -9,6 +9,7 @@ from django.forms import inlineformset_factory
 from .models import HgSpeciJob, SPElements, SPElementsForm, ParameterForm
 from .models import SPMasterSpecies, SPMasterSpeciesForm, SPSolutionSpecies, SPSolutionSpeciesForm, QueryForm
 from phreeqcdb.models import SolutionMasterSpecies, SolutionSpecies
+from calcdata.models import CalcSolutionMasterSpecies, CalcSolutionSpecies
 
 from scripts.JobManagement import JobManagement
 import threading
@@ -192,6 +193,15 @@ def results(request, JobID, JobType='hgspeci'):
     if item.CurrentStatus == '0':
         # the job is 'to be start', submit the job and jump to '1'
 
+        # change the status in the database
+        item.CurrentStatus = '1'
+        item.Successful = True
+        item.FailedReason = ''
+        item.save()
+        # redirect to the result page
+        return redirect('/hgspeci/results/%d' % int(item.JobID))
+
+    if item.CurrentStatus == '1':
         # a function to start the job
         #### call some function here ####
         # a. generate input file
@@ -205,16 +215,6 @@ def results(request, JobID, JobType='hgspeci'):
         Exec_thread = threading.Thread(target=jobmanger.JobExec, kwargs={"obj": item, 'JobType': JobType})
         Exec_thread.start()
 
-
-        # change the status in the database
-        item.CurrentStatus = '1'
-        item.Successful = True
-        item.FailedReason = ''
-        item.save()
-        # redirect to the result page
-        return redirect('/hgspeci/results/%d' % int(item.JobID))
-
-    if item.CurrentStatus == '1':
         # the job is 'running', keep checking the status
         return render(request, 'hgspeci/results_jobrunning.html', {'JobID': JobID, 'Item': item})
     if item.CurrentStatus == '2':
@@ -363,12 +363,22 @@ def download(request, JobID, JobType='hgspeci'):
 def query_solutionmaster(request, ele):
     response_dict = {'success': True}
     response_dict['ele'] = ele
+    masters = []
     try:
         master = SolutionMasterSpecies.objects.get(Element=ele)
     except:
         master = ''
+    try:
+        master_calc = CalcSolutionMasterSpecies.objects.get(Element=ele)
+    except:
+        master_calc = ''
 
-    response_dict['master'] = master
+    if master:
+        masters.append(master)
+    if master_calc:
+        masters.append(master_calc)
+
+    response_dict['masters'] = masters
     return render(request, 'hgspeci/solutionmaster.html', response_dict)
 
 def query_solutionspecies(request, ele):
@@ -380,12 +390,24 @@ def query_solutionspecies(request, ele):
         master = ''
 
     if master:
-        objs = SolutionSpecies.objects.filter(Reaction__contains=master.Species)
+        objs = list(SolutionSpecies.objects.filter(Reaction__contains=master.Species))
     else:
         objs = []
 
+    try:
+        master_calc = CalcSolutionMasterSpecies.objects.get(Element=ele)
+    except:
+        master_calc = ''
+
+    if master_calc:
+        objs_calc = list(CalcSolutionSpecies.objects.filter(Reaction__contains=master_calc.Species))
+    else:
+        objs_calc = []
+
     response_dict['master'] = master
     response_dict['objs'] = objs
+    response_dict['master_calc'] = master_calc
+    response_dict['objs_calc'] = objs_calc
     return render(request, 'hgspeci/solutionspecies.html', response_dict)
 
 # public functions

@@ -2,6 +2,10 @@ import numpy as np
 import pandas as pd
 import shutil, os
 
+from phreeqcdb.models import SolutionMasterSpecies, SolutionSpecies, Phases, ExchangeMasterSpecies, ExchangeSpecies, \
+    SurfaceMasterSpecies, SurfaceSpecies, Rates
+from calcdata.models import CalcSolutionMasterSpecies, CalcSolutionSpecies
+
 
 class PhreeqcPrepare:
     def __init__(self):
@@ -41,6 +45,65 @@ class PhreeqcPrepare:
                 ms.save()
         obj.save()
 
+    def format_elements_input(self, ele):
+        ele_line = '    %s\t%s' % (ele.Element, str(ele.Concentration))
+        if ele.PE:
+            ele_line += '\tpe'
+        if ele.PPB:
+            ele_line += '\tppd %s' % ele.PPBFormula
+        if ele.Others:
+            ele_line += '\t%s' % ele.Others
+        ele_line += '\n'
+        return ele_line
+
+
+    def format_solution_master_species(self, ms):
+        ms_line = '    %s\t%s\t%s\t%s' % (ms.Element, ms.Species, str(ms.Alkalinity), str(ms.GFWorFormula))
+        if ms.GFWforElement:
+            ms_line += '\t%s' % ms.GFWforElement
+        ms_line += '\n'
+        return ms_line
+
+    def format_species(self, ss):
+        ''' for solution species '''
+        ss_line = '    %s\n        log_k\t%s\n' % (ss.Reaction, str(ss.LogK))
+        if ss.DeltaH > 0:
+            ss_line += '        delta_h\t%s %s\n' % (str(ss.DeltaH), ss.DeltaHUnits)
+        if sum([ss.AEA1, ss.AEA2, ss.AEA3, ss.AEA4, ss.AEA5]) > 0:
+            ss_line += '        -a_e %s %s %s %s %s\n' % (
+            str(ss.AEA1), str(ss.AEA2), str(ss.AEA3), str(ss.AEA4), str(ss.AEA5))
+        if sum([ss.GammaA, ss.GammaB]) > 0 or ss.GammaB > 0:
+            ss_line += '        -gamma\t%s %s\n' % (str(ss.GammaA), str(ss.GammaB))
+        if ss.NoCheck:
+            ss_line += '        -no_check\n'
+        if ss.MoleBalance:
+            ss_line += '        -mole_balance\t%s\n' % str(ss.MoleBalance)
+        return ss_line
+
+    def format_phases(self, ss):
+        ss_line = '%s\n' % ss.PhaseName
+        ss_line += '    %s\n        log_k\t%s\n' % (ss.Reaction, str(ss.LogK))
+        if ss.DeltaH > 0:
+            ss_line += '        delta_h\t%s %s\n' % (str(ss.DeltaH), ss.DeltaHUnits)
+        if sum([ss.AEA1, ss.AEA2, ss.AEA3, ss.AEA4, ss.AEA5]) > 0:
+            ss_line += '        -a_e %s %s %s %s %s\n' % (
+            str(ss.AEA1), str(ss.AEA2), str(ss.AEA3), str(ss.AEA4), str(ss.AEA5))
+        return ss_line
+
+    def format_exchange_species(self, ss):
+        ss_line = '    %s\n        log_k\t%s\n' % (ss.Reaction, str(ss.LogK))
+        if ss.DeltaH > 0:
+            ss_line += '        delta_h\t%s %s\n' % (str(ss.DeltaH), ss.DeltaHUnits)
+        if sum([ss.GammaA, ss.GammaB]) > 0 or ss.GammaB > 0:
+            ss_line += '        -gamma\t%s %s\n' % (str(ss.GammaA), str(ss.GammaB))
+        if ss.Davies:
+            ss_line += '        -davies\n'
+        return ss_line
+
+    def format_surface_species(self, ss):
+        ss_line = '    %s\n        log_k\t%s\n' % (ss.Reaction, str(ss.LogK))
+        return ss_line
+
 
     def genInputFile(self, obj, outdir):
         '''
@@ -59,24 +122,16 @@ class PhreeqcPrepare:
             fout.write('    temp %s\n' % str(obj.SPTemperature))
             # add elements
             for ele in obj.spelements.all():
-                ele_line = '    %s\t%s' % (ele.Element, str(ele.Concentration))
-                if ele.PE:
-                    ele_line += '\tpe'
-                if ele.PPB:
-                    ele_line += '\tppd %s' % ele.PPBFormula
-                if ele.Others:
-                    ele_line += '\t%s' % ele.Others
-                fout.write('%s\n' % ele_line)
+                ele_line = self.format_elements_input(ele)
+                fout.write(ele_line)
             # user defined solution_master_species
             if obj.spmaster.all():
                 # clean up
                 self.clean_default_values(obj=obj, type='master')
                 fout.write('SOLUTION_MASTER_SPECIES\n')
                 for ms in obj.spmaster.all():
-                    ms_line = '    %s\t%s\t%s\t%s' % (ms.Element, ms.Species, str(ms.Alkalinity), str(ms.GFWorFormula))
-                    if ms.GFWforElement:
-                        ms_line += '\t%s' % ms.GFWforElement
-                    fout.write('%s\n' % ms_line)
+                    ms_line = self.format_solution_master_species(ms)
+                    fout.write(ms_line)
             # user defined solution_species
             if obj.spspecies.all():
                 # clean up
@@ -84,17 +139,7 @@ class PhreeqcPrepare:
 
                 fout.write('SOLUTION_SPECIES\n')
                 for ss in obj.spspecies.all():
-                    ss_line = '    %s\n        log_k\t%s\n' % (ss.Reaction, str(ss.LogK))
-                    if ss.DeltaH > 0:
-                        ss_line += '        delta_h\t%s %s\n' % (str(ss.DeltaH), ss.DeltaHUnits)
-                    if sum([ss.AEA1, ss.AEA2, ss.AEA3, ss.AEA4, ss.AEA5 ]) > 0:
-                        ss_line += '        -a_e %s %s %s %s %s\n' % (str(ss.AEA1), str(ss.AEA2), str(ss.AEA3), str(ss.AEA4), str(ss.AEA5))
-                    if sum([ss.GammaA, ss.GammaB]) > 0 or ss.GammaB > 0:
-                        ss_line += '        -gamma\t%s %s\n' % (str(ss.GammaA), str(ss.GammaB))
-                    if ss.NoCheck:
-                        ss_line += '        -no_check\n'
-                    if ss.MoleBalance:
-                        ss_line += '        -mole_balance\t%s\n' % str(ss.MoleBalance)
+                    ss_line = self.format_species(ss)
                     fout.write(ss_line)
             fout.close()
         return
@@ -102,9 +147,91 @@ class PhreeqcPrepare:
     def genDatabaseFile(self, obj, outdir):
         # TODO, generate a sub-database according to user input.
 
+        #fout = open('%s/aqua-mer.dat' % outdir, 'w')
+        #fin = open(self.tempphreeqcdat).readlines()
+        #fout.writelines(fin)
+        #fout.close()
+
+        # init output_line
+        output_line = ''
+        ## prepare Solution_master_species
+        # get all elements
+        elements = [ele.Element for ele in obj.spelements.all()]
+        # get related solution master species objs
+        #ms_obj_phreeqcdb = [ele for ele in SolutionMasterSpecies.objects.filter(Element__in=elements)]
+        #### remove this exclued_ms, when added Solution_Species for this species!!!!
+        exclued_ms = ["AmmH+", "Rs-", "U+4", "S2O3-2", "L-", "Co+2", "Ni+2", "Dom-4", "Citrate-3", "Hg+2", "Rcoo-", "Mmm+", "Edta-4", "UO2+2", "I-", "Co+3", "Cdta-4"]
+        ms_obj_phreeqcdb = [i for i in SolutionMasterSpecies.objects.all() if i.Species not in exclued_ms]
+        ms_obj_calcdata = [ele for ele in CalcSolutionMasterSpecies.objects.filter(Element__in=elements)]
+        # generate the Solution_Master_Species data block
+        output_line += 'SOLUTION_MASTER_SPECIES\n'
+        for ms in ms_obj_phreeqcdb + ms_obj_calcdata:
+            ms_line = self.format_solution_master_species(ms)
+            output_line += ms_line
+
+        ## prepare solution species
+        # get species
+        #species_phreeqcdb = [ele.Species for ele in ms_obj_phreeqcdb]
+        species_calcdata = [ele.Species for ele in ms_obj_calcdata]
+        # get species objs
+        ss_obj_phreeqcdb = list(SolutionSpecies.objects.all())
+        ss_obj_calcdata = []
+        #for ele in species_phreeqcdb:
+        #    ss_obj_phreeqcdb += list(SolutionSpecies.objects.filter(Reaction__contains = ele))
+        for ele in species_calcdata:
+            ss_obj_calcdata += list(CalcSolutionSpecies.objects.filter(Reaction__contains = ele))
+        # generate the Solution_Species data block
+        output_line += 'SOLUTION_SPECIES\n'
+        for ss in ss_obj_phreeqcdb + ss_obj_calcdata:
+            ss_line = self.format_species(ss)
+            output_line += ss_line
+
+        ## prepare PHASES
+        # get phases objs
+        ps_obj_phreeqcdb = list(Phases.objects.all())
+        #for ele in species_phreeqcdb:
+        #    ss_obj_phreeqcdb += list(Phases.objects.filter(Reaction__contains = ele))
+        # genearte the PHASES data block
+        output_line += 'PHASES\n'
+        for ps in ps_obj_phreeqcdb:
+            try:
+                ps_line = self.format_phases(ps)
+            except Exception as e:
+                print e
+                ps_line = '\n'
+            output_line += ps_line
+
+        ## prepare Exchange_master_species
+        output_line += 'EXCHANGE_MASTER_SPECIES\n'
+        for ex in ExchangeMasterSpecies.objects.all():
+            output_line += '    %s  %s\n' % (ex.ExchangeName, ex.ExchangeMaster)
+
+        ## prepare Exchange_species
+        output_line += 'EXCHANGE_SPECIES\n'
+        for ex in ExchangeSpecies.objects.all():
+            ex_line = self.format_exchange_species(ex)
+            output_line += ex_line
+
+        ## prepare Surface_master_species
+        output_line += 'SURFACE_MASTER_SPECIES\n'
+        for ex in SurfaceMasterSpecies.objects.all():
+            output_line += '    %s  %s\n' % (ex.BindingSite, ex.SurfaceMaster)
+
+        ## prepare Surface_species
+        output_line += 'SURFACE_SPECIES\n'
+        for ex in SurfaceSpecies.objects.all():
+            ex_line = self.format_surface_species(ex)
+            output_line += ex_line
+
+        ## prepare RATES
+        output_line += 'RATES\n'
+        for ex in Rates.objects.all():
+            ex_line = '%s\n%s\n' % (ex.Name, ex.BasicStatement)
+            output_line += ex_line
+
+        ## save to database file
         fout = open('%s/aqua-mer.dat' % outdir, 'w')
-        fin = open(self.tempphreeqcdat).readlines()
-        fout.writelines(fin)
+        fout.write(output_line)
         fout.close()
 
         return
@@ -115,7 +242,9 @@ class PhreeqcPrepare:
 
         fout = open('%s/runPhreeqc.sh' % outdir, 'w')
         for ph in pHrange:
-            cmd = '%s pH-%s.phrq pH-%s.out aqua-mer.dat' % (self.phreeqc, str(ph), str(ph))
+            #cmd = '%s pH-%s.phrq pH-%s.out aqua-mer.dat' % (self.phreeqc, str(ph), str(ph))
+            cmd = '''if [ -f pH-%s.phrq -a -f aqua-mer.dat ]; then %s pH-%s.phrq pH-%s.out aqua-mer.dat; fi''' \
+                  % (str(ph), self.phreeqc, str(ph), str(ph))
             fout.write('%s\n' % cmd)
         fout.close()
 

@@ -1,5 +1,6 @@
-{% if master %}
- <tr>
+{% if masters %}
+        {% for master in masters %}
+            <tr>
                 <td>{{ master.Element }}</td>
                 <td>{{ master.Species }}</td>
                 <td>{{ master.Alkalinity }}</td>
@@ -13,6 +14,7 @@
                 <td><input type='button' onclick="$(this).closest('tr').remove();" value="remove" style="color:blue"></td>
                 -->
             </tr>
+        {% endfor %}
 {% else %}
             <tr style="color:red">
                 <td>{{ ele }}</td>

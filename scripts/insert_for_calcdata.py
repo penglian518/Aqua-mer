@@ -24,8 +24,9 @@ class insert_for_calcdata:
             logging.warn('Failed to load the file %s' % csv)
             return 1
 
-        # clean the data frame
-        df_anions = df[df.Charge < 0].drop_duplicates()
+        # clean the data frame, to include only molecules suitable for master species
+        #df_anions = df[df.Charge < 0].drop_duplicates()
+        df_anions = df[df.Reactant == 1]
         df_anions_noH = df_anions[df_anions.Source.apply(lambda x: x.find('H') < 0)]
         df_cleaned = df_anions_noH.sort_values(by=['GFWforElement', 'IUPACName'])
 
@@ -47,7 +48,12 @@ class insert_for_calcdata:
             else:
                 tag = ''.join([i.replace(i, self.convertDict[int(i)]) for i in str(item.id).zfill(6)])
                 item.Element = '%s_%s' % (Basename, tag)
-                item.Species = '%s_%s%s' % (Basename, tag, str(dfi.Charge))
+                if dfi.Charge < 0:
+                    item.Species = '%s_%s%s' % (Basename, tag, str(dfi.Charge))
+                elif dfi.Charge == 0:
+                    item.Species = '%s_%s' % (Basename, tag)
+                elif dfi.Charge > 0:
+                    item.Species = '%s_%s+%s' % (Basename, tag, str(dfi.Charge))
                 item.Alkalinity = dfi.Alkalinity
                 item.GFWorFormula = dfi.GFWorFormula.strip('-').strip('+')
                 item.GFWforElement = dfi.GFWforElement
@@ -79,9 +85,15 @@ class insert_for_calcdata:
 
 
         # clean the data frame
-        df_anions = df[df.Charge < 0].drop_duplicates()
+        #df_anions = df[df.Charge < 0].drop_duplicates()
+        df_anions = df[df.Reactant == 1]
+        # most reduced state or primary amines
         df_anions_noH = df_anions[df_anions.Source.apply(lambda x: x.find('H') < 0)]
         df_cleaned = df_anions_noH.sort_values(by=['GFWforElement', 'IUPACName'])
+
+        # less reduced state or secondary amines
+        df_anions_wH = df_anions[df_anions.Source.apply(lambda x: x.find('H') >= 0)]
+        df_2ndamines = df_anions_wH[df_anions_wH.Charge == 1]
 
         # insert
         for idx in df_cleaned.index.values:
@@ -113,11 +125,29 @@ class insert_for_calcdata:
                 item.Reaction = '%s + H+ = H%s' % (obj.Species, obj.Element)
             elif dfi.Charge == -2:
                 item.Reaction = '%s + H+ = H%s-' % (obj.Species, obj.Element)
+            elif dfi.Charge == 0:
+                item.Reaction = '%s + H+ = H%s+' % (obj.Species, obj.Element)
 
             logk_calced = dflogk[dflogk.Reactants.apply(lambda x: dfi.Source in json.loads(x).keys())].Calculated.values[0]
             item.LogK = logk_calced
             item.Ref_id = 1
             item.save()
+
+            # insert for 2nd amines
+            if len(df_2ndamines) > 0:
+                dfi_2nd = df_2ndamines[df_2ndamines.Source.apply(lambda x: x.split('H+')[0] == dfi.Source)]
+                # find only one 2nd amine for molecule in dfi
+                if len(dfi_2nd) == 1:
+                    # create an object for solution species
+                    item = CalcSolutionSpecies.objects.create()
+
+                    item.Reaction = 'H%s+ + H+ = H2%s+2' % (obj.Species, obj.Element)
+
+                    logk_calced = dflogk[dflogk.Reactants.apply(lambda x: dfi_2nd.Source.values[0] in json.loads(x).keys())].Calculated.values[0]
+                    item.LogK = logk_calced
+                    item.Ref_id = 1
+                    item.save()
+
         return
 
 
@@ -130,8 +160,10 @@ if __name__ == '__main__':
     outputDir = '%s/output/%s' % (ins.BaseDirforCalc, method)
 
     #Basename = 'Thiol'
-    Basename = 'Acid'
-    ReactionSet = 'logK_Namazian_w0.csv'
+    #Basename = 'Acid'
+    Basename = 'Amine'
+    #ReactionSet = 'logK_Namazian_w0.csv'
+    ReactionSet = 'logK_Haworth_Re_w0.csv'
     csv = '%s/phreeqc/%s' % (outputDir, ReactionSet)
     csvlogk = '%s/csv/%s' % (outputDir, ReactionSet)
 
@@ -143,7 +175,7 @@ if __name__ == '__main__':
     #ins.insert_solution_master_species(csv, Basename=Basename, xyzDir=relativeXYZDir)
 
     # inster solution species
-    #ins.insert_solution_species(csv=csv, csvlogk=csvlogk)
+    ins.insert_solution_species(csv=csv, csvlogk=csvlogk)
 
 
     # copy xyz files to the website
