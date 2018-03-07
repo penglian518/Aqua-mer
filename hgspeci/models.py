@@ -9,6 +9,9 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MaxValueValidator, MinValueValidator
 
+from dal import autocomplete
+from phreeqcdb.models import SolutionMasterSpecies
+
 # Create your models here.
 @python_2_unicode_compatible  # only if you need to support Python 2
 class HgSpeciJob(models.Model):
@@ -68,6 +71,7 @@ class SPElementsForm(ModelForm):
         super(SPElementsForm, self).__init__(*args, **kwargs)
         # turn on required for concentration field
         self.fields['Concentration'].required = True
+
 
     class Meta:
         model = SPElements

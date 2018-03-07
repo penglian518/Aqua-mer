@@ -18,6 +18,8 @@ import pandas as pd
 import numpy as np
 from decimal import Decimal
 
+from dal import autocomplete
+
 # Create your views here.
 
 
@@ -409,6 +411,41 @@ def query_solutionspecies(request, ele):
     response_dict['master_calc'] = master_calc
     response_dict['objs_calc'] = objs_calc
     return render(request, 'hgspeci/solutionspecies.html', response_dict)
+
+def query_elements(request, ele):
+    response_dict = {'success': True}
+    response_dict['ele'] = ele
+    masters = []
+    try:
+        master = SolutionMasterSpecies.objects.filter(Element__contains=ele)
+    except:
+        master = ''
+    try:
+        master_calc = CalcSolutionMasterSpecies.objects.filter(Element__contains=ele)
+    except:
+        master_calc = ''
+
+    if master:
+        masters += list(master)
+    if master_calc:
+        masters += list(master_calc)
+
+    try:
+        elements = [i.Element for i in masters]
+    except:
+        elements = []
+
+    response_dict['masters'] = elements
+    return render(request, 'hgspeci/elements.html', response_dict)
+
+
+# function for autocomple field in Element input
+class ElementAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = SolutionMasterSpecies.objects.all()
+        if self.q:
+            qs = qs.filter(Element__contains=self.q)
+        return list(qs)
 
 # public functions
 def get_job_dir(JobID, JobType='hgspeci'):

@@ -1,0 +1,15 @@
+{% if masters %}
+        {% for master in masters %}
+            <tr>
+                <td>{{ master }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+        {% endfor %}
+{% else %}
+            <tr style="color:red">
+                <td>{{ ele }}</td>
+                <td><input type='button' onclick="$(this).closest('tr').remove();" value="remove" style="color:blue"></td>
+                <td><input type='button' onclick="window.open('/toolkit/', '_blank');" value="calculate with DFT" style="color:blue"></td>
+            </tr>
+{% endif %}

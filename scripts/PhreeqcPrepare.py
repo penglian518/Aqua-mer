@@ -160,8 +160,8 @@ class PhreeqcPrepare:
         # get related solution master species objs
         #ms_obj_phreeqcdb = [ele for ele in SolutionMasterSpecies.objects.filter(Element__in=elements)]
         #### remove this exclued_ms, when added Solution_Species for this species!!!!
-        exclued_ms = ["AmmH+", "Rs-", "U+4", "S2O3-2", "L-", "Co+2", "Ni+2", "Dom-4", "Citrate-3", "Hg+2", "Rcoo-", "Mmm+", "Edta-4", "UO2+2", "I-", "Co+3", "Cdta-4"]
-        ms_obj_phreeqcdb = [i for i in SolutionMasterSpecies.objects.all() if i.Species not in exclued_ms]
+        exclued_ms = ["U+4", "S2O3-2", "L-", "Co+2", "Ni+2", "Dom-4", "Citrate-3", "Rcoo-", "Edta-4", "UO2+2", "Co+3", "Cdta-4"]
+        ms_obj_phreeqcdb = [i for i in SolutionMasterSpecies.objects.all() if i.Species]
         ms_obj_calcdata = [ele for ele in CalcSolutionMasterSpecies.objects.filter(Element__in=elements)]
         # generate the Solution_Master_Species data block
         output_line += 'SOLUTION_MASTER_SPECIES\n'
