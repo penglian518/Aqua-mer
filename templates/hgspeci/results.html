@@ -23,12 +23,7 @@
 
     <p>Job {{ Item.JobID }} is finished, click <a href="/hgspeci/download/{{ Item.JobID }}">HERE</a> to download the results.</p>
     <br>
-    <p><center><b>Speciation plot of {{ Item.SPTitle }}</b></center></p>
-
-    <div style="width:100%;">
-        <canvas id="canvas"></canvas>
-    </div>
-    <br>
+    <p><center><h2>Speciation plot of {{ Item.SPTitle }}</h2></center></p>
     <p><center>
         <button id="bn_molality">Molality</button>
         <button id="bn_activity">Activity</button>
@@ -36,6 +31,15 @@
         <button id="bn_logactivity">Log Activity</button>
         <button id="bn_gamma">Log Gamma</button>
     </center></p>
+
+    <div style="width:100%;">
+        <canvas id="canvas"></canvas>
+    </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
 
     <script>
         var config_molality = {
@@ -59,30 +63,26 @@
             options: {
                 responsive: true,
                 title:{
-                    display:true,
-                    text:'Molality V.S. pH'
+                            display:true,
+                            text:'Molality V.S. pH'
                         },
                 legend: {position: 'top'},
                 tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    position: 'nearest',
-                    itemSort: (a, b, data) => b.yLabel - a.yLabel,
+                            mode: 'index',
+                            intersect: false,
+                            position: 'nearest',
+                            itemSort: (a, b, data) => b.yLabel - a.yLabel,
                         },
                 scales: {
                     xAxes: [{
-                        display: true,
-                        scaleLabel: {
                             display: true,
-                            labelString: 'pH value'
-                                }
+                            scaleLabel: { display: true, labelString: 'pH value', fontSize: 28, },
+                            ticks: {fontSize: 25},
                             }],
                     yAxes: [{
-                        display: true,
-                        scaleLabel: {
                             display: true,
-                            labelString: 'Molality'
-                                }
+                            scaleLabel: { display: true, labelString: 'Molality', fontSize: 28, },
+                            ticks: {fontSize: 25},
                             }]
                     }
                 }
@@ -109,30 +109,26 @@
             options: {
                 responsive: true,
                 title:{
-                    display:true,
-                    text:'Activity V.S. pH'
+                            display:true,
+                            text:'Activity V.S. pH'
                         },
                 legend: {position: 'top'},
                 tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    position: 'nearest',
-                    itemSort: (a, b, data) => b.yLabel - a.yLabel,
+                            mode: 'index',
+                            intersect: false,
+                            position: 'nearest',
+                            itemSort: (a, b, data) => b.yLabel - a.yLabel,
                         },
                 scales: {
                     xAxes: [{
-                        display: true,
-                        scaleLabel: {
                             display: true,
-                            labelString: 'pH value'
-                                }
+                            scaleLabel: { display: true, labelString: 'pH value', fontSize: 28, },
+                            ticks: {fontSize: 25},
                             }],
                     yAxes: [{
-                        display: true,
-                        scaleLabel: {
                             display: true,
-                            labelString: 'Activity'
-                                }
+                            scaleLabel: { display: true, labelString: 'Activity', fontSize: 28, },
+                            ticks: {fontSize: 25},
                             }]
                     }
                 }
@@ -159,30 +155,26 @@
             options: {
                 responsive: true,
                 title:{
-                    display:true,
-                    text:'Log Molality V.S. pH'
+                            display:true,
+                            text:'Log Molality V.S. pH'
                         },
                 legend: {position: 'top'},
                 tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    position: 'nearest',
-                    itemSort: (a, b, data) => b.yLabel - a.yLabel,
+                            mode: 'index',
+                            intersect: false,
+                            position: 'nearest',
+                            itemSort: (a, b, data) => b.yLabel - a.yLabel,
                         },
                 scales: {
                     xAxes: [{
-                        display: true,
-                        scaleLabel: {
                             display: true,
-                            labelString: 'pH value'
-                                }
+                            scaleLabel: { display: true, labelString: 'pH value', fontSize: 28, },
+                            ticks: {fontSize: 25},
                             }],
                     yAxes: [{
-                        display: true,
-                        scaleLabel: {
                             display: true,
-                            labelString: 'Log Molality'
-                                }
+                            scaleLabel: { display: true, labelString: 'Log Molality', fontSize: 28, },
+                            ticks: {fontSize: 25},
                             }]
                     }
                 }
@@ -209,30 +201,26 @@
             options: {
                 responsive: true,
                 title:{
-                    display:true,
-                    text:'Log Activity V.S. pH'
+                            display:true,
+                            text:'Log Activity V.S. pH'
                         },
                 legend: {position: 'top'},
                 tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    position: 'nearest',
-                    itemSort: (a, b, data) => b.yLabel - a.yLabel,
+                            mode: 'index',
+                            intersect: false,
+                            position: 'nearest',
+                            itemSort: (a, b, data) => b.yLabel - a.yLabel,
                         },
                 scales: {
                     xAxes: [{
-                        display: true,
-                        scaleLabel: {
                             display: true,
-                            labelString: 'pH value'
-                                }
+                            scaleLabel: { display: true, labelString: 'pH value', fontSize: 28, },
+                            ticks: {fontSize: 25},
                             }],
                     yAxes: [{
-                        display: true,
-                        scaleLabel: {
                             display: true,
-                            labelString: 'Log Activity'
-                                }
+                            scaleLabel: { display: true, labelString: 'Log Activity', fontSize: 28, },
+                            ticks: {fontSize: 25},
                             }]
                     }
                 }
@@ -260,30 +248,26 @@
             options: {
                 responsive: true,
                 title:{
-                    display:true,
-                    text:'Log Gamma V.S. pH'
+                            display:true,
+                            text:'Log Gamma V.S. pH'
                         },
                 legend: {position: 'top'},
                 tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                    position: 'nearest',
-                    itemSort: (a, b, data) => b.yLabel - a.yLabel,
+                            mode: 'index',
+                            intersect: false,
+                            position: 'nearest',
+                            itemSort: (a, b, data) => b.yLabel - a.yLabel,
                         },
                 scales: {
                     xAxes: [{
-                        display: true,
-                        scaleLabel: {
                             display: true,
-                            labelString: 'pH value'
-                                }
+                            scaleLabel: { display: true, labelString: 'pH value', fontSize: 28, },
+                            ticks: {fontSize: 25},
                             }],
                     yAxes: [{
-                        display: true,
-                        scaleLabel: {
                             display: true,
-                            labelString: 'Log Gamma'
-                                }
+                            scaleLabel: { display: true, labelString: 'Log Gamma', fontSize: 28, },
+                            ticks: {fontSize: 25},
                             }]
                     }
                 }
