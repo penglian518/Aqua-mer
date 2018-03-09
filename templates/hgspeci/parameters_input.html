@@ -15,6 +15,17 @@
         <form action="" method="post">{% csrf_token %}
             {{ paraform.as_p }}
 
+            <!-- notations -->
+            <div>
+                <table>
+                    <tr><td><b>Element</b></td><td>The element (or species for organic molecules) in the solution.
+                        All available elements and species in the AQUA-MER database can be found from <a target="_blank" href="/hgspeci/elements/">here</a></td></tr>
+                    <tr><td><b>Concentration</b></td><td>Concentration for the input element. Unit is defined as above.</a></td></tr>
+                </table>
+            </div>
+
+            <br>
+
             <!-- formset for element input -->
             <div id="formset">
                 {{ formset.management_form }}
@@ -25,7 +36,7 @@
                             <tr>
                                 {% for field in form.visible_fields %}
                                     {% if field.label == 'Element' %}
-                                        <th align="left">{{ field.label|capfirst }} <a target="_blank" href="/hgspeci/elements/">(available)</a></th>
+                                        <th align="left">{{ field.label|capfirst }}</th>
                                     {% else %}
                                         <th align="left">{{ field.label|capfirst }}</th>
                                     {% endif %}

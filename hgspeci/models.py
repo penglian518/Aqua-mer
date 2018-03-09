@@ -79,6 +79,8 @@ class SPElementsForm(ModelForm):
         widgets = {
             'JobID': forms.HiddenInput(),
             'Element': forms.TextInput(attrs={'class': 'dyn-input'}),
+            'PPBFormula': forms.TextInput(attrs={'placeholder': 'formula if use ppb.', 'size': 20}),
+            'Others': forms.TextInput(attrs={'placeholder': 'optional keywords.', 'size': 25, 'title': 'additional'}),
         }
         labels = {
             'PPBFormula': _('Formula for PPB'),
@@ -189,10 +191,10 @@ class ParameterForm(ModelForm):
     """
     class Meta:
         model = HgSpeciJob
-        fields = ['JobID', 'CurrentStep', 'Successful', 'SPTitle', 'SPUnit', 'SPTemperature', 'SPpHMin', 'SPpHMax', 'SPpHIncrease']
+        fields = ['JobID', 'CurrentStep', 'Successful', 'SPTitle', 'SPTemperature', 'SPpHMin', 'SPpHMax', 'SPpHIncrease', 'SPUnit']
         labels = {
             'SPTitle': _('Title'),
-            'SPUnit': _('Unit'),
+            'SPUnit': _('Concentration Unit'),
             'SPTemperature': _('Temperature (C)'),
             'SPpHMin': _('pH (min)'),
             'SPpHMax': _('pH (max)'),
