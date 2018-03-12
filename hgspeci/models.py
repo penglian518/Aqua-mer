@@ -25,8 +25,9 @@ class HgSpeciJob(models.Model):
     )
 
     Units = (
-        ('ppm', 'ppm'),
-        ('ppd', 'ppd'),
+        ('ppt', 'parts per thousand (ppt)'),
+        ('ppm', 'parts per million (ppm)'),
+        ('ppb', 'parts per billion (ppb)'),
     )
 
     # use self.id or self.pk as JobID
@@ -45,6 +46,10 @@ class HgSpeciJob(models.Model):
     SPpHMin = models.FloatField(blank=False, default=0.0)
     SPpHMax = models.FloatField(blank=False, default=14.0)
     SPpHIncrease = models.FloatField(blank=False, default=1.0)
+    SPpe = models.FloatField(blank=False, default=4.0)
+    SPRedox = models.CharField(max_length=20, default='O(-2)/O(0)')
+    SPDensity = models.FloatField(blank=False, default=1.0)
+
 
 
     def __str__(self):
@@ -57,33 +62,78 @@ class SPElements(models.Model):
     JobID = models.PositiveIntegerField(blank=True, default=0)
     Element = models.CharField(max_length=50, blank=True, default='')
     Concentration = models.FloatField(blank=True)
-    PE = models.BooleanField(blank=True, default=False)
-    PPB = models.BooleanField(blank=True, default=False)
-    PPBFormula = models.CharField(max_length=50, blank=True, default='')
+    Unit = models.CharField(max_length=50, blank=True, default='')
+    AS = models.BooleanField(blank=True, default=False)
+    ASFormula = models.CharField(max_length=50, blank=True, default='')
+    GFW = models.BooleanField(blank=True, default=False)
+    GFWFormula = models.CharField(max_length=50, blank=True, default='')
+    Redox = models.CharField(max_length=50, blank=True, default='')
     Others = models.CharField(max_length=50, blank=True, default='')
 
     def __str__(self):
         return str(self.pk)
 
+
+class ParameterForm(ModelForm):
+    """
+    for build up input file, excluding elements & concentrations which are handled by a separate formset
+    """
+    class Meta:
+        model = HgSpeciJob
+        fields = ['JobID', 'CurrentStep', 'Successful', 'SPTitle', 'SPTemperature', 'SPpHMin', 'SPpHMax', 'SPpHIncrease',
+                  'SPpe', 'SPRedox', 'SPDensity', 'SPUnit']
+        labels = {
+            'SPTitle': _('Title'),
+            'SPUnit': _('Concentration Unit'),
+            'SPTemperature': _('Temperature (C)'),
+            'SPpHMin': _('pH (min)'),
+            'SPpHMax': _('pH (max)'),
+            'SPpHIncrease': _('pH (increment)'),
+            'SPpe': _('pe'),
+            'SPRedox': _('Redox'),
+            'SPDensity': _('Density'),
+        }
+        help_texts = {
+            'SPTitle': _('(Title for this solution)'),
+            'SPpe': _('(Conventional negative log of the activity of the electron. For distributing redox elements and calculating saturation indices)'),
+            'SPRedox': _('(A redox couple used to calculate pe)'),
+            'SPDensity': _('(Density of the solution, kg/L)'),
+            'SPUnit': _('(Default concentration unit for elements in this solution)'),
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+            'SPTitle': forms.TextInput(attrs={'size': 40}),
+
+        }
+
+
 class SPElementsForm(ModelForm):
     def __init__(self, *args, **kwargs):
         # call parent's constructor
         super(SPElementsForm, self).__init__(*args, **kwargs)
-        # turn on required for concentration field
-        self.fields['Concentration'].required = True
 
 
     class Meta:
         model = SPElements
-        fields = ['JobID', 'Element', 'Concentration', 'PE', 'PPB', 'PPBFormula', 'Others']
+        fields = ['JobID', 'Element', 'Concentration', 'Unit', 'AS', 'ASFormula', 'GFW', 'GFWFormula', 'Redox', 'Others']
         widgets = {
             'JobID': forms.HiddenInput(),
-            'Element': forms.TextInput(attrs={'class': 'dyn-input'}),
-            'PPBFormula': forms.TextInput(attrs={'placeholder': 'formula if use ppb.', 'size': 20}),
+            'Element': forms.TextInput(attrs={'class': 'dyn-input', 'size': 20, 'required': True}),
+            'Concentration': forms.TextInput(attrs={'size': 15, 'required': True}),
+            'Unit': forms.TextInput(attrs={'placeholder': 'Unit for this element, if different.', 'size': 25}),
+            'ASFormula': forms.TextInput(attrs={'placeholder': 'formula if use "AS".', 'size': 20}),
+            'GFWFormula': forms.TextInput(attrs={'placeholder': 'formula if use "GFW".', 'size': 20}),
+            'Redox': forms.TextInput(attrs={'placeholder': 'Redox couple for this element, if different.', 'size': 25}),
             'Others': forms.TextInput(attrs={'placeholder': 'optional keywords.', 'size': 25, 'title': 'additional'}),
         }
         labels = {
-            'PPBFormula': _('Formula for PPB'),
+            'Element': _('Element/Species'),
+            'Unit': _('Concentration unit'),
+            'ASFormula': _('AS Formula'),
+            'GFWFormula': _('GFW Formula'),
+            'Redox': _('Redox couple'),
             'Others': _('Additional keywords'),
         }
 
@@ -178,37 +228,6 @@ class SPSolutionSpeciesForm(ModelForm):
             'AEA3': _('A3'),
             'AEA4': _('A4'),
             'AEA5': _('A5'),
-        }
-
-
-
-
-
-
-class ParameterForm(ModelForm):
-    """
-    for build up input file, excluding elements & concentrations which are handled by a separate formset
-    """
-    class Meta:
-        model = HgSpeciJob
-        fields = ['JobID', 'CurrentStep', 'Successful', 'SPTitle', 'SPTemperature', 'SPpHMin', 'SPpHMax', 'SPpHIncrease', 'SPUnit']
-        labels = {
-            'SPTitle': _('Title'),
-            'SPUnit': _('Concentration Unit'),
-            'SPTemperature': _('Temperature (C)'),
-            'SPpHMin': _('pH (min)'),
-            'SPpHMax': _('pH (max)'),
-            'SPpHIncrease': _('pH (increment)'),
-        }
-        help_texts = {
-            'SPTitle': _('(Title for this solution)'),
-        }
-        widgets = {
-            'JobID': forms.HiddenInput(),
-            'CurrentStep': forms.HiddenInput(),
-            'Successful': forms.HiddenInput(),
-            'SPTitle': forms.TextInput(attrs={'size': 40}),
-
         }
 
 

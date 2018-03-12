@@ -47,10 +47,14 @@ class PhreeqcPrepare:
 
     def format_elements_input(self, ele):
         ele_line = '    %s\t%s' % (ele.Element, str(ele.Concentration))
-        if ele.PE:
-            ele_line += '\tpe'
-        if ele.PPB:
-            ele_line += '\tppd %s' % ele.PPBFormula
+        if ele.Unit:
+            ele_line += '\t%s' % ele.Unit
+        if ele.AS and ele.ASFormula:
+            ele_line += '\tas %s' % ele.ASFormula
+        if ele.GFW and ele.GFWFormula:
+            ele_line += '\tgfw %s' % ele.GFWFormula
+        if ele.Redox:
+            ele_line += '\t%s' % ele.Redox
         if ele.Others:
             ele_line += '\t%s' % ele.Others
         ele_line += '\n'

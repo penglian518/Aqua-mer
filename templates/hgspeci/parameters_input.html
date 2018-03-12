@@ -12,15 +12,41 @@
 <div id=main>
     <div class="col-md-4">
         <h3>SOLUTION 1</h3>
+        <h4>Parameters applied for this solution</h4>
         <form action="" method="post">{% csrf_token %}
-            {{ paraform.as_p }}
+            <!-- {{ paraform.as_p }} -->
+            {% for field in paraform.visible_fields %}
+                {# Include the hidden fields in the form #}
+                {% if forloop.first %}
+                    {% for hidden in paraform.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                {% endif %}
 
+                {% if field.name == "SPpHMin" %}
+                    {{ field.label_tag }} {{ field }} {{ field.errors }} {{ field.help_text }}&nbsp;&nbsp;&nbsp;&nbsp;
+                {% elif field.name == "SPpHMax" %}
+                    {{ field.label_tag }} {{ field }} {{ field.errors }} {{ field.help_text }}&nbsp;&nbsp;&nbsp;&nbsp;
+                {% elif field.name == "SPpHIncrease" %}
+                    {{ field.label_tag }} {{ field }} {{ field.errors }} {{ field.help_text }}&nbsp;&nbsp;&nbsp;&nbsp;
+                {% else %}
+                    <p>{{ field.label_tag }} {{ field }} {{ field.errors }} {{ field.help_text }}</p>
+                {% endif %}
+            {% endfor %}
+
+            <br>
+            <h4>Parameters for each element/species in this solution</h4>
             <!-- notations -->
             <div>
                 <table>
-                    <tr><td><b>Element</b></td><td>The element (or species for organic molecules) in the solution.
-                        All available elements and species in the AQUA-MER database can be found from <a target="_blank" href="/hgspeci/elements/">here</a></td></tr>
-                    <tr><td><b>Concentration</b></td><td>Concentration for the input element. Unit is defined as above.</a></td></tr>
+                    <tr><td><b>Element/Species</b></td><td>Required. The element (or species for organic molecules) in the solution.
+                        All available elements and species in the AQUA-MER database can be found from <a target="_blank" href="/hgspeci/elements/"><b>HERE</b></a></td></tr>
+                    <tr><td><b>Concentration</b></td><td>Required. Concentration for the input element/species.</td></tr>
+                    <tr><td><b>Concentration unit</b></td><td>Optional. Concentration unit for this element/species. If not specified, the default unit defined above will be applied.</td></tr>
+                    <tr><td><b>AS & AS Formula</b></td><td>Optional. Specify a chemical formula for calculating the gram formula weight (GFW). Used to convert mass units into mole units.</td></tr>
+                    <tr><td><b>GFW & GFW Formula</b></td><td>Optional. Specify the gram formula weight (GFW) for this element/species. Used to convert mass units into mole units.</td></tr>
+                    <tr><td><b>Redox couple</b></td><td>Optional. Redox couple for this element/species. If not specified, the default redox couple defined above will be applied.</td></tr>
+                    <tr><td><b>Additional keywords</b></td><td>Optional. Other keywords for this element/species, such as phase name, saturation index, etc. If multiple keywords are specified, please seperate them with blanks.</td></tr>
                 </table>
             </div>
 

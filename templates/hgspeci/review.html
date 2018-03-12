@@ -14,11 +14,15 @@
     <div id="phreeqcinput">
         <p>Title {{ Item.SPTitle }}</p>
         <p>SOLUTION 1</p>
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;units {{ Item.SPUnit }}</p>
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;pH {{ Item.SPpHMin }} {{ Item.SPpHMax}} {{ Item.SPpHIncrease}}</p>
         <p>&nbsp;&nbsp;&nbsp;&nbsp;temp {{ Item.SPTemperature }}</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;pH {{ Item.SPpHMin }} {{ Item.SPpHMax}} {{ Item.SPpHIncrease}}</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;pe {{ Item.SPpe }}</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;redox {{ Item.SPRedox }}</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;units {{ Item.SPUnit }}</p>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;density {{ Item.SPDensity }}</p>
+
         {% for ele in Item.spelements.all %}
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;{{ ele.Element }} {{ ele.Concentration }} {{ ele.PE | elements:"pe" }} {{ ele.PPB | elements:"ppb" }} {{ ele.PPBFormula }} {{ ele.Others }}</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;{{ ele.Element }} {{ ele.Concentration }} {{ ele.Unit }} {{ ele.AS | elements:"as" }} {{ ele.ASFormula }} {{ ele.GFW | elements:"gfw" }} {{ ele.GFWFormula }} {{ ele.Redox }} {{ ele.Others }}</p>
         {% endfor %}
         {% if Item.spmaster.all %}
             <p>SOLUTION_MASTER_SPECIES</p>
