@@ -12,7 +12,7 @@
 <div id=main>
     <div class="col-md-4">
         <h3>SOLUTION 1</h3>
-        <h4>Parameters applied for this solution</h4>
+        <h4>Environmental conditions for this solution</h4>
         <form action="" method="post">{% csrf_token %}
             <!-- {{ paraform.as_p }} -->
             {% for field in paraform.visible_fields %}
@@ -29,13 +29,15 @@
                     {{ field.label_tag }} {{ field }} {{ field.errors }} {{ field.help_text }}&nbsp;&nbsp;&nbsp;&nbsp;
                 {% elif field.name == "SPpHIncrease" %}
                     {{ field.label_tag }} {{ field }} {{ field.errors }} {{ field.help_text }}&nbsp;&nbsp;&nbsp;&nbsp;
+                {% elif field.name == "SPTemperature" %}
+                    <p>Temperature (&#8451;) {{ field }} {{ field.errors }} {{ field.help_text }}</p>
                 {% else %}
                     <p>{{ field.label_tag }} {{ field }} {{ field.errors }} {{ field.help_text }}</p>
                 {% endif %}
             {% endfor %}
 
             <br>
-            <h4>Parameters for each element/species in this solution</h4>
+            <h4>Individual element/species in this solution</h4>
             <!-- notations -->
             <div>
                 <table>

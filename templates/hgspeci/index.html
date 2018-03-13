@@ -8,14 +8,33 @@
 
 <!-- content on the right -->
 <div id="content">
-<div id="title">Instructions</div>
+<div id="title">Instruction on how to use the Speciation module</div>
 <div id=main>
-    Steps for speciation:<p>
+    <p>The <b>Speciation</b> module provides an intuitive online tool for researchers to study the speciation of given solutions.
+        Although it integrate extensive parameters for <b>Hg related complexes</b>, it can also be applied to study the speciation
+        of other elements, such as Fe, Cd, Co etc. It allows the researchers to study the solutions <b>with their own parameters</b> as well.
+        Together with the <b>online toolkit</b> provided by AQUA-MER, the users can easily calculate the necessary parameters with
+        <b>quantum mechanis methods, such as DFT</b>.<br><br>
+
+        To use the <b>Speciation</b> module, the following three steps are required:
+        1, input the parameters; 2, review the input and submit the job; 3, view and download the results.<br>
+        If you are familiar with AQUA-MER, you can start by clicking the <a href="/hgspeci/parameters/"><b>"Input parameters"</b></a> from the left menu.
+        Otherwise, please read this instruction first.
+    </p>
+
     <p><b>Step 1. Input parameters.</b>
         <br>
-        a. Input physical conditions (units, pH range, pe, density, temperatures, redox ...)
+        In this step, the user will build up a vertual solution which contians the Environmental Conditions and
+        the Individual Element/species. Parameters in the Environmental Condistions section, such as Temperture, pH range,
+        Conenctration Unit etc. will be applied system wide. Parameters in the Individual Element/species section will only
+        affect the corresponding element/species and will override the parameters in the first section.
         <br>
-        b. Input elements in the solution (will provide related parameters in the database, and the option to add parameters by the users.)
+        &nbsp;&nbsp;&nbsp;&nbsp;a. <b>Environmental Conditions</b> parameters (units, pH range, pe, density, temperatures, redox ...)
+        <br>
+        <p><div class="video"><img src="{% static 'img/hgspeci-environ-para.png' %}" border=0 width="90%" max-height="500px"></div></p>
+
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;b. <b>Individual Element/species</b> parameters (will provide related parameters in the database, and the option to add parameters by the users.)
     <br><b>Tips:</b>
         While inputting the elements, it will searching the database automatically. If the related parameters are available,
         it will display them in the bellow. Otherwise, the user can provide their own parameters. <p>
