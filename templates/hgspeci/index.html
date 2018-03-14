@@ -14,7 +14,7 @@
         Although it integrate extensive parameters for <b>Hg related complexes</b>, it can also be applied to study the speciation
         of other elements, such as Fe, Cd, Co etc. It allows the researchers to study the solutions <b>with their own parameters</b> as well.
         Together with the <b>online toolkit</b> provided by AQUA-MER, the users can easily calculate the necessary parameters with
-        <b>quantum mechanis methods, such as DFT</b>.<br><br>
+        <b>quantum mechanics methods, such as DFT</b>.<br><br>
 
         To use the <b>Speciation</b> module, the following three steps are required:
         1, input the parameters; 2, review the input and submit the job; 3, view and download the results.<br>
@@ -22,19 +22,24 @@
         Otherwise, please read this instruction first.
     </p>
 
-    <p><b>Step 1. Input parameters.</b>
-        <br>
-        In this step, the user will build up a vertual solution which contians the Environmental Conditions and
-        the Individual Element/species. Parameters in the Environmental Condistions section, such as Temperture, pH range,
-        Conenctration Unit etc. will be applied system wide. Parameters in the Individual Element/species section will only
+    <p><h3>Step 1. Input parameters</h3>
+        In this step, the user will build up a virtual solution which contains two parts, the Environmental Conditions and
+        the Individual Element/species. Parameters in the Environmental Conditions section, such as Temperature, pH range,
+        Concentration Unit etc. will be applied to the whole solution. Parameters in the Individual Element/species section will only
         affect the corresponding element/species and will override the parameters in the first section.
         <br>
-        &nbsp;&nbsp;&nbsp;&nbsp;a. <b>Environmental Conditions</b> parameters (units, pH range, pe, density, temperatures, redox ...)
         <br>
-        <p><div class="video"><img src="{% static 'img/hgspeci-environ-para.png' %}" border=0 width="90%" max-height="500px"></div></p>
+        &nbsp;&nbsp;&nbsp;&nbsp;<b>a). Environmental Conditions</b>
+        <br>
+        <p><div class="video"><img src="{% static 'img/hgspeci-environ-para.png' %}" border=1 width="90%" max-height="500px"></div></p>
 
         <br>
-        &nbsp;&nbsp;&nbsp;&nbsp;b. <b>Individual Element/species</b> parameters (will provide related parameters in the database, and the option to add parameters by the users.)
+        &nbsp;&nbsp;&nbsp;&nbsp;<b>b). Individual Element/species</b> parameters (will provide related parameters in the database, and the option to add parameters by the users.)
+        <br>
+        <p><div class="video"><img src="{% static 'img/hgspeci-individual-para.png' %}" border=1 width="90%" max-height="500px"></div></p>
+        <p><div class="video"><img src="{% static 'img/hgspeci-auto-para.png' %}" border=1 width="90%" max-height="500px"></div></p>
+
+    <!--
     <br><b>Tips:</b>
         While inputting the elements, it will searching the database automatically. If the related parameters are available,
         it will display them in the bellow. Otherwise, the user can provide their own parameters. <p>
@@ -42,21 +47,23 @@
         <iframe width="100%" height="500" src="https://www.youtube.com/embed/ajQs4g7g388?&autoplay=1&loop=1&playlist=ajQs4g7g388" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
     </p>
+    -->
     <br>
-    <p><b>Step 2. Review & submit.</b>
-        Before submission, you can review your input parameters and parameters from database.<p>
-    <p><div class="video-box"><img src="{% static 'img/hgspeci-review.png' %}" border=0 width="100%" max-height="500px"></div></p>
-    <br>
-    <p><b>Step 3. View and download the results.</b>
-        Once the job is finished, you can view your results and download them.<p>
-    <p><div class="video-box">
+    <p><h3>Step 2. Review & submit</h3>
+        Before submission, you can review your input parameters. You can either go back to revise your input or proceed to
+        submit the job to the server. The job ID will be shown on top of your input as well. With this job ID, you can close
+        your webpage and come back to check the result later by clicking the <a href="/hgspeci/results/"><b>"Results"</b></a>
+        from the left menu.
+    <p>
+
+    <p><h3>Step 3. View and download the results</h3>
+        Once the job is finished, you can either view and analysis your results online or download and plot them yourself.<p>
+    <p><div class="video">
         <!--<video id="video" controls autoplay src="{% static 'video/hgspeci-result.webm' %}"></video>-->
-        <iframe width="100%" height="500" src="https://www.youtube.com/embed/94bqn48IkiU?&autoplay=1&loop=1&playlist=94bqn48IkiU" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <iframe width="90%" height="500" src="https://www.youtube.com/embed/94bqn48IkiU?&autoplay=1&loop=1&playlist=94bqn48IkiU" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
     </p>
 
-    <p><b>Notice:</b> Once the compound is uploaded, a unique job ID will be assigned. With the job ID, you can check your
-        results and redo analysis quickly.</p>
     <br>
     <br>
 
