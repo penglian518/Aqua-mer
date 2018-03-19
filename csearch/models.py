@@ -8,7 +8,6 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
-
 def user_directory_path(instance, filename):
     # upload to MEDIA_ROOT/csearch/jobs/JOB_ID/
     return 'csearch/jobs/{0}/{1}'.format(instance.JobID, filename)
@@ -107,12 +106,13 @@ class SearchTypeForm(ModelForm):
         model = CSearchJob
         fields = ['JobID', 'CurrentStep', 'Successful', 'CSearchType']
         labels = {
-            'CSearchType': _('Conformation search method'),
+            'CSearchType': _('Which conformational search method do you want to use?'),
         }
         widgets = {
             'JobID': forms.HiddenInput(),
             'CurrentStep': forms.HiddenInput(),
             'Successful': forms.HiddenInput(),
+            'CSearchType': forms.RadioSelect,
         }
 
 class RandomSearchForm(ModelForm):

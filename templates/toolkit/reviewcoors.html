@@ -1,0 +1,41 @@
+{% extends 'base_index.html' %}
+{% load static %}
+{% load filename %}
+
+
+{% block content %}
+<!-- 3Dmol.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/1.3.0/3Dmol-min.js"></script>
+
+<!-- nav box on the left -->
+{% include 'toolkit/memu.html' %}
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 1. Upload a compound</div>
+<div id=main>
+    <p>
+        Please double check your molecule and select the calculation you want to do.
+    </p>
+
+    <div style="height: 300px; width: 500px; position: relative;" class='viewer_3Dmoljs'
+         data-href='/toolkit/inputcoor/{{ Item.JobID }}'
+         data-backgroundcolor='0xffffff' data-type="xyz" data-select1="all" data-style1='stick'></div>
+
+    <form enctype="multipart/form-data" method='POST'>
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <br>
+        <button type="submit" class="btn btn-default" style="height:25px;width:90px">Next</button>
+
+    </form>
+
+    <br>
+    <br>
+
+
+
+</div></div>
+{% endblock %}

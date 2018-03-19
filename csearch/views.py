@@ -58,7 +58,6 @@ def smiles(request):
 
 
 def parameters_cstype(request, JobID):
-
     item = get_object_or_404(CSearchJob, JobID=JobID)
     if request.method == 'POST':
         form = SearchTypeForm(request.POST, instance=item)

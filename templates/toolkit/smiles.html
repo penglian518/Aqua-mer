@@ -1,0 +1,60 @@
+{% extends 'base_index.html' %}
+{% load static %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'toolkit/memu.html' %}
+
+
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 1. Upload a compound</div>
+<div id=main>
+
+    <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST'>
+        {% csrf_token %}
+        <table>
+        {{ form }}
+
+        <td>
+        <button type="button" onclick="toggleIfrm()" class="btn btn-default" style="height:25px;width:100px">Draw it now</button>
+            &nbsp; OR &nbsp;
+        <button type="button" onclick="window.location.href='/toolkit/upload'" class="btn btn-default" style="height:25px;width:140px">Upload coordinates</button>
+        </td>
+
+        </table>
+
+        <div id="ifrmdiv" style="display:none">
+            <iframe id="ifrm" height="450px" width="900px" src="http://pubchem.ncbi.nlm.nih.gov/edit2/index.html"></iframe>
+        </div>
+
+        <br>
+        <button type="submit" class="btn btn-default" style="height:25px;width:90px">Next</button>
+    </form>
+    <br>
+    <br>
+
+
+
+</div>
+</div>
+
+
+
+
+<script>
+function toggleIfrm() {
+    var x = document.getElementById("ifrmdiv");
+    if (x.style.display == "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+}
+</script>
+
+
+{% endblock %}
