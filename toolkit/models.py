@@ -38,6 +38,7 @@ class ToolkitJob(models.Model):
 
 
     JobID = models.PositiveIntegerField(blank=True, default=0)
+    # calculation type
     Name = models.CharField(max_length=50, choices=CalculationTypes, default='')
     CurrentStep = models.CharField(max_length=10, blank=True, default='0')
     CurrentStatus = models.CharField(max_length=10, choices=JobStatus, default='0')
@@ -45,8 +46,8 @@ class ToolkitJob(models.Model):
     FailedReason = models.CharField(max_length=100, blank=True, default='')
     CreatedDate = models.DateTimeField('date created', default=datetime.now())
 
-    SmilesStr = models.CharField(max_length=200, blank=False, default='')
-    UploadedFile = models.FileField(upload_to=user_directory_path, blank=False)
+    SmilesStr = models.CharField(max_length=200, blank=True, default='', null=True)
+    UploadedFile = models.FileField(upload_to=user_directory_path, blank=True, null=True)
     UploadedFileType = models.CharField(max_length=10, choices=FileTypes, default='')
 
     Note = models.CharField(max_length=100, blank=True, default='')
@@ -66,7 +67,7 @@ class SmilesForm(ModelForm):
             'JobID': forms.HiddenInput(),
             'CurrentStep': forms.HiddenInput(),
             'Successful': forms.HiddenInput(),
-            'SmilesStr': forms.TextInput(attrs={'placeholder': 'Paste the SMILES here', 'size': 80})
+            'SmilesStr': forms.TextInput(attrs={'placeholder': 'Paste the SMILES here', 'size': 80, 'required': True})
         }
 
 class UploadForm(ModelForm):
@@ -81,6 +82,7 @@ class UploadForm(ModelForm):
             'JobID': forms.HiddenInput(),
             'CurrentStep': forms.HiddenInput(),
             'Successful': forms.HiddenInput(),
+            'UploadedFile': forms.FileInput(attrs={'required':True}),
         }
 
 class CalculationTypeForm(ModelForm):
@@ -97,41 +99,5 @@ class CalculationTypeForm(ModelForm):
             'Successful': forms.HiddenInput(),
             'Name': forms.RadioSelect,
         }
-
-
-
-
-
-
-@python_2_unicode_compatible  # only if you need to support Python 2
-class CSearchJob(models.Model):
-    CSearchTypes = (
-        ('Random', 'Random'),
-        ('Replica', 'Replica'),
-        ('DFT', 'DFT'),
-    )
-
-    ForcefieldTypes = (
-        ('UFF', 'UFF'),
-        ('GAFF', 'GAFF'),
-        ('Ghemical', 'Ghemical'),
-        ('MMFF94', 'MMFF94'),
-        ('MMFF94s', 'MMFF94s'),
-    )
-
-    CSearchJobID = models.ForeignKey('ToolkitJob', on_delete=models.CASCADE, default=0, related_name='csearchjobid')
-
-    CSearchType = models.CharField(max_length=30, choices=CSearchTypes, default='Random')
-
-    RandomForcefield = models.CharField(max_length=30, choices=ForcefieldTypes, default='UFF')
-    RandomNRotamers = models.PositiveIntegerField(blank=True, default=1000)
-    RandomNSteps = models.PositiveIntegerField(blank=True, default=2500)
-    RandomEPS = models.FloatField(blank=True, default=0.01)
-    RandomNMinSamples = models.PositiveIntegerField(blank=True, default=2)
-    RandomReclustering = models.BooleanField(default=False)
-
-    def __str__(self):
-        return str(self.pk)
-
 
 
