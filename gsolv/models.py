@@ -36,8 +36,8 @@ class GSolvJob(models.Model):
     )
 
     QMFunctionals = (
-        ('MO6-2X', 'M06-2X'),
-        ('MO6-L', 'M06-L'),
+        ('M06-2X', 'M06-2X'),
+        ('M06-L', 'M06-L'),
         ('B3LYP', 'B3LYP'),
         ('HF', 'HF'),
     )
@@ -75,24 +75,24 @@ class GSolvJob(models.Model):
 
 
     JobID = models.PositiveIntegerField(blank=True, default=0)
-    Name = models.CharField(max_length=50, blank=True, default='GSolv')
+    Name = models.CharField(max_length=50, blank=True, default='gsolv')
     CurrentStep = models.CharField(max_length=10, blank=True, default='0')
     CurrentStatus = models.CharField(max_length=10, choices=JobStatus, default='0')
     Successful = models.BooleanField(default=False)
     FailedReason = models.CharField(max_length=100, blank=True, default='')
     CreatedDate = models.DateTimeField('date created', default=datetime.now())
 
-    SmilesStr = models.CharField(max_length=200, blank=False, default='')
-    UploadedFile = models.FileField(upload_to=user_directory_path, blank=False)
+    SmilesStr = models.CharField(max_length=200, blank=True, default='')
+    UploadedFile = models.FileField(upload_to=user_directory_path, blank=True)
     UploadedFileType = models.CharField(max_length=10, choices=FileTypes, default='')
 
     QMSoftware = models.CharField(max_length=30, choices=QMSoftwares, default='Gaussian')
 
-    QMTitle = models.CharField(max_length=100, blank=True, default='Title')
+    QMTitle = models.CharField(max_length=100, blank=True, default='AQUA-MER GSOLV')
     QMCalType = models.CharField(max_length=30, choices=QMCalTypes, default='Geometry Optimization')
     QMProcessors = models.PositiveIntegerField(blank=True, default=1, validators=[MaxValueValidator(4), MinValueValidator(1)])
     QMMemory = models.PositiveIntegerField(blank=True, default=1)
-    QMFunctional = models.CharField(max_length=30, choices=QMFunctionals, default='MO6-2X')
+    QMFunctional = models.CharField(max_length=30, choices=QMFunctionals, default='M06-2X')
     QMBasisSet = models.CharField(max_length=30, choices=QMBasisSets, default='6-31+G(d,p)')
     QMCharge = models.IntegerField(blank=True, default=0)
     QMMultiplicity = models.IntegerField(blank=True, default=1)
@@ -121,7 +121,7 @@ class SmilesForm(ModelForm):
             'JobID': forms.HiddenInput(),
             'CurrentStep': forms.HiddenInput(),
             'Successful': forms.HiddenInput(),
-            'SmilesStr': forms.TextInput(attrs={'placeholder': 'Paste the SMILES here', 'size': 80}),
+            'SmilesStr': forms.TextInput(attrs={'placeholder': 'Paste the SMILES here', 'size': 80, 'required': True}),
         }
 
 class UploadForm(ModelForm):
@@ -136,6 +136,7 @@ class UploadForm(ModelForm):
             'JobID': forms.HiddenInput(),
             'CurrentStep': forms.HiddenInput(),
             'Successful': forms.HiddenInput(),
+            'UploadedFile': forms.FileInput(attrs={'required': True}),
         }
 
 class QueryForm(ModelForm):

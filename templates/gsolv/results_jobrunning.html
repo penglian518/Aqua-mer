@@ -3,7 +3,11 @@
 
 
 {% block content %}
-<meta http-equiv="refresh" content="30" >
+{% if Item.QMSoftware == 'Gaussian' %}
+    <meta http-equiv="refresh" content="3" >
+{% else %}
+    <meta http-equiv="refresh" content="30" >
+{% endif %}
 
 <!-- nav box on the left -->
 {% include 'gsolv/memu.html' %}

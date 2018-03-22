@@ -32,7 +32,7 @@
              data-select1="all" data-style1='stick'></div>
         </td>
     </tr>
-    <tr><td>JobID</td><td>{{ Item.JobID }}</td></tr>
+    <tr><td>JobID</td><td><b>{{ Item.JobID }}</b></td></tr>
     {% if Item.UploadedFile %}
         <tr><td>File name</td><td>{{ Item.UploadedFile | filename }}</td></tr>
         <tr><td>File type</td><td>{{ Item.UploadedFileType }}</td></tr>
@@ -42,7 +42,7 @@
     {% endif %}
     <tr><td><br></td><td></td></tr>
 
-    {% if Item.Name == 'GSolv' %}
+    {% if Item.Name == 'gsolv' %}
         <tr><td>Software</td><td>{{ Item.QMSoftware }}</td></tr>
         <tr><td>Job Title</td><td>{{ Item.Title }}</td></tr>
         <tr><td>Calculation Type</td><td>{{ Item.QMCalType }}</td></tr>

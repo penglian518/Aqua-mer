@@ -1,5 +1,6 @@
 import os, shutil, subprocess, logging
 from .PhreeqcPrepare import PhreeqcPrepare
+from .QMCalculationPrepare import QMCalculationPrepare
 
 class JobManagement:
     def __init__(self):
@@ -282,3 +283,70 @@ class JobManagement:
 
         obj.save()
         return
+
+    #### Gsolv ####
+    def GsolvJobPrepare(self, obj, JobType='gsolv'):
+        # get basic info
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+
+        try:
+            os.makedirs(job_dir)
+        except:
+            pass
+
+        qmclac = QMCalculationPrepare()
+
+        try:
+            conf = qmclac.gen_conf_dict(obj)
+            obj.Successful = True
+        except:
+            obj.FailedReason = 'Could not generate configuration dict for %s.' % JobType
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
+        try:
+            inp = qmclac.gen_g09input(conf)
+            obj.Successful = True
+        except Exception as e:
+            obj.FailedReason = 'Could not generate input file for %s' % JobType
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+            print 'Could not generate input file: %s' % e
+
+        try:
+            # write input file
+            fout = open('%s/%s-%s.com' % (job_dir, JobType, obj.JobID), 'w')
+            fout.write(inp)
+            fout.close()
+
+            obj.Successful = True
+            obj.CurrentStatus = '2'
+        except:
+            obj.FailedReason = 'Could not write the input file for %s.' % JobType
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
+        obj.save()
+        return
+
+    def GsolvCollectResults(self, obj, JobType='gsolv'):
+        # get basic info
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+
+        try:
+            os.makedirs(job_dir)
+        except:
+            pass
+
+        phreeqc = PhreeqcPrepare()
+        try:
+            phreeqc.collectResults(obj=obj, outdir=job_dir)
+            obj.Successful = True
+        except:
+            print 'Could not collect the speciation data from the output file.'
+
+        obj.save()
+        return
+

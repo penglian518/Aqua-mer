@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
 from .models import GSolvJob, UploadForm, QueryForm, SmilesForm, GsolvInputForm
+from cyshg.models import AllJobIDs
 
 
 from scripts.JobManagement import JobManagement
+from scripts.VistorStatistics import clientStatistics
 import threading
 import base64, os
 
@@ -12,18 +14,16 @@ import base64, os
 
 
 def index(request):
+    clientStatistics(request)
     return render(request, 'gsolv/index.html')
 
 def upload(request):
+    clientStatistics(request)
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
-            try:
-                lastjobid = GSolvJob.objects.last().id
-            except AttributeError:
-                lastjobid = 0
             model_instance = form.save(commit=False)
-            model_instance.JobID = lastjobid + 1
+            model_instance.JobID = generate_JobID()
             model_instance.CurrentStep = "1"
             model_instance.Successful = True
             model_instance.save()
@@ -34,15 +34,12 @@ def upload(request):
     return render(request, 'gsolv/upload.html', {'form': form})
 
 def smiles(request):
+    clientStatistics(request)
     if request.method == 'POST':
         form = SmilesForm(request.POST, request.FILES)
         if form.is_valid():
-            try:
-                lastjobid = GSolvJob.objects.last().id
-            except AttributeError:
-                lastjobid = 0
             model_instance = form.save(commit=False)
-            model_instance.JobID = lastjobid + 1
+            model_instance.JobID = generate_JobID()
             model_instance.CurrentStep = "1"
             model_instance.Successful = True
             model_instance.save()
@@ -53,7 +50,7 @@ def smiles(request):
     return render(request, 'gsolv/smiles.html', {'form': form})
 
 def parameters_input(request, JobID):
-
+    clientStatistics(request)
     item = get_object_or_404(GSolvJob, JobID=JobID)
     if request.method == 'POST':
         form = GsolvInputForm(request.POST, instance=item)
@@ -70,16 +67,20 @@ def parameters_input(request, JobID):
     return render(request, 'gsolv/parameters_input.html', {'form': form, 'JobID': JobID})
 
 def parameters(request):
+    clientStatistics(request)
     return render(request, 'gsolv/parameters_doc.html')
 
 def review(request, JobID):
+    clientStatistics(request)
     item = get_object_or_404(GSolvJob, JobID=JobID)
     return render(request, 'gsolv/review.html', {'JobID': JobID, 'Item': item})
 
 def review_doc(request):
+    clientStatistics(request)
     return render(request, 'gsolv/review_doc.html')
 
 def results(request, JobID, JobType='gsolv'):
+    clientStatistics(request)
     # if the job hasn't been started, start the job.
     # if the job is running, check every 5 seconds.
     # if the job has finished, display the results.
@@ -88,23 +89,23 @@ def results(request, JobID, JobType='gsolv'):
     if item.CurrentStatus == '0':
         # the job is 'to be start', submit the job and jump to '1'
 
+        # change the status in the database
+        item.CurrentStatus = '1'
+        item.save()
+
         # a function to start the job
         #### call some function here ####
         # a. generate input file
         # b. submit the job
-
         # generate input file
+
         jobmanger = JobManagement()
+        jobmanger.GsolvJobPrepare(obj=item, JobType='gsolv')
 
         # run the calculations in background
         #Exec_thread = threading.Thread(target=jobmanger.GSolvJobExec, kwargs={"obj": item})
         #Exec_thread.start()
 
-
-
-        # change the status in the database
-        item.CurrentStatus = '1'
-        item.save()
         # redirect to the result page
         return redirect('/gsolv/results/%d' % int(item.JobID))
 
@@ -130,7 +131,7 @@ def results(request, JobID, JobType='gsolv'):
 
 
 def results_doc(request):
-
+    clientStatistics(request)
     if request.method == 'POST':
         # user filled form
         form = QueryForm(request.POST)
@@ -167,15 +168,29 @@ def get_job_dir(JobID, JobType='gsolv'):
 
     return job_dir
 
+def generate_JobID(module=AllJobIDs, JobType='gsolv'):
+    try:
+        lastjobid = module.objects.last().id
+    except AttributeError:
+        lastjobid = 0
+    JobID = lastjobid + 1
+
+    # register that job
+    newjob = module.objects.create()
+    newjob.JobID = JobID
+    newjob.JobType = JobType
+    newjob.save()
+    return JobID
+
+
 def results_xyz(request, JobID, Ith, JobType='gsolv'):
     """
-
     :param request:
     :param JobID:
     :param Ith: the ith molecule from top
     :return:
     """
-
+    clientStatistics(request)
     job_dir = get_job_dir(JobID)
     xyzfile = '%s/%s-%s/xyz/CSearch_%s_%s-%s.xyz' % (job_dir, JobType, JobID, Ith, JobType, JobID)
 
@@ -188,6 +203,7 @@ def inputcoor(request, JobID, JobType='gsolv'):
     """
     convert input files to xyz and show
     """
+    clientStatistics(request)
     item = get_object_or_404(GSolvJob, JobID=JobID)
     # convert smi to xyz
     jobmanger = JobManagement()
@@ -197,5 +213,23 @@ def inputcoor(request, JobID, JobType='gsolv'):
     job_dir = get_job_dir(JobID)
     xyzfile = '%s/%s-%s.xyz' % (job_dir, JobType, JobID)
     fcon = ''.join(open(xyzfile).readlines())
+
+    return HttpResponse(fcon, content_type='text/plain')
+
+def inputfile(request, JobID, JobType='gsolv'):
+    """
+    display the input files
+    """
+    clientStatistics(request)
+    item = get_object_or_404(GSolvJob, JobID=JobID)
+    # read xyz file
+    job_dir = get_job_dir(JobID)
+
+    if item.QMSoftware == 'Gaussian':
+        inputfile = '%s/%s-%s.com' % (job_dir, JobType, JobID)
+    elif item.QMSoftware == 'NWChem':
+        inputfile = '%s/%s-%s.nw' % (job_dir, JobType, JobID)
+
+    fcon = ''.join(open(inputfile).readlines())
 
     return HttpResponse(fcon, content_type='text/plain')

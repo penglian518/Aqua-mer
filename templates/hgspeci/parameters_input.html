@@ -256,10 +256,10 @@ function toggleIfrm(fmID) {
 </script>
 <script type="text/javascript">
   function resizeIframe(iframe) {
-    iframe.height = getDocHeight() + 30 + "px";
+    iframe.height = getDocHeight(iframe) + 20 + "px";
   }
 
-  function getDocHeight() {
+  function getDocHeight(iframe) {
     var D = iframe.contentWindow.document;
     return Math.max(
         Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),

@@ -288,7 +288,7 @@ def get_job_dir(JobID, JobType='csearch'):
 
     return job_dir
 
-def generate_JobID(module=AllJobIDs):
+def generate_JobID(module=AllJobIDs, JobType='csearch'):
     try:
         lastjobid = module.objects.last().id
     except AttributeError:
@@ -298,9 +298,8 @@ def generate_JobID(module=AllJobIDs):
     # register that job
     newjob = module.objects.create()
     newjob.JobID = JobID
-    newjob.JobType = 'csearch'
+    newjob.JobType = JobType
     newjob.save()
-
     return JobID
 
 def results_xyz(request, JobID, Ith, JobType='csearch'):
