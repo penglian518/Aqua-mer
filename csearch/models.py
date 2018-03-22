@@ -46,15 +46,15 @@ class CSearchJob(models.Model):
 
 
     JobID = models.PositiveIntegerField(blank=True, default=0)
-    Name = models.CharField(max_length=50, blank=True, default='CSearch')
+    Name = models.CharField(max_length=50, blank=True, default='csearch')
     CurrentStep = models.CharField(max_length=10, blank=True, default='0')
     CurrentStatus = models.CharField(max_length=10, choices=JobStatus, default='0')
     Successful = models.BooleanField(default=False)
     FailedReason = models.CharField(max_length=100, blank=True, default='')
     CreatedDate = models.DateTimeField('date created', default=datetime.now())
 
-    SmilesStr = models.CharField(max_length=200, blank=False, default='')
-    UploadedFile = models.FileField(upload_to=user_directory_path, blank=False)
+    SmilesStr = models.CharField(max_length=200, blank=True, default='')
+    UploadedFile = models.FileField(upload_to=user_directory_path, blank=True)
     UploadedFileType = models.CharField(max_length=10, choices=FileTypes, default='')
 
     CSearchType = models.CharField(max_length=30, choices=CSearchTypes, default='Random')
@@ -84,7 +84,7 @@ class SmilesForm(ModelForm):
             'JobID': forms.HiddenInput(),
             'CurrentStep': forms.HiddenInput(),
             'Successful': forms.HiddenInput(),
-            'SmilesStr': forms.TextInput(attrs={'placeholder': 'Paste the SMILES here', 'size': 80})
+            'SmilesStr': forms.TextInput(attrs={'placeholder': 'Paste the SMILES here', 'size': 80, 'required': True})
         }
 
 class UploadForm(ModelForm):
@@ -99,6 +99,7 @@ class UploadForm(ModelForm):
             'JobID': forms.HiddenInput(),
             'CurrentStep': forms.HiddenInput(),
             'Successful': forms.HiddenInput(),
+            'UploadedFile': forms.FileInput(attrs={'required': True}),
         }
 
 class SearchTypeForm(ModelForm):
