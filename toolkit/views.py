@@ -1,34 +1,38 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
-from .models import ToolkitJob, CSearchJob, SmilesForm, UploadForm, CalculationTypeForm
+from django.forms import model_to_dict
 
+from .models import ToolkitJob, SmilesForm, UploadForm, CalculationTypeForm
+from csearch.models import CSearchJob
+from cyshg.models import AllJobIDs
 
 from scripts.JobManagement import JobManagement
 import threading
 import base64, os
+
+from scripts.VistorStatistics import clientStatistics
 
 # Create your views here.
 
 
 
 def index(request):
+    clientStatistics(request)
     return render(request, 'toolkit/index.html')
 
 
 def draw(request):
+    clientStatistics(request)
     return render(request, 'toolkit/draw.html')
 
 def upload(request):
+    clientStatistics(request)
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
-            try:
-                lastjobid = ToolkitJob.objects.last().id
-            except AttributeError:
-                lastjobid = 0
             model_instance = form.save(commit=False)
-            model_instance.JobID = lastjobid + 1
+            model_instance.JobID = generate_JobID()
             model_instance.CurrentStep = "1"
             model_instance.Successful = True
             model_instance.save()
@@ -39,15 +43,12 @@ def upload(request):
     return render(request, 'toolkit/upload.html', {'form': form})
 
 def smiles(request):
+    clientStatistics(request)
     if request.method == 'POST':
         form = SmilesForm(request.POST, request.FILES)
         if form.is_valid():
-            try:
-                lastjobid = ToolkitJob.objects.last().id
-            except AttributeError:
-                lastjobid = 0
             model_instance = form.save(commit=False)
-            model_instance.JobID = lastjobid + 1
+            model_instance.JobID = generate_JobID()
             model_instance.CurrentStep = "1"
             model_instance.Successful = True
             model_instance.save()
@@ -59,6 +60,7 @@ def smiles(request):
 
 
 def reviewcoors(request, JobID):
+    clientStatistics(request)
     item = get_object_or_404(ToolkitJob, JobID=JobID)
     if request.method == 'POST':
         form = CalculationTypeForm(request.POST, instance=item)
@@ -69,7 +71,7 @@ def reviewcoors(request, JobID):
             model_instance.Successful = True
             model_instance.save()
             if model_instance.Name == 'csearch':
-                return redirect('/csearch/')
+                return redirect('/toolkit/trans/csearch/%s/' % JobID)
             elif model_instance.Name == 'gsolv':
                 return redirect('/gsolv/')
             elif model_instance.Name == 'pka':
@@ -82,6 +84,17 @@ def reviewcoors(request, JobID):
     return render(request, 'toolkit/reviewcoors.html', {'JobID': JobID, 'Item': item, 'form': form})
 
 
+def trans(request, JobType, JobID):
+    clientStatistics(request)
+    '''to transfer the job from toolkit to other modules'''
+    item = get_object_or_404(ToolkitJob, JobID=JobID)
+    item_dict = model_to_dict(item)
+
+    # copy the job infor to the module
+    if JobType in ['csearch']:
+        CSearchJob.objects.create(**item_dict)
+
+    return redirect('/%s/parameters/%s/' % (JobType, JobID))
 
 
 
@@ -93,10 +106,26 @@ def get_job_dir(JobID, JobType='toolkit'):
 
     return job_dir
 
+def generate_JobID(module=AllJobIDs):
+    try:
+        lastjobid = module.objects.last().id
+    except AttributeError:
+        lastjobid = 0
+    JobID = lastjobid + 1
+
+    # register that job
+    newjob = module.objects.create()
+    newjob.JobID = JobID
+    newjob.JobType = 'toolkit'
+    newjob.save()
+
+    return JobID
+
 def inputcoor(request, JobID, JobType='toolkit'):
     """
     convert input files to xyz and show
     """
+    clientStatistics(request)
     item = get_object_or_404(ToolkitJob, JobID=JobID)
     # convert smi to xyz
     jobmanger = JobManagement()

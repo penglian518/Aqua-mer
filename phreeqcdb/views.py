@@ -3,8 +3,11 @@ from django.shortcuts import render
 from .models import SolutionMasterSpecies, SolutionSpecies, Phases, SurfaceMasterSpecies, SurfaceSpecies,\
                     ExchangeMasterSpecies, ExchangeSpecies, Rates, Refs
 
+from scripts.VistorStatistics import clientStatistics
 # Create your views here.
 def index(request):
+    clientStatistics(request)
+
     NumElements = SolutionMasterSpecies.objects.count()
     NumSpecies = SolutionSpecies.objects.count()
     NumPhases = Phases.objects.count()
@@ -28,6 +31,7 @@ def index(request):
 
 
 def master(request):
+    clientStatistics(request)
     all_master = SolutionMasterSpecies.objects.all()
     all_master = sorted(all_master, key=lambda x: x.Element)
     # get refs
@@ -39,6 +43,7 @@ def master(request):
                   {'all_master': all_master, 'refs': list(set(all_refs))})
 
 def species(request):
+    clientStatistics(request)
     all_species = SolutionSpecies.objects.all()
     # get refs
     all_refs = []
@@ -49,6 +54,7 @@ def species(request):
                   {'all_species': all_species, 'refs': list(set(all_refs))})
 
 def phases(request):
+    clientStatistics(request)
     all_phases = Phases.objects.all()
     # get refs
     all_refs = []
@@ -59,6 +65,7 @@ def phases(request):
                   {'all_phases': all_phases, 'refs': list(set(all_refs))})
 
 def surfacemaster(request):
+    clientStatistics(request)
     all_master = SurfaceMasterSpecies.objects.all()
     # get refs
     all_refs = []
@@ -69,6 +76,7 @@ def surfacemaster(request):
                   {'all_master': all_master, 'refs': list(set(all_refs))})
 
 def surfacespecies(request):
+    clientStatistics(request)
     all_species = SurfaceSpecies.objects.all()
     # get refs
     all_refs = []
@@ -79,6 +87,7 @@ def surfacespecies(request):
                   {'all_species': all_species, 'refs': list(set(all_refs))})
 
 def exchangemaster(request):
+    clientStatistics(request)
     all_master = ExchangeMasterSpecies.objects.all()
     # get refs
     all_refs = []
@@ -89,6 +98,7 @@ def exchangemaster(request):
                   {'all_master': all_master, 'refs': list(set(all_refs))})
 
 def exchangespecies(request):
+    clientStatistics(request)
     all_species = ExchangeSpecies.objects.all()
     # get refs
     all_refs = []
@@ -99,6 +109,7 @@ def exchangespecies(request):
                   {'all_species': all_species, 'refs': list(set(all_refs))})
 
 def rates(request):
+    clientStatistics(request)
     all_rates = Rates.objects.all()
     # get refs
     all_refs = []

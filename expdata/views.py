@@ -3,9 +3,11 @@ from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Compound, PKA, StabilityConstants, dGsolv, Refs
 
+from scripts.VistorStatistics import clientStatistics
 # Create your views here.
 
 def index(request):
+    clientStatistics(request)
     all_compounds = Compound.objects.all()
     all_pkas = PKA.objects.all()
     all_stabilities = StabilityConstants.objects.all()
@@ -21,6 +23,7 @@ def index(request):
 
 
 def basic(request):
+    clientStatistics(request)
     all_compounds = Compound.objects.all()
     return render(request,
                   'expdata/basic.html',
@@ -29,6 +32,7 @@ def basic(request):
                   )
 
 def dgsolv(request):
+    clientStatistics(request)
     all_dgsov = dGsolv.objects.all()
     #all_refs = Refs.objects.all()
     # get refs
@@ -47,6 +51,7 @@ def dgsolv(request):
                   )
 
 def pka(request):
+    clientStatistics(request)
     all_pkas = PKA.objects.all()
 
     # get refs
@@ -66,6 +71,7 @@ def pka(request):
 
 
 def stability(request):
+    clientStatistics(request)
     all_stabilities = StabilityConstants.objects.all()
     #all_refs = Refs.objects.all()
     # get refs
@@ -85,6 +91,7 @@ def stability(request):
 
 
 def onecpd(request, args, value):
+    clientStatistics(request)
     # get the compound
     if args in ['id', 'pk']:
         try:

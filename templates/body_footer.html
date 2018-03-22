@@ -1,13 +1,15 @@
 {% load static %}
 
 <div id=footer>
-<div style="float: left">
-  <a href="http://cmb.ornl.gov/" target="_blank"><img src="{% static 'img/cmb_logo.png' %}" border=0 height=35></a>
-</div>
+  <div style="float: left">
+    <a href="http://cmb.ornl.gov/" target="_blank"><img src="{% static 'img/cmb_logo.png' %}" border=0 height=35></a>
+  </div>
 
-Please use the latest version of <b>Chrome</b> to achieve the best performance.
-<br>
-<br>
-Copyright(c) 2006-2017 by CMB @ UT/ORNL <br>
-
+  <div style="float: center">
+    This website has been visted <b>{{ numVist }}</b> time.
+    <br>
+    Please use the latest version of <b>Chrome</b> to achieve the best performance.
+    <br>
+    Copyright(c) 2006-2017 by CMB @ UT/ORNL
+  </div>
 </div>

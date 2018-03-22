@@ -10,8 +10,10 @@ from .models import HgSpeciJob, SPElements, SPElementsForm, ParameterForm
 from .models import SPMasterSpecies, SPMasterSpeciesForm, SPSolutionSpecies, SPSolutionSpeciesForm, QueryForm
 from phreeqcdb.models import SolutionMasterSpecies, SolutionSpecies
 from calcdata.models import CalcSolutionMasterSpecies, CalcSolutionSpecies
+from cyshg.models import AllJobIDs
 
 from scripts.JobManagement import JobManagement
+from scripts.VistorStatistics import clientStatistics
 import threading
 import base64, os, datetime, json
 import pandas as pd
@@ -22,23 +24,26 @@ from decimal import Decimal
 
 
 def index(request):
+    clientStatistics(request)
     return render(request, 'hgspeci/index.html')
 
 
 def parameters(request):
+    clientStatistics(request)
     # delete empty jobs that longer then 2 hours
     for j in HgSpeciJob.objects.filter(CurrentStep=0):
         deltaT = int(datetime.datetime.now().strftime('%s')) - int(j.CreatedDate.strftime('%s'))
         if deltaT > 3600 * 2:
             j.delete()
-
+    '''
     # generate JobID
     try:
         lastjobid = HgSpeciJob.objects.last().id
     except AttributeError:
         lastjobid = 0
     JobID = lastjobid + 1
-
+    '''
+    JobID = generate_JobID()
     # occupy this JobID for 2 hours
     SPJob = HgSpeciJob(JobID=JobID)
     SPJob.save()
@@ -46,6 +51,7 @@ def parameters(request):
     return redirect('/hgspeci/parameters/%d/' % JobID)
 
 def parameters_input(request, JobID):
+    clientStatistics(request)
     # get job handle
     try:
         SPJob = HgSpeciJob.objects.get(JobID=JobID)
@@ -87,6 +93,7 @@ def parameters_input(request, JobID):
                   {'paraform': paraform, 'formset': formset, 'JobID': JobID})
 
 def input_masterspecies(request, JobID):
+    clientStatistics(request)
     # get the job handle
     try:
         SPJob = HgSpeciJob.objects.get(JobID=JobID)
@@ -131,6 +138,7 @@ def input_masterspecies(request, JobID):
                   {'paraform': paraform, 'masterformset': masterformset, 'success': success})
 
 def input_solutionspecies(request, JobID):
+    clientStatistics(request)
     # get the job handle
     try:
         SPJob = HgSpeciJob.objects.get(JobID=JobID)
@@ -177,7 +185,7 @@ def input_solutionspecies(request, JobID):
 
 def elements(request):
     '''This function displays all avaialbe elemetns in the database'''
-
+    clientStatistics(request)
     # from phreeqcdb
     all_master = SolutionMasterSpecies.objects.all()
     all_master = sorted(all_master, key=lambda x: x.Element)
@@ -202,14 +210,17 @@ def elements(request):
 
 
 def review(request, JobID):
+    clientStatistics(request)
     item = get_object_or_404(HgSpeciJob, JobID=JobID)
     return render(request, 'hgspeci/review.html', {'JobID': JobID, 'Item': item})
 
 def review_doc(request):
+    clientStatistics(request)
     return render(request, 'hgspeci/review_doc.html')
 
 
 def results(request, JobID, JobType='hgspeci'):
+    clientStatistics(request)
     # if the job hasn't been started, start the job.
     # if the job is running, check every 5 seconds.
     # if the job has finished, display the results.
@@ -342,6 +353,7 @@ def results(request, JobID, JobType='hgspeci'):
         return render(request, 'hgspeci/results_error.html', {'JobID': JobID, 'Item': item})
 
 def results_doc(request):
+    clientStatistics(request)
     if request.method == 'POST':
         # user filled form
         form = QueryForm(request.POST)
@@ -365,6 +377,7 @@ def results_doc(request):
     return render(request, 'hgspeci/results_doc.html', {'form': form})
 
 def download(request, JobID, JobType='hgspeci'):
+    clientStatistics(request)
     item = get_object_or_404(HgSpeciJob, JobID=JobID)
 
     if item.CurrentStatus == '2':
@@ -386,6 +399,7 @@ def download(request, JobID, JobType='hgspeci'):
 
 # function for ajax query
 def query_solutionmaster(request, ele):
+    clientStatistics(request)
     response_dict = {'success': True}
     response_dict['ele'] = ele
     masters = []
@@ -407,6 +421,7 @@ def query_solutionmaster(request, ele):
     return render(request, 'hgspeci/solutionmaster.html', response_dict)
 
 def query_solutionspecies(request, ele):
+    clientStatistics(request)
     response_dict = {'success': True}
     response_dict['ele'] = ele
     try:
@@ -436,10 +451,10 @@ def query_solutionspecies(request, ele):
     return render(request, 'hgspeci/solutionspecies.html', response_dict)
 
 def query_elements(request):
+    clientStatistics(request)
     if request.is_ajax():
 
         ele = request.GET.get('term', '')
-
 
         masters = []
         try:
@@ -474,3 +489,18 @@ def get_job_dir(JobID, JobType='hgspeci'):
     job_dir = '%s/%s/%s' % (DjangoHome, JobLocation, JobID)
 
     return job_dir
+
+def generate_JobID(module=AllJobIDs):
+    try:
+        lastjobid = module.objects.last().id
+    except AttributeError:
+        lastjobid = 0
+    JobID = lastjobid + 1
+
+    # register that job
+    newjob = module.objects.create()
+    newjob.JobID = JobID
+    newjob.JobType = 'hgspeci'
+    newjob.save()
+
+    return JobID

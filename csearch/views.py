@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
 from .models import CSearchJob, SmilesForm, UploadForm, SearchTypeForm, RandomSearchForm, QueryForm, ReclusteringForm
-
+from cyshg.models import AllJobIDs
 
 from scripts.JobManagement import JobManagement
+from scripts.VistorStatistics import clientStatistics
 import threading
 import base64, os
 
@@ -12,21 +13,20 @@ import base64, os
 
 
 def index(request):
+    clientStatistics(request)
     return render(request, 'csearch/index.html')
 
 def draw(request):
+    clientStatistics(request)
     return render(request, 'csearch/draw.html')
 
 def upload(request):
+    clientStatistics(request)
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
-            try:
-                lastjobid = CSearchJob.objects.last().id
-            except AttributeError:
-                lastjobid = 0
             model_instance = form.save(commit=False)
-            model_instance.JobID = lastjobid + 1
+            model_instance.JobID = generate_JobID()
             model_instance.CurrentStep = "1"
             model_instance.Successful = True
             model_instance.save()
@@ -37,15 +37,12 @@ def upload(request):
     return render(request, 'csearch/upload.html', {'form': form})
 
 def smiles(request):
+    clientStatistics(request)
     if request.method == 'POST':
         form = SmilesForm(request.POST, request.FILES)
         if form.is_valid():
-            try:
-                lastjobid = CSearchJob.objects.last().id
-            except AttributeError:
-                lastjobid = 0
             model_instance = form.save(commit=False)
-            model_instance.JobID = lastjobid + 1
+            model_instance.JobID = generate_JobID()
             model_instance.CurrentStep = "1"
             model_instance.Successful = True
             model_instance.save()
@@ -58,6 +55,7 @@ def smiles(request):
 
 
 def parameters_cstype(request, JobID):
+    clientStatistics(request)
     item = get_object_or_404(CSearchJob, JobID=JobID)
     if request.method == 'POST':
         form = SearchTypeForm(request.POST, instance=item)
@@ -78,7 +76,7 @@ def parameters_cstype(request, JobID):
     return render(request, 'csearch/parameters.html', {'form': form, 'JobID': JobID})
 
 def parameters_random(request, JobID):
-
+    clientStatistics(request)
     item = get_object_or_404(CSearchJob, JobID=JobID)
     if request.method == 'POST':
         form = RandomSearchForm(request.POST, instance=item)
@@ -95,25 +93,29 @@ def parameters_random(request, JobID):
     return render(request, 'csearch/parameters_random.html', {'form': form, 'JobID': JobID})
 
 def parameters_replica(request, JobID):
-
+    clientStatistics(request)
     return render(request, 'csearch/parameters_replica.html', {'JobID': JobID})
 
 def parameters_dft(request, JobID):
-
+    clientStatistics(request)
     return render(request, 'csearch/parameters_dft.html', {'JobID': JobID})
 
 def parameters(request):
+    clientStatistics(request)
     return render(request, 'csearch/parameters_doc.html')
 
 def review(request, JobID):
+    clientStatistics(request)
     item = get_object_or_404(CSearchJob, JobID=JobID)
     return render(request, 'csearch/review.html', {'JobID': JobID, 'Item': item})
 
 def review_doc(request):
+    clientStatistics(request)
     return render(request, 'csearch/review_doc.html')
 
 
 def results(request, JobID, JobType='csearch'):
+    clientStatistics(request)
     # if the job hasn't been started, start the job.
     # if the job is running, check every 5 seconds.
     # if the job has finished, display the results.
@@ -169,7 +171,7 @@ def results(request, JobID, JobType='csearch'):
         return render(request, 'csearch/results_error.html', {'JobID': JobID, 'Item': item})
 
 def results_doc(request):
-
+    clientStatistics(request)
     if request.method == 'POST':
         # user filled form
         form = QueryForm(request.POST)
@@ -193,6 +195,7 @@ def results_doc(request):
     return render(request, 'csearch/results_doc.html', {'form': form})
 
 def reclustering(request, JobID):
+    clientStatistics(request)
     # if the job hasn't been started, start the job.
     # if the job is running, check every 5 seconds.
     # if the job has finished, display the results.
@@ -234,7 +237,7 @@ def reclustering(request, JobID):
 
 
 def reclustering_doc(request):
-
+    clientStatistics(request)
     if request.method == 'POST':
         # user filled form
         form = QueryForm(request.POST)
@@ -258,6 +261,7 @@ def reclustering_doc(request):
     return render(request, 'csearch/reclustering_doc.html', {'form': form})
 
 def download(request, JobID, JobType='csearch'):
+    clientStatistics(request)
     item = get_object_or_404(CSearchJob, JobID=JobID)
 
     if item.CurrentStatus == '2':
@@ -284,6 +288,21 @@ def get_job_dir(JobID, JobType='csearch'):
 
     return job_dir
 
+def generate_JobID(module=AllJobIDs):
+    try:
+        lastjobid = module.objects.last().id
+    except AttributeError:
+        lastjobid = 0
+    JobID = lastjobid + 1
+
+    # register that job
+    newjob = module.objects.create()
+    newjob.JobID = JobID
+    newjob.JobType = 'csearch'
+    newjob.save()
+
+    return JobID
+
 def results_xyz(request, JobID, Ith, JobType='csearch'):
     """
 
@@ -292,7 +311,7 @@ def results_xyz(request, JobID, Ith, JobType='csearch'):
     :param Ith: the ith molecule from top
     :return:
     """
-
+    clientStatistics(request)
     job_dir = get_job_dir(JobID)
     xyzfile = '%s/%s-%s/xyz/CSearch_%s_%s-%s.xyz' % (job_dir, JobType, JobID, Ith, JobType, JobID)
 
@@ -304,6 +323,7 @@ def inputcoor(request, JobID, JobType='csearch'):
     """
     convert input files to xyz and show
     """
+    clientStatistics(request)
     item = get_object_or_404(CSearchJob, JobID=JobID)
     # convert smi to xyz
     jobmanger = JobManagement()
