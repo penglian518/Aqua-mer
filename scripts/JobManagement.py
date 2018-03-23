@@ -1,6 +1,7 @@
 import os, shutil, subprocess, logging
 from .PhreeqcPrepare import PhreeqcPrepare
 from .QMCalculationPrepare import QMCalculationPrepare
+from django.core.mail import send_mail
 
 class JobManagement:
     def __init__(self):
@@ -297,6 +298,7 @@ class JobManagement:
 
         qmclac = QMCalculationPrepare()
 
+        # generate the conf dict
         try:
             conf = qmclac.gen_conf_dict(obj)
             obj.Successful = True
@@ -305,8 +307,14 @@ class JobManagement:
             obj.CurrentStatus = '3'
             obj.Successful = False
 
+        # generate the input files
         try:
-            inp = qmclac.gen_g09input(conf)
+            if obj.QMSoftware in ['Gaussian']:
+                inp = qmclac.gen_g09input(conf)
+            elif obj.QMSoftware in ['NWChem']:
+                inp = qmclac.gen_NWinput(conf)
+            elif obj.QMSoftware in ['Arrows']:
+                inp = qmclac.gen_Arrowsinput(conf)
             obj.Successful = True
         except Exception as e:
             obj.FailedReason = 'Could not generate input file for %s' % JobType
@@ -316,7 +324,12 @@ class JobManagement:
 
         try:
             # write input file
-            fout = open('%s/%s-%s.com' % (job_dir, JobType, obj.JobID), 'w')
+            if obj.QMSoftware in ['Gaussian']:
+                fout = open('%s/%s-%s.com' % (job_dir, JobType, obj.JobID), 'w')
+            elif obj.QMSoftware in ['NWChem']:
+                fout = open('%s/%s-%s.nw' % (job_dir, JobType, obj.JobID), 'w')
+            elif obj.QMSoftware in ['Arrows']:
+                fout = open('%s/%s-%s.arrows' % (job_dir, JobType, obj.JobID), 'w')
             fout.write(inp)
             fout.close()
 
@@ -326,6 +339,22 @@ class JobManagement:
             obj.FailedReason = 'Could not write the input file for %s.' % JobType
             obj.CurrentStatus = '3'
             obj.Successful = False
+
+        if obj.QMSoftware in ['Arrows']:
+            mail_subject = '%s_%s' % (JobType, obj.JobID)
+            from_address = 'plian@utk.edu'
+            to_address = ['arrows@emsl.pnnl.gov']
+            try:
+                send_mail(mail_subject, inp, from_address, to_address, fail_silently=False)
+                obj.Successful = True
+                obj.CurrentStatus = '1'
+            except Exception as e:
+                obj.FailedReason = 'Could not send emails for %s_%s. (%s)' % (JobType, obj.JobID, e)
+                obj.CurrentStatus = '3'
+                obj.Successful = False
+
+
+
 
         obj.save()
         return
@@ -340,13 +369,5 @@ class JobManagement:
         except:
             pass
 
-        phreeqc = PhreeqcPrepare()
-        try:
-            phreeqc.collectResults(obj=obj, outdir=job_dir)
-            obj.Successful = True
-        except:
-            print 'Could not collect the speciation data from the output file.'
-
-        obj.save()
         return
 

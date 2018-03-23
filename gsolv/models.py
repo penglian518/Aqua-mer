@@ -20,6 +20,7 @@ class GSolvJob(models.Model):
     QMSoftwares = (
         ('Gaussian', 'Gaussian'),
         ('NWChem', 'NWChem'),
+        ('Arrows', 'EMSL Arrows (online)'),
     )
 
     FileTypes = (
@@ -30,9 +31,10 @@ class GSolvJob(models.Model):
     )
 
     QMCalTypes = (
-        ('Single Point Energy', 'Single Point Energy'),
-        ('Geometry Optimization', 'Geometry Optimization'),
-        ('Frequencies', 'Frequencies'),
+        ('Opt-Freq', 'Optimization and Frequencies'),
+        ('Opt', 'Geometry Optimization'),
+        ('Freq', 'Frequencies'),
+        ('Energy', 'Single Point Energy'),
     )
 
     QMFunctionals = (
@@ -49,7 +51,6 @@ class GSolvJob(models.Model):
 
     QMCoordinateFormats = (
         ('Cartesian', 'Cartesian'),
-        ('Z-Matrix', 'Z-Matrix'),
     )
 
     QMSolvationModels = (
@@ -61,9 +62,10 @@ class GSolvJob(models.Model):
     )
 
     QMCavitySurfaces = (
-        ('VDW', 'VDW'),
-        ('SAS', 'SAS'),
-        ('SES', 'SES'),
+        ('Default', 'Software Default'),
+        ('SAS', 'Solvent Accessible Surface'),
+        ('SES', 'Solvent Excluding Surface'),
+        ('VDW', 'Van der Waals Surface'),
     )
 
     JobStatus = (
@@ -86,10 +88,10 @@ class GSolvJob(models.Model):
     UploadedFile = models.FileField(upload_to=user_directory_path, blank=True)
     UploadedFileType = models.CharField(max_length=10, choices=FileTypes, default='')
 
-    QMSoftware = models.CharField(max_length=30, choices=QMSoftwares, default='Gaussian')
+    QMSoftware = models.CharField(max_length=30, choices=QMSoftwares, default='Arrows')
 
     QMTitle = models.CharField(max_length=100, blank=True, default='AQUA-MER GSOLV')
-    QMCalType = models.CharField(max_length=30, choices=QMCalTypes, default='Geometry Optimization')
+    QMCalType = models.CharField(max_length=30, choices=QMCalTypes, default='Opt-Freq')
     QMProcessors = models.PositiveIntegerField(blank=True, default=1, validators=[MaxValueValidator(4), MinValueValidator(1)])
     QMMemory = models.PositiveIntegerField(blank=True, default=1)
     QMFunctional = models.CharField(max_length=30, choices=QMFunctionals, default='M06-2X')

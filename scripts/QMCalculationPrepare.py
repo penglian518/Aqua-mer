@@ -1,4 +1,4 @@
-from PLg09 import constants, g09prepare, pbsPrepare, g09checkResults, NWprepare, NWcheckResults
+from PLg09 import constants, g09prepare, pbsPrepare, g09checkResults, NWprepare, NWcheckResults, Arrowsprepare
 import os
 
 class QMCalculationPrepare:
@@ -45,7 +45,7 @@ class QMCalculationPrepare:
             'Pseudo_basis': '',
 
             # similart to Opt, Freq, put all options in braces for 'SCF'
-            'SCF': '(MaxCyc=200)',
+            'SCF': '(MaxCyc=200, Tight)',
             'Integral': 'UltraFine',
             'NoSymm': True,
 
@@ -58,14 +58,39 @@ class QMCalculationPrepare:
             'SCRF_parameters_content_nw': 'Hg 1.55',
 
             # others options could be put here
-            'Others': 'EmpiricalDispersion=D3'
+            'Others': ''
         }
+
+        # optimzation or frequencies
+        if obj.QMCalType in ['Opt-Freq']:
+            step1_qm_conf['Opt'] = '(MaxCyc=100)'
+            step1_qm_conf['Freq'] = True
+        elif obj.QMCalType in ['Opt']:
+            step1_qm_conf['Opt'] = '(MaxCyc=100)'
+            step1_qm_conf['Freq'] = False
+        elif obj.QMCalType in ['Freq']:
+            step1_qm_conf['Opt'] = False
+            step1_qm_conf['Freq'] = True
+        elif obj.QMCalType in ['Energy']:
+            step1_qm_conf['Opt'] = False
+            step1_qm_conf['Freq'] = False
+            step1_qm_conf['Energy'] = True
+            step1_qm_conf['Theory'] = 'dft'
+
+        # solvation model
+        if obj.QMCavitySurface in ['Default']:
+            step1_qm_conf['SCRF_Read'] = False
+            step1_qm_conf['SCRF_parameters_nw'] = ''
+        else:
+            step1_qm_conf['SCRF_Read'] = True
+            step1_qm_conf['SCRF_ReadConf'] = 'Surface=%s\nAlpha=%s' % (obj.QMCavitySurface, str(obj.QMScalingFactor))
+
 
         resource_conf = {
             # number of processors to be used
-            'NProc': '4',
+            'NProc': str(obj.QMProcessors),
             # memory
-            'Mem': '4GB',
+            'Mem': '%sGB' % str(obj.QMMemory),
 
             # chk file name will be the same as the input file
 
@@ -151,4 +176,7 @@ class QMCalculationPrepare:
 
     def gen_NWinput(self, conf):
         NWinput, inp_name = NWprepare.genInputFile(conf)
+        return NWinput
+    def gen_Arrowsinput(self, conf):
+        NWinput = Arrowsprepare.genInputFile(conf)
         return NWinput

@@ -44,7 +44,7 @@
 
     {% if Item.Name == 'gsolv' %}
         <tr><td>Software</td><td>{{ Item.QMSoftware }}</td></tr>
-        <tr><td>Job Title</td><td>{{ Item.Title }}</td></tr>
+        <tr><td>Job Title</td><td>{{ Item.QMTitle }}</td></tr>
         <tr><td>Calculation Type</td><td>{{ Item.QMCalType }}</td></tr>
         <tr><td>Processors</td><td>{{ Item.QMProcessors }}</td></tr>
         <tr><td>Memory</td><td>{{ Item.QMMemory }} GB</td></tr>
@@ -52,7 +52,12 @@
         <tr><td>Basis Set</td><td>{{ Item.QMBasisSet }}</td></tr>
         <tr><td>Charge</td><td>{{ Item.QMCharge }}</td></tr>
         <tr><td>Multiplicity</td><td>{{ Item.QMMultiplicity }}</td></tr>
-        <tr><td></td><td>will show the input file here</td></tr>
+        <tr><td>Solvation Model</td><td>{{ Item.QMSolvationModel }}</td></tr>
+        <tr><td>Solvent</td><td>{{ Item.QMSolvent }}</td></tr>
+        {% if Item.QMCavitySurface != 'Default' %}
+            <tr><td>Cavity Surface</td><td>{{ Item.QMCavitySurface }}</td></tr>
+            <tr><td>Cavity Scalling Factor</td><td>{{ Item.QMScalingFactor }}</td></tr>
+        {% endif %}
     {% endif %}
 
     </tbody>
