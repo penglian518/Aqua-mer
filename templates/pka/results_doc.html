@@ -4,20 +4,20 @@
 
 {% block content %}
 <!-- nav box on the left -->
-{% include 'hgspeci/memu.html' %}
+{% include 'pka/memu.html' %}
 
 <!-- content on the right -->
 <div id="content">
-<div id="title">Step 3. Results</div>
+<div id="title">Step 4. Results</div>
 <div id=main>
 
 
-<div>This page will display the results once the job is finished. If the calculation is still running,
-    it will check automatically every 10 seconds.  </div>
+<div>This page is to display the results of the job. If the calculation is still running,
+    it will check automatically for every 30 seconds.  </div>
 
     <br>
     <br>
-    <div>You can find your job through the Job ID. </div>
+    <div>You can also find the job through the Job ID. </div>
 
     <form enctype="multipart/form-data" method='POST'>
         {% csrf_token %}

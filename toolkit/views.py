@@ -5,6 +5,7 @@ from django.forms import model_to_dict
 
 from .models import ToolkitJob, SmilesForm, UploadForm, CalculationTypeForm
 from csearch.models import CSearchJob
+from gsolv.models import GSolvJob
 from cyshg.models import AllJobIDs
 
 from scripts.JobManagement import JobManagement
@@ -73,7 +74,7 @@ def reviewcoors(request, JobID):
             if model_instance.Name == 'csearch':
                 return redirect('/toolkit/trans/csearch/%s/' % JobID)
             elif model_instance.Name == 'gsolv':
-                return redirect('/gsolv/')
+                return redirect('/toolkit/trans/gsolv/%s/' % JobID)
             elif model_instance.Name == 'pka':
                 return redirect('/pka/')
             elif model_instance.Name == 'logk':
@@ -92,7 +93,9 @@ def trans(request, JobType, JobID):
 
     # copy the job infor to the module
     if JobType in ['csearch']:
-        CSearchJob.objects.create(**item_dict)
+        CSearchJob.objects.update_or_create(**item_dict)
+    elif JobType in ['gsolv']:
+        GSolvJob.objects.update_or_create(**item_dict)
 
     return redirect('/%s/parameters/%s/' % (JobType, JobID))
 

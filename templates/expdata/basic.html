@@ -7,6 +7,25 @@
     } );
 </script>
 
+<h2>Annotation</h2>
+<table id="annotation" class="display compact pure-table">
+    <thead>
+        <tr>
+            <th align="left">Keyword</th>
+            <th align="left">Explanation</th>
+        </tr>
+    </thead>
+        <tbody>
+            <tr><td>Mol ID</td><td>Molecular ID in this database. Click on this ID will lead to the sumary page of this molecule.</td></tr>
+            <tr><td>PubChem ID</td><td>The PubChem CID of this molecule. Click on this ID will lead to the PubChem page of this molecule.</td></tr>
+            <tr><td>CAS</td><td>The CAS number of this molecule. (A proprietary registry number assigned by the Chemical Abstracts Service (CAS) division of the American Chemical Society (ACS).)</td></tr>
+            <tr><td>InChIKey</td><td>The InChI Key of this molucle. (A hashed version of the full International Chemical Identifier (InChI).)</td></tr>
+            <tr><td>SMILES</td><td>The canonical SMILE strucure of this molecule.</td></tr>
+            <tr><td>Note</td><td>A note for this molecule. (DOI of the paper where the results were published.) </td></tr>
+        </tbody>
+</table>
+<br>
+
 <h2>Basic Information</h2>
 <table id="basic" class="display compact pure-table sortable">
     <thead>
@@ -18,10 +37,9 @@
             <th>Mol Weight (g/mol)</th>
             <th>Charge</th>
             <th>CAS</th>
-            <th>InChiKey</th>
+            <th>InChIKey</th>
             <th>SMILES</th>
             <th>IUPAC Name</th>
-            <th>Source</th>
             <th>Note</th>
 
         </tr>
@@ -43,7 +61,6 @@
             <td>{{ p.InChIKey }}</td>
             <td>{{ p.SMILES }}</td>
             <td>{{ p.IUPACName }}</td>
-            <td>{{ p.Source }}</td>
             <td>{{ p.Note }}</td>
         </tr>
     {% endfor %}

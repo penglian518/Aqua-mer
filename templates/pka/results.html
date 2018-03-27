@@ -4,7 +4,7 @@
 
 {% block content %}
 <!-- nav box on the left -->
-{% include 'gsolv/memu.html' %}
+{% include 'pka/memu.html' %}
 
 <!-- content on the right -->
 <div id="content">
@@ -17,7 +17,7 @@
         <p>
             <b>{{ Item.Name }}_{{ Item.JobID }}.com</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/inputfile/{{ Item.JobID }}" ></iframe>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/pka/inputfile/{{ Item.JobID }}" ></iframe>
         </p>
     {% elif Item.QMSoftware == 'NWChem' %}
         <p>The bellow is your input file for {{ Item.QMSoftware }}. The user can do the calculation locally
@@ -25,11 +25,11 @@
         <p>
             <b>{{ Item.Name }}_{{ Item.JobID }}.nw</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/inputfile/{{ Item.JobID }}" ></iframe>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/pka/inputfile/{{ Item.JobID }}" ></iframe>
         </p>
     {% elif Item.QMSoftware == 'Arrows' %}
-        <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/gsolv/download/{{ Item.JobID }}">HERE</a> to download the structure files.</p>
-        <p>You can also redo clustering, click <a href="/gsolv/reclustering/{{ Item.JobID }}">HERE</a>.</p>
+        <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/pka/download/{{ Item.JobID }}">HERE</a> to download the structure files.</p>
+        <p>You can also redo clustering, click <a href="/pka/reclustering/{{ Item.JobID }}">HERE</a>.</p>
     {% endif %}
 
 

@@ -1,0 +1,107 @@
+{% extends 'base_index.html' %}
+{% load static %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'pka/memu.html' %}
+
+
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 1. Upload compounds</div>
+<div id=main>
+    <div>
+        <p>
+            The p<i>K</i><sub>a</sub> calculation uses the following equation,
+            <p><b>A<sup>-</sup> + H<sup>+</sup> ----> HA&nbsp;&nbsp;&nbsp;&nbsp;<i>K</i> = [HA]/[A<sup>-</sup>][H<sup>+</sup>]</b></p>
+            therefore, it requires the user to provide both the <b>deprotonated (A<sup>-</sup>)</b> and
+            the <b>protonated (HA)</b> forms of the compound.
+        </p>
+    </div>
+
+
+    <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST'>
+        {% csrf_token %}
+        <table>
+        {{ form }}
+        <td>
+            <button type="button" onclick="toggleIfrm('ifrmdiv', 'uploaddiv')" class="btn btn-default" style="height:25px;width:100px">Draw it now</button>
+                &nbsp; OR &nbsp;
+            <button type="button" onclick='toggleIfrm("uploaddiv", "ifrmdiv")' class="btn btn-default" style="height:25px;width:140px">Upload coordinates</button>
+        </td>
+        </table>
+
+        <div id="ifrmdiv" style="display:none">
+            <iframe id="ifrm" seamless height="450px" width="900px" src="http://pubchem.ncbi.nlm.nih.gov/edit2/index.html"></iframe>
+        </div>
+
+        <div id="uploaddiv" style="display:none">
+            <iframe id="up" seamless height="120px" width="900px" src="/pka/upload/A/"></iframe>
+        </div>
+
+
+        <br>
+        <br>
+        <table>
+        {{ formP1 }}
+        <td>
+            <button type="button" onclick="toggleIfrm('ifrmdiv1', 'uploaddiv1')" class="btn btn-default" style="height:25px;width:100px">Draw it now</button>
+                &nbsp; OR &nbsp;
+            <button type="button" onclick='toggleIfrm("uploaddiv1", "ifrmdiv1")' class="btn btn-default" style="height:25px;width:140px">Upload coordinates</button>
+        </td>
+        </table>
+
+        <div id="ifrmdiv1" style="display:none">
+            <iframe id="ifrm1" seamless height="450px" width="900px" src="http://pubchem.ncbi.nlm.nih.gov/edit2/index.html"></iframe>
+        </div>
+
+        <div id="uploaddiv1" style="display:none">
+            <iframe id="up1" seamless height="120px" width="900px" src="/pka/upload/HA/"></iframe>
+        </div>
+
+
+        <button type="submit" class="btn btn-default" style="height:25px;width:90px">Next</button>
+    </form>
+    <br>
+    <br>
+
+
+
+</div>
+</div>
+
+
+
+
+<script>
+function toggleIfrm(divID, divID2) {
+    var x = document.getElementById(divID);
+    var y = document.getElementById(divID2);
+
+    if (x.style.display == "none") {
+        x.style.display = "block";
+        if (y.style.display != "none") {
+            y.style.display = "none"
+        };
+    } else {
+        x.style.display = "none";
+    }
+
+
+}
+</script>
+
+<style type="text/css">
+    iframe[seamless]{
+    background-color: transparent;
+    border: 0px none transparent;
+    padding: 0px;
+    overflow: hidden;
+}
+</style>
+
+
+{% endblock %}

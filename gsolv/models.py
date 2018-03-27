@@ -88,7 +88,7 @@ class GSolvJob(models.Model):
     UploadedFile = models.FileField(upload_to=user_directory_path, blank=True)
     UploadedFileType = models.CharField(max_length=10, choices=FileTypes, default='')
 
-    QMSoftware = models.CharField(max_length=30, choices=QMSoftwares, default='Arrows')
+    QMSoftware = models.CharField(max_length=30, choices=QMSoftwares, default='Gaussian')
 
     QMTitle = models.CharField(max_length=100, blank=True, default='AQUA-MER GSOLV')
     QMCalType = models.CharField(max_length=30, choices=QMCalTypes, default='Opt-Freq')
