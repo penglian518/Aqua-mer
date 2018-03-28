@@ -8,7 +8,7 @@ from cyshg.models import AllJobIDs
 from scripts.JobManagement import JobManagement
 from scripts.VistorStatistics import clientStatistics
 import threading
-import base64, os
+import base64, os, datetime, json
 
 # Create your views here.
 
@@ -17,48 +17,83 @@ def index(request):
     clientStatistics(request)
     return render(request, 'pka/index.html')
 
-def upload(request, Mol):
+def start(request):
     clientStatistics(request)
-    if Mol in ['Success', 'success']:
+    # delete empty jobs that longer then 2 hours
+    for j in pKaJob.objects.filter(CurrentStep=0):
+        deltaT = int(datetime.datetime.now().strftime('%s')) - int(j.CreatedDate.strftime('%s'))
+        if deltaT > 3600 * 2:
+            j.delete()
+
+    JobID = generate_JobID()
+    # occupy this JobID for 2 hours
+    SPJob = pKaJob(JobID=JobID)
+    SPJob.save()
+
+    return redirect('/pka/smiles/%d/' % JobID)
+
+def smiles(request, JobID):
+    clientStatistics(request)
+
+    # get job handle
+    try:
+        SPJob = pKaJob.objects.get(JobID=JobID)
+    except:
+        SPJob = pKaJob(JobID=JobID)
+
+    if request.method == 'POST':
+        form = SmilesForm(request.POST, request.FILES, instance=SPJob)
+        formP1 = SmilesFormP1(request.POST, request.FILES, instance=SPJob)
+        if form.is_valid():
+            model_instance = form.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "1"
+            model_instance.Successful = True
+            model_instance.save()
+        if formP1.is_valid():
+            model_instance = formP1.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "1"
+            model_instance.Successful = True
+            model_instance.save()
+        return redirect('/pka/parameters/%d' % int(JobID))
+    else:
+        form = SmilesForm(instance=SPJob)
+        formP1 = SmilesFormP1(instance=SPJob)
+
+    return render(request, 'pka/smiles.html', {'form': form, 'formP1': formP1, 'JobID': JobID})
+
+
+def upload(request, Mol, JobID):
+    clientStatistics(request)
+    if Mol in ['Success', 'success'] and JobID in ['0', 0]:
         return render(request, 'pka/upload_success.html')
 
+    # get job handle
+    try:
+        SPJob = pKaJob.objects.get(JobID=JobID)
+    except:
+        SPJob = pKaJob(JobID=JobID)
+
     if request.method == 'POST':
         if Mol in ['A', 'A-']:
-            form = UploadForm(request.POST, request.FILES)
+            form = UploadForm(request.POST, request.FILES, instance=SPJob)
         elif Mol in ['HA']:
-            form = UploadFormP1(request.POST, request.FILES)
+            form = UploadFormP1(request.POST, request.FILES, instance=SPJob)
         if form.is_valid():
             model_instance = form.save(commit=False)
-            model_instance.JobID = generate_JobID()
+            model_instance.JobID = JobID
             model_instance.CurrentStep = "1"
             model_instance.Successful = True
             model_instance.save()
-            return redirect('/pka/upload/success/')
+            return redirect('/pka/upload/success/0/')
     else:
         if Mol in ['A', 'A-']:
-            form = UploadForm()
+            form = UploadForm(instance=SPJob)
         elif Mol in ['HA']:
-            form = UploadFormP1()
+            form = UploadFormP1(instance=SPJob)
 
     return render(request, 'pka/upload.html', {'form': form})
-
-def smiles(request):
-    clientStatistics(request)
-    if request.method == 'POST':
-        form = SmilesForm(request.POST, request.FILES)
-        formP1 = SmilesFormP1(request.POST, request.FILES)
-        if form.is_valid():
-            model_instance = form.save(commit=False)
-            model_instance.JobID = generate_JobID()
-            model_instance.CurrentStep = "1"
-            model_instance.Successful = True
-            model_instance.save()
-            return redirect('/pka/parameters/%d' % int(model_instance.JobID))
-    else:
-        form = SmilesForm()
-        formP1 = SmilesFormP1()
-
-    return render(request, 'pka/smiles.html', {'form': form, 'formP1': formP1})
 
 def parameters_input(request, JobID):
     clientStatistics(request)
@@ -74,8 +109,13 @@ def parameters_input(request, JobID):
             return redirect('/pka/review/%d' % int(model_instance.JobID))
 
     else:
-        form = pKaInputForm()
-    return render(request, 'pka/parameters_input.html', {'form': form, 'JobID': JobID})
+        form = pKaInputForm(instance=item)
+
+    seqences = ['QMSoftware', 'QMTitle', 'QMCalType', 'QMProcessors', 'QMMemory', 'QMFunctional', 'QMBasisSet',
+                  'QMCharge', 'QMMultiplicity', 'QMCoordinateFormat', 'QMSolvationModel', 'QMSolvent',
+                  'QMCavitySurface', 'QMScalingFactor']
+
+    return render(request, 'pka/parameters_input.html', {'form': form, 'JobID': JobID, 'Fields': seqences})
 
 def parameters(request):
     clientStatistics(request)
@@ -111,7 +151,7 @@ def results(request, JobID, JobType='pka'):
         # generate input file
 
         jobmanger = JobManagement()
-        jobmanger.GsolvJobPrepare(obj=item, JobType='pka')
+        jobmanger.pKaJobPrepare(obj=item, JobType='pka')
 
         # run the calculations in background
         #Exec_thread = threading.Thread(target=jobmanger.pKaJobExec, kwargs={"obj": item})
@@ -169,8 +209,31 @@ def results_doc(request):
 
 
 
+# function for ajax query
+def query_coor(request, JobID):
+    clientStatistics(request)
 
+    response_dict = {'success': True}
+    response_dict['JobID'] = JobID
 
+    obj = get_object_or_404(pKaJob, JobID=JobID)
+
+    HasA = False
+    HasHA = False
+
+    if obj.UploadedFile:
+        HasA = True
+
+    if obj.UploadedFileP1:
+        HasHA = True
+
+    response_dict['HasA'] = HasA
+    response_dict['HasHA'] = HasHA
+
+    #return render(request, 'hgspeci/solutionmaster.html', response_dict)
+    return HttpResponse(json.dumps(response_dict))
+
+# public functions
 def get_job_dir(JobID, JobType='pka'):
     DjangoHome = '/home/p6n/workplace/website/cyshg'
     JobLocation = 'media/%s/jobs' % JobType
@@ -210,7 +273,7 @@ def results_xyz(request, JobID, Ith, JobType='pka'):
     return HttpResponse(fcon, content_type='text/plain')
 
 
-def inputcoor(request, JobID, JobType='pka'):
+def inputcoor(request, JobID, JobType='pka', Mol='A'):
     """
     convert input files to xyz and show
     """
@@ -222,12 +285,16 @@ def inputcoor(request, JobID, JobType='pka'):
 
     # read xyz file
     job_dir = get_job_dir(JobID)
-    xyzfile = '%s/%s-%s.xyz' % (job_dir, JobType, JobID)
+
+    if Mol in ['A']:
+        xyzfile = '%s/A_%s-%s.xyz' % (job_dir, JobType, JobID)
+    elif Mol in ['HA']:
+        xyzfile = '%s/HA_%s-%s.xyz' % (job_dir, JobType, JobID)
     fcon = ''.join(open(xyzfile).readlines())
 
     return HttpResponse(fcon, content_type='text/plain')
 
-def inputfile(request, JobID, JobType='pka'):
+def inputfile(request, JobID, JobType='pka', Mol='A'):
     """
     display the input files
     """
@@ -236,10 +303,16 @@ def inputfile(request, JobID, JobType='pka'):
     # read xyz file
     job_dir = get_job_dir(JobID)
 
-    if item.QMSoftware == 'Gaussian':
-        inputfile = '%s/%s-%s.com' % (job_dir, JobType, JobID)
-    elif item.QMSoftware == 'NWChem':
-        inputfile = '%s/%s-%s.nw' % (job_dir, JobType, JobID)
+    if Mol in ['A']:
+        if item.QMSoftware == 'Gaussian':
+            inputfile = '%s/A_%s-%s.com' % (job_dir, JobType, JobID)
+        elif item.QMSoftware == 'NWChem':
+            inputfile = '%s/A_%s-%s.nw' % (job_dir, JobType, JobID)
+    elif Mol in ['HA']:
+        if item.QMSoftwareP1 == 'Gaussian':
+            inputfile = '%s/HA_%s-%s.com' % (job_dir, JobType, JobID)
+        elif item.QMSoftwareP1 == 'NWChem':
+            inputfile = '%s/HA_%s-%s.nw' % (job_dir, JobType, JobID)
 
     fcon = ''.join(open(inputfile).readlines())
 

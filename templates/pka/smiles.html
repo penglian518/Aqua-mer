@@ -23,7 +23,7 @@
     </div>
 
 
-    <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST'>
+    <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST' onsubmit="return validateForm()">
         {% csrf_token %}
         <table>
         {{ form }}
@@ -39,7 +39,7 @@
         </div>
 
         <div id="uploaddiv" style="display:none">
-            <iframe id="up" seamless height="120px" width="900px" src="/pka/upload/A/"></iframe>
+            <iframe id="up" seamless height="120px" width="900px" src="/pka/upload/A/{{ JobID }}"></iframe>
         </div>
 
 
@@ -59,11 +59,13 @@
         </div>
 
         <div id="uploaddiv1" style="display:none">
-            <iframe id="up1" seamless height="120px" width="900px" src="/pka/upload/HA/"></iframe>
+            <iframe id="up1" seamless height="120px" width="900px" src="/pka/upload/HA/{{ JobID }}"></iframe>
         </div>
 
-
+        <!--
         <button type="submit" class="btn btn-default" style="height:25px;width:90px">Next</button>
+        -->
+        <input type="submit" class="btn btn-default" style="height:25px;width:90px" value="Next">
     </form>
     <br>
     <br>
@@ -73,7 +75,53 @@
 </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+<script>
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+}
 
+function checkCoor() {
+    return $.ajax({
+    url: "/pka/ajax/query_coor/{{ JobID }}/",
+    data: {action: 'query_coor'},
+    dataType: 'json',
+    });
+}
+
+
+function validateForm() {
+    var A_smi = document.forms['pdb']['SmilesStr'].value;
+    var HA_smi = document.forms['pdb']['SmilesStrP1'].value;
+
+    var data = checkCoor();
+    var result = data.success();
+
+    // TODO: waite until result success !
+    var i = 0;
+    do {
+        sleep(500);
+        var s = result.state();
+        i += 1;
+    }
+    while ( s == "pending" && i < 8);
+
+    var A_coor = result.responseJSON.HasA;
+    var HA_coor = result.responseJSON.HasHA;
+
+    if (A_smi == "" && A_coor == false) {
+        alert('Either SMILES or coordinates for A- is required!');
+        return false;
+    }
+}
+
+
+</script>
 
 
 <script>

@@ -13,7 +13,11 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 def user_directory_path(instance, filename):
     # upload to MEDIA_ROOT/csearch/jobs/JOB_ID/
-    return 'gsolv/jobs/{0}/{1}'.format(instance.JobID, filename)
+    return 'pka/jobs/{0}/A_{1}'.format(instance.JobID, filename)
+
+def user_directory_pathP1(instance, filename):
+    # upload to MEDIA_ROOT/csearch/jobs/JOB_ID/
+    return 'pka/jobs/{0}/HA_{1}'.format(instance.JobID, filename)
 
 @python_2_unicode_compatible  # only if you need to support Python 2
 class pKaJob(models.Model):
@@ -107,7 +111,7 @@ class pKaJob(models.Model):
     Note = models.CharField(max_length=100, blank=True, default='')
 
     SmilesStrP1 = models.CharField(max_length=200, blank=True, default='')
-    UploadedFileP1 = models.FileField(upload_to=user_directory_path, blank=True)
+    UploadedFileP1 = models.FileField(upload_to=user_directory_pathP1, blank=True)
     UploadedFileTypeP1 = models.CharField(max_length=10, choices=FileTypes, default='')
 
     QMSoftwareP1 = models.CharField(max_length=30, choices=QMSoftwares, default='Gaussian')
@@ -230,6 +234,7 @@ class pKaInputForm(ModelForm):
             'QMSolvent': _('Solvent'),
             'QMCavitySurface': _('Surface type for the cavity'),
             'QMScalingFactor': _('Scaling factor for the cavity'),
+
             'QMSoftwareP1': _('Software'),
             'QMTitleP1': _('Title of calculations'),
             'QMCalTypeP1': _('Type of calculations'),

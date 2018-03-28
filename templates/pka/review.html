@@ -15,11 +15,16 @@
 <div id="title">Step 3. Review & Submit</div>
 <div id=main>
 
+    <p>Your JobID is <b>{{ JobID }}</b></p>
+    Please review the input parameters for your calculations:
+    <br>
+    <br>
 <table id="basic" class="hover compact pure-table sortable">
     <thead>
         <tr>
             <th>Parameter</th>
-            <th>Value</th>
+            <th>Deprotonated (A-)</th>
+            <th>Prontonated (HA)</th>
         </tr>
     </thead>
 
@@ -27,36 +32,54 @@
     <tr><td>Input Molecule</td>
         <td>
             <div style="height: 150px; width: 250px; position: relative;" class='viewer_3Dmoljs'
-             data-href='/pka/inputcoor/{{ Item.JobID }}'
+             data-href='/pka/inputcoor/{{ Item.JobID }}/A/'
+             data-backgroundcolor='0xffffff' data-type="xyz"
+             data-select1="all" data-style1='stick'></div>
+        </td>
+        <td>
+            <div style="height: 150px; width: 250px; position: relative;" class='viewer_3Dmoljs'
+             data-href='/pka/inputcoor/{{ Item.JobID }}/HA/'
              data-backgroundcolor='0xffffff' data-type="xyz"
              data-select1="all" data-style1='stick'></div>
         </td>
     </tr>
-    <tr><td>JobID</td><td><b>{{ Item.JobID }}</b></td></tr>
-    {% if Item.UploadedFile %}
-        <tr><td>File name</td><td>{{ Item.UploadedFile | filename }}</td></tr>
-        <tr><td>File type</td><td>{{ Item.UploadedFileType }}</td></tr>
-    {% else %}
-        <tr><td>File name</td><td>{{ Item.SmilesStr }}</td></tr>
-        <tr><td>File type</td><td>smi</td></tr>
+
+    {% if Item.UploadedFile and Item.UploadedFileP1 %}
+        <tr><td>File name</td><td>{{ Item.UploadedFile | filename }}</td><td>{{ Item.UploadedFileP1 | filename }}</td></tr>
+        <tr><td>File type</td><td>{{ Item.UploadedFileType }}</td><td>{{ Item.UploadedFileTypeP1 }}</td></tr>
+    {% elif Item.UploadedFile and Item.SmilesStrP1 %}
+        <tr><td>File name</td><td>{{ Item.UploadedFile | filename }}</td><td>{{ Item.SmilesStrP1 }}</td></tr>
+        <tr><td>File type</td><td>{{ Item.UploadedFileType }}</td><td>smi</td></tr>
+    {% elif Item.SmilesStr and Item.UploadedFileP1 %}
+        <tr><td>File name</td><td>{{ Item.SmilesStr }}</td><td>{{ Item.UploadedFileP1 | filename }}</td></tr>
+        <tr><td>File type</td><td>smi</td><td>{{ Item.UploadedFileTypeP1 }}</td></tr>
+    {% elif Item.SmilesStr and Item.SmilesStrP1 %}
+        <tr><td>File name</td><td>{{ Item.SmilesStr }}</td><td>{{ Item.SmilesStrP1 }}</td></tr>
+        <tr><td>File type</td><td>smi</td><td>smi</td></tr>
     {% endif %}
-    <tr><td><br></td><td></td></tr>
+    <tr><td><br></td><td></td><td></td></tr>
 
     {% if Item.Name == 'pka' %}
-        <tr><td>Software</td><td>{{ Item.QMSoftware }}</td></tr>
-        <tr><td>Job Title</td><td>{{ Item.QMTitle }}</td></tr>
-        <tr><td>Calculation Type</td><td>{{ Item.QMCalType }}</td></tr>
-        <tr><td>Processors</td><td>{{ Item.QMProcessors }}</td></tr>
-        <tr><td>Memory</td><td>{{ Item.QMMemory }} GB</td></tr>
-        <tr><td>Functional</td><td>{{ Item.QMFunctional }}</td></tr>
-        <tr><td>Basis Set</td><td>{{ Item.QMBasisSet }}</td></tr>
-        <tr><td>Charge</td><td>{{ Item.QMCharge }}</td></tr>
-        <tr><td>Multiplicity</td><td>{{ Item.QMMultiplicity }}</td></tr>
-        <tr><td>Solvation Model</td><td>{{ Item.QMSolvationModel }}</td></tr>
-        <tr><td>Solvent</td><td>{{ Item.QMSolvent }}</td></tr>
-        {% if Item.QMCavitySurface != 'Default' %}
-            <tr><td>Cavity Surface</td><td>{{ Item.QMCavitySurface }}</td></tr>
-            <tr><td>Cavity Scalling Factor</td><td>{{ Item.QMScalingFactor }}</td></tr>
+        <tr><td>Software</td><td>{{ Item.QMSoftware }}</td><td>{{ Item.QMSoftwareP1 }}</td></tr>
+        <tr><td>Job Title</td><td>{{ Item.QMTitle }}</td><td>{{ Item.QMTitleP1 }}</td></tr>
+        <tr><td>Calculation Type</td><td>{{ Item.QMCalType }}</td><td>{{ Item.QMCalTypeP1 }}</td></tr>
+        <tr><td>Processors</td><td>{{ Item.QMProcessors }}</td><td>{{ Item.QMProcessorsP1 }}</td></tr>
+        <tr><td>Memory</td><td>{{ Item.QMMemory }} GB</td><td>{{ Item.QMMemoryP1 }} GB</td></tr>
+        <tr><td>Functional</td><td>{{ Item.QMFunctional }}</td><td>{{ Item.QMFunctionalP1 }}</td></tr>
+        <tr><td>Basis Set</td><td>{{ Item.QMBasisSet }}</td><td>{{ Item.QMBasisSetP1 }}</td></tr>
+        <tr><td>Charge</td><td>{{ Item.QMCharge }}</td><td>{{ Item.QMChargeP1 }}</td></tr>
+        <tr><td>Multiplicity</td><td>{{ Item.QMMultiplicity }}</td><td>{{ Item.QMMultiplicityP1 }}</td></tr>
+        <tr><td>Solvation Model</td><td>{{ Item.QMSolvationModel }}</td><td>{{ Item.QMSolvationModelP1 }}</td></tr>
+        <tr><td>Solvent</td><td>{{ Item.QMSolvent }}</td><td>{{ Item.QMSolventP1 }}</td></tr>
+        {% if Item.QMCavitySurface != 'Default' and Item.QMCavitySurfaceP1 != 'Default' %}
+            <tr><td>Cavity Surface</td><td>{{ Item.QMCavitySurface }}</td><td>{{ Item.QMCavitySurfaceP1 }}</td></tr>
+            <tr><td>Cavity Scalling Factor</td><td>{{ Item.QMScalingFactor }}</td><td>{{ Item.QMScalingFactorP1 }}</td></tr>
+        {% elif Item.QMCavitySurface != 'Default' and Item.QMCavitySurfaceP1 == 'Default' %}
+            <tr><td>Cavity Surface</td><td>{{ Item.QMCavitySurface }}</td><td>Software Default</td></tr>
+            <tr><td>Cavity Scalling Factor</td><td>{{ Item.QMScalingFactor }}</td><td>Software Default</td></tr>
+        {% elif Item.QMCavitySurface == 'Default' and Item.QMCavitySurfaceP1 != 'Default' %}
+        <tr><td>Cavity Surface</td><td>Software Default</td><td>{{ Item.QMCavitySurfaceP1 }}</td></tr>
+        <tr><td>Cavity Scalling Factor</td><td>Software Default</td><td>{{ Item.QMScalingFactorP1 }}</td></tr>
         {% endif %}
     {% endif %}
 

@@ -10,12 +10,37 @@
 <div id="content">
 <div id="title">Step 2.1 Parameters for p<i>K</i><sub>a</sub> Calculation</div>
 <div id=main>
-
-
+    <p>Your JobID is <b>{{ JobID }}</b></p>
+    Please input QM calculation parameters for each molecule:
+    <br>
+    <br>
     <form enctype="multipart/form-data" method='POST'>
         {% csrf_token %}
+
         <table>
-        {{ form }}
+            <thead>
+                <tr><th>Parameters</th><th>Deprotonated (A-)</th><th>Protonated (HA)</th></tr>
+            </thead>
+
+            <tbody>
+            {% for i in Fields %}
+                {% for field in form.visible_fields %}
+                    {% if field.name == i %}
+                        <tr><td>{{ field.label_tag }}</td><td>{{ field }} {{ field.errors }} {{ field.help_text }}</td>
+                    {% elif field.name == i|add:"P1" %}
+                        <td>{{ field }} {{ field.errors }} {{ field.help_text }}</td></tr>
+                    {% endif %}
+
+                    {# Include the hidden fields in the form #}
+                    {% if forloop.first %}
+                        {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+                    {% endif %}
+
+                {% endfor %}
+            {% endfor %}
+            </tbody>
         </table>
 
         <br>
