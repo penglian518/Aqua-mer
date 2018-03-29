@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
-from .models import pKaJob, UploadForm, QueryForm, SmilesForm, pKaInputForm, UploadFormP1, SmilesFormP1
+from django.forms import model_to_dict
+
+from .models import pKaJob, UploadForm, QueryForm, SmilesForm, pKaInputForm, UploadFormP1, SmilesFormP1, TransToAForm
 from toolkit.models import ToolkitJob
 from cyshg.models import AllJobIDs
 
@@ -64,6 +66,36 @@ def smiles(request, JobID):
 
     return render(request, 'pka/smiles.html', {'form': form, 'formP1': formP1, 'JobID': JobID})
 
+def smiles_single(request, JobID, Mol):
+    clientStatistics(request)
+
+    # get job handle
+    try:
+        SPJob = pKaJob.objects.get(JobID=JobID)
+    except:
+        SPJob = pKaJob(JobID=JobID)
+
+    if request.method == 'POST':
+        if Mol in ['A']:
+            form = SmilesForm(request.POST, request.FILES, instance=SPJob)
+        elif Mol in ['HA']:
+            form = SmilesFormP1(request.POST, request.FILES, instance=SPJob)
+
+        if form.is_valid():
+            model_instance = form.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "1"
+            model_instance.Successful = True
+            model_instance.save()
+            return redirect('/pka/parameters/%d' % int(JobID))
+    else:
+        if Mol in ['A']:
+            form = SmilesForm(instance=SPJob)
+        elif Mol in ['HA']:
+            form = SmilesFormP1(instance=SPJob)
+
+    return_dict = {'form': form, 'JobID': JobID, 'Mol': Mol}
+    return render(request, 'pka/smiles_single.html', return_dict)
 
 def upload(request, Mol, JobID):
     clientStatistics(request)
@@ -96,15 +128,63 @@ def upload(request, Mol, JobID):
 
     return render(request, 'pka/upload.html', {'form': form})
 
-def fromtoolkit(request, JobID):
+def trans2a(request, JobID):
     clientStatistics(request)
     item = get_object_or_404(ToolkitJob, JobID=JobID)
 
+    # get job handle
+    try:
+        SPJob = pKaJob.objects.get(JobID=JobID)
+    except:
+        SPJob = pKaJob(JobID=JobID)
+
     if request.method == 'POST':
-        form = ''
+        form = TransToAForm(request.POST, request.FILES, instance=SPJob)
+        if form.is_valid():
+            model_instance = form.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "1"
+            model_instance.Successful = True
+            model_instance.save()
+            if model_instance.TransToA in ['A']:
+                # copy the data to A
+                model_instance.CurrentStep = item.CurrentStep
+                model_instance.CurrentStatus = item.CurrentStatus
+                model_instance.Name = item.Name
+                model_instance.Successful = item.Successful
+                model_instance.FailedReason = item.FailedReason
 
+                model_instance.SmilesStr = item.SmilesStr
+                model_instance.UploadedFile = item.UploadedFile
+                model_instance.UploadedFileType = item.UploadedFileType
+                model_instance.Note = item.Note
 
-    return
+                model_instance.save()
+
+                #return HttpResponse('upload HA')
+                return redirect('/pka/smiles_single/%s/%s/' % (JobID, 'HA'))
+            elif model_instance.TransToA in ['HA']:
+                # copy the data to HA
+                model_instance.CurrentStep = item.CurrentStep
+                model_instance.CurrentStatus = item.CurrentStatus
+                model_instance.Name = item.Name
+                model_instance.Successful = item.Successful
+                model_instance.FailedReason = item.FailedReason
+
+                model_instance.SmilesStrP1 = item.SmilesStr
+                model_instance.UploadedFileP1 = item.UploadedFile
+                model_instance.UploadedFileTypeP1 = item.UploadedFileType
+                model_instance.NoteP1 = item.Note
+
+                model_instance.save()
+                #return HttpResponse('upload A-')
+                return redirect('/pka/smiles_single/%s/%s/' % (JobID, 'A'))
+            elif model_instance.TransToA in ['None']:
+                return redirect('/pka/start/')
+    else:
+        form = TransToAForm(instance=SPJob)
+
+    return render(request, 'pka/trans2a.html', {'form': form})
 
 
 def parameters_input(request, JobID):

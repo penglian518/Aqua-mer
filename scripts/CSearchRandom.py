@@ -36,6 +36,7 @@ class CSearchRand:
         self.obrotamer = '/home/p6n/anaconda2/bin/obrotamer'
         self.obminimize = '/home/p6n/anaconda2/bin/obminimize'
         self.rdkitrotamer = '/home/p6n/tools/myPythonLib/PLg09/rdkitrotamer.py'
+        self.vmd = '/home/p6n/tools/vmd-1.9.2/bin/vmd'
 
 
     def genRotamers(self, inMol2, outMol2, debug=True):
@@ -190,7 +191,7 @@ class CSearchRand:
         fout.close()
 
         # calc rmsd
-        rmsd_cmd = "vmd -dispdev text -e %s > /dev/null" % tclFile
+        rmsd_cmd = "%s -dispdev text -e %s > /dev/null" % (self.vmd, tclFile)
 
         if debug:
             logging.info('Running: %s\n' % rmsd_cmd)

@@ -79,6 +79,11 @@ class pKaJob(models.Model):
         ('3', 'something wrong'),
     )
 
+    TransToMolecules = (
+        ('A', 'Deprotonated molecule (A-)'),
+        ('HA', 'Protonated molecule (HA)'),
+        ('None', "None of the above, I'll start over."),
+    )
 
     JobID = models.PositiveIntegerField(blank=True, default=0)
     Name = models.CharField(max_length=50, blank=True, default='pka')
@@ -88,7 +93,7 @@ class pKaJob(models.Model):
     FailedReason = models.CharField(max_length=100, blank=True, default='')
     CreatedDate = models.DateTimeField('date created', default=datetime.now())
 
-    FromToolkitToA = models.BooleanField(default=False)
+    TransToA = models.CharField(max_length=10, choices=TransToMolecules, default='')
 
     SmilesStr = models.CharField(max_length=200, blank=True, default='')
     UploadedFile = models.FileField(upload_to=user_directory_path, blank=True)
@@ -200,17 +205,18 @@ class UploadFormP1(ModelForm):
         }
 
 
-class TransForm(ModelForm):
+class TransToAForm(ModelForm):
     class Meta:
         model = pKaJob
-        fields = ['JobID', 'CurrentStep', 'Successful', 'FromToolkitToA']
+        fields = ['JobID', 'CurrentStep', 'Successful', 'TransToA']
         labels = {
-            'FromToolkitToA': _('This project from'),
+            'TransToA': _(''),
         }
         widgets = {
             'JobID': forms.HiddenInput(),
             'CurrentStep': forms.HiddenInput(),
             'Successful': forms.HiddenInput(),
+            'TransToA': forms.RadioSelect,
         }
 
 
@@ -237,7 +243,7 @@ class pKaInputForm(ModelForm):
                   ]
         labels = {
             'QMSoftware': _('Software'),
-            'QMTitle': _('Title of calculations'),
+            'QMTitle': _('Title of calculations (optional)'),
             'QMCalType': _('Type of calculations'),
             'QMProcessors': _('Number of processors (max: 4)'),
             'QMMemory': _('Meory to use (unit: GB, max: 2)'),
@@ -252,7 +258,7 @@ class pKaInputForm(ModelForm):
             'QMScalingFactor': _('Scaling factor for the cavity'),
 
             'QMSoftwareP1': _('Software'),
-            'QMTitleP1': _('Title of calculations'),
+            'QMTitleP1': _('Title of calculations (optional)'),
             'QMCalTypeP1': _('Type of calculations'),
             'QMProcessorsP1': _('Number of processors (max: 4)'),
             'QMMemoryP1': _('Meory to use (unit: GB, max: 2)'),

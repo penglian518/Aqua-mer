@@ -99,7 +99,7 @@ def trans(request, JobType, JobID):
         GSolvJob.objects.update_or_create(**item_dict)
         return redirect('/%s/parameters/%s/' % (JobType, JobID))
     elif JobType in ['pka', 'logk']:
-        return redirect('/%s/fromtoolkit/%s/' % (JobType, JobID))
+        return redirect('/%s/trans2a/%s/' % (JobType, JobID))
 
 
 def get_job_dir(JobID, JobType='toolkit'):
