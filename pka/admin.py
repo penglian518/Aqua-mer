@@ -6,7 +6,7 @@ from .models import pKaJob
 class pKaJobAdmin(admin.ModelAdmin):
     model = pKaJob
 
-    list_display = ('JobID', 'Name', 'CurrentStep', 'CurrentStatus', 'Successful', 'FailedReason', 'CreatedDate',
+    list_display = ('JobID', 'Name', 'CurrentStep', 'CurrentStatus', 'Successful', 'FailedReason', 'CreatedDate', 'FromToolkitToA',
                     'SmilesStr', 'UploadedFile', 'UploadedFileType', 'QMSoftware',
                     'QMTitle', 'QMCalType', 'QMProcessors', 'QMMemory', 'QMFunctional', 'QMBasisSet', 'QMCharge',
                     'QMMultiplicity', 'QMCoordinateFormat', 'QMSolvationModel', 'QMSolvent', 'QMCavitySurface', 'QMScalingFactor', 'Note',

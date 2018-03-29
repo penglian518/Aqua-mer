@@ -88,6 +88,8 @@ class pKaJob(models.Model):
     FailedReason = models.CharField(max_length=100, blank=True, default='')
     CreatedDate = models.DateTimeField('date created', default=datetime.now())
 
+    FromToolkitToA = models.BooleanField(default=False)
+
     SmilesStr = models.CharField(max_length=200, blank=True, default='')
     UploadedFile = models.FileField(upload_to=user_directory_path, blank=True)
     UploadedFileType = models.CharField(max_length=10, choices=FileTypes, default='')
@@ -195,6 +197,20 @@ class UploadFormP1(ModelForm):
             'CurrentStep': forms.HiddenInput(),
             'Successful': forms.HiddenInput(),
             'UploadedFileP1': forms.FileInput(attrs={'required': True}),
+        }
+
+
+class TransForm(ModelForm):
+    class Meta:
+        model = pKaJob
+        fields = ['JobID', 'CurrentStep', 'Successful', 'FromToolkitToA']
+        labels = {
+            'FromToolkitToA': _('This project from'),
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
         }
 
 

@@ -10,6 +10,8 @@ urlpatterns = [
     url(r'^inputcoor/(?P<JobID>[0-9]+)/(?P<Mol>.*)/$', views.inputcoor, name='inputcoor'),
     url(r'^inputfile/(?P<JobID>[0-9]+)/(?P<Mol>.*)/$', views.inputfile, name='inputfile'),
 
+    url(r'^fromtoolkit/(?P<JobID>[0-9]+)/$', views.fromtoolkit, name='fromtoolkit'),
+
     url(r'^parameters/(?P<JobID>[0-9]+)/$', views.parameters_input, name='parameters_input'),
     url(r'^parameters/$', views.parameters, name='parameters'),
 

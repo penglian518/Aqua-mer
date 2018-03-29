@@ -76,9 +76,9 @@ def reviewcoors(request, JobID):
             elif model_instance.Name == 'gsolv':
                 return redirect('/toolkit/trans/gsolv/%s/' % JobID)
             elif model_instance.Name == 'pka':
-                return redirect('/pka/')
+                return redirect('/toolkit/trans/pka/%s' % JobID)
             elif model_instance.Name == 'logk':
-                return redirect('/logk/')
+                return redirect('/toolkit/trans/logk/%s' % JobID)
     else:
         form = CalculationTypeForm()
 
@@ -94,11 +94,12 @@ def trans(request, JobType, JobID):
     # copy the job infor to the module
     if JobType in ['csearch']:
         CSearchJob.objects.update_or_create(**item_dict)
+        return redirect('/%s/parameters/%s/' % (JobType, JobID))
     elif JobType in ['gsolv']:
         GSolvJob.objects.update_or_create(**item_dict)
-
-    return redirect('/%s/parameters/%s/' % (JobType, JobID))
-
+        return redirect('/%s/parameters/%s/' % (JobType, JobID))
+    elif JobType in ['pka', 'logk']:
+        return redirect('/%s/fromtoolkit/%s/' % (JobType, JobID))
 
 
 def get_job_dir(JobID, JobType='toolkit'):

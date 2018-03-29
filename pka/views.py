@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
 from .models import pKaJob, UploadForm, QueryForm, SmilesForm, pKaInputForm, UploadFormP1, SmilesFormP1
+from toolkit.models import ToolkitJob
 from cyshg.models import AllJobIDs
 
 
@@ -94,6 +95,17 @@ def upload(request, Mol, JobID):
             form = UploadFormP1(instance=SPJob)
 
     return render(request, 'pka/upload.html', {'form': form})
+
+def fromtoolkit(request, JobID):
+    clientStatistics(request)
+    item = get_object_or_404(ToolkitJob, JobID=JobID)
+
+    if request.method == 'POST':
+        form = ''
+
+
+    return
+
 
 def parameters_input(request, JobID):
     clientStatistics(request)
