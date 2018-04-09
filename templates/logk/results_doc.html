@@ -1,0 +1,37 @@
+{% extends 'base_index.html' %}
+{% load static %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'logk/memu.html' %}
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 4. Results</div>
+<div id=main>
+
+
+<div>This page is to display the results of the job. If the calculation is still running,
+    it will check automatically for every 30 seconds.  </div>
+
+    <br>
+    <br>
+    <div>You can also find the job through the Job ID. </div>
+
+    <form enctype="multipart/form-data" method='POST'>
+        {% csrf_token %}
+        <table>
+        {{ form }}
+        </table>
+
+        <br>
+        <button type="submit" class="btn btn-default" style="height:25px;width:90px">Find</button>
+
+    </form>
+
+
+
+
+</div></div>
+{% endblock %}

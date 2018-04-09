@@ -1,0 +1,127 @@
+{% extends 'base_index.html' %}
+{% load static %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'logk/memu.html' %}
+
+
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 1. Upload compounds</div>
+<div id=main>
+    <div>
+        <p>
+            The log <i>K</i> calculation uses the following equation,
+            <p><b>M<sup>+</sup> + L<sup>-</sup> ----> ML&nbsp;&nbsp;&nbsp;&nbsp;<i>K</i> = [ML]/[M<sup>+</sup>][L<sup>-</sup>]</b></p>
+            therefore, it requires the user to provide both the <b>ligand (L<sup>-</sup>)</b>, the <b>metal ion (M+)</b> and
+            the <b>complex (ML)</b> forms of the compound.
+        </p>
+    </div>
+
+
+    <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST' onsubmit="return validateForm()">
+        {% csrf_token %}
+        <table>
+        {{ form }}
+        <td>
+            <button type="button" onclick="toggleIfrm('ifrmdiv', 'uploaddiv')" class="btn btn-default" style="height:25px;width:100px">Draw it now</button>
+                &nbsp; OR &nbsp;
+            <button type="button" onclick='toggleIfrm("uploaddiv", "ifrmdiv")' class="btn btn-default" style="height:25px;width:140px">Upload coordinates</button>
+        </td>
+        </table>
+
+        <div id="ifrmdiv" style="display:none">
+            <iframe id="ifrm" seamless height="450px" width="900px" src="http://pubchem.ncbi.nlm.nih.gov/edit2/index.html"></iframe>
+        </div>
+
+        <div id="uploaddiv" style="display:none">
+            <iframe id="up" seamless height="120px" width="900px" src="/logk/upload/{{ Mol }}/{{ JobID }}"></iframe>
+        </div>
+
+
+        <br>
+        <button type="submit" class="btn btn-default" style="height:25px;width:90px">Next</button>
+        <!--
+        <input type="submit" class="btn btn-default" style="height:25px;width:90px" value="Next">
+        -->
+
+    </form>
+    <br>
+    <br>
+
+
+
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+<script>
+function validateForm() {
+    var mol = '{{ Mol }}';
+    if (mol == 'A') {
+        var HA_smi = mol;
+        var A_smi = document.forms['pdb']['SmilesStr'].value;
+    } else if (mol == 'HA') {
+        var A_smi = mol;
+        var HA_smi = document.forms['pdb']['SmilesStrP1'].value;
+    };
+
+    $.ajax({
+        url: "/logk/ajax/query_coor/{{ JobID }}/",
+        data: {action: 'query_coor'},
+        dataType: 'json',
+        success: function(result) {
+
+                //console.log(result);
+                //console.log(result.HasA);
+
+                if (A_smi == "" && result.HasA == false) {
+                    alert('Either SMILES or coordinates for ligand molecule (L-) is required!');
+                    window.location.href = "/logk/smiles_single/{{ JobID }}/{{ Mol }}/";
+                    return false;
+                } else if (HA_smi == "" && result.HasHA == false) {
+                    alert('Either SMILES or coordinates for complex molecule (ML) is required!');
+                    window.location.href = "/logk/smiles_single/{{ JobID }}/{{ Mol }}/";
+                    return false;
+                };
+
+            },
+    });
+
+}
+</script>
+
+
+<script>
+function toggleIfrm(divID, divID2) {
+    var x = document.getElementById(divID);
+    var y = document.getElementById(divID2);
+
+    if (x.style.display == "none") {
+        x.style.display = "block";
+        if (y.style.display != "none") {
+            y.style.display = "none"
+        };
+    } else {
+        x.style.display = "none";
+    }
+
+
+}
+</script>
+
+<style type="text/css">
+    iframe[seamless]{
+    background-color: transparent;
+    border: 0px none transparent;
+    padding: 0px;
+    overflow: hidden;
+}
+</style>
+
+
+{% endblock %}

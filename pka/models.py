@@ -24,7 +24,7 @@ class pKaJob(models.Model):
     QMSoftwares = (
         ('Gaussian', 'Gaussian'),
         ('NWChem', 'NWChem'),
-        ('Arrows', 'EMSL Arrows (online)'),
+        #('Arrows', 'EMSL Arrows (online)'),
     )
 
     FileTypes = (

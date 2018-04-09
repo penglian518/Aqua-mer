@@ -60,7 +60,7 @@ class CSearchJob(models.Model):
     CSearchType = models.CharField(max_length=30, choices=CSearchTypes, default='Random')
 
     RandomForcefield = models.CharField(max_length=30, choices=ForcefieldTypes, default='UFF')
-    RandomNRotamers = models.PositiveIntegerField(blank=True, default=1000)
+    RandomNRotamers = models.PositiveIntegerField(blank=True, default=100)
     RandomNSteps = models.PositiveIntegerField(blank=True, default=2500)
     RandomEPS = models.FloatField(blank=True, default=0.01)
     RandomNMinSamples = models.PositiveIntegerField(blank=True, default=2)

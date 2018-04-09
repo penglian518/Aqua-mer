@@ -539,7 +539,138 @@ class JobManagement:
         obj.save()
         return
 
-    def pKaCollectResults(self, obj, JobType='gsolv'):
+    def pKaCollectResults(self, obj, JobType='pka'):
+        # get basic info
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+
+        try:
+            os.makedirs(job_dir)
+        except:
+            pass
+
+        return
+
+    #### logK ####
+    def LogKJobPrepare(self, obj, JobType='logk'):
+        # get basic info
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+
+        try:
+            os.makedirs(job_dir)
+        except:
+            pass
+
+        qmclac = QMCalculationPrepare()
+
+        # generate the conf dicts
+        try:
+            conf_A, conf_HA = qmclac.gen_conf_dict(obj)
+            obj.Successful = True
+        except:
+            obj.FailedReason = 'Could not generate configuration dict for A_%s_%s.' % (JobType,obj.JobID)
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
+
+        #### generate the input files for conf_A
+        try:
+            if obj.QMSoftware in ['Gaussian']:
+                inp = qmclac.gen_g09input(conf_A)
+            elif obj.QMSoftware in ['NWChem']:
+                inp = qmclac.gen_NWinput(conf_A)
+            elif obj.QMSoftware in ['Arrows']:
+                inp = qmclac.gen_Arrowsinput(conf_A)
+            obj.Successful = True
+        except Exception as e:
+            obj.FailedReason = 'Could not generate input file for A_%s_%s' % (JobType, obj.JobID)
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+            print 'Could not generate input file: %s' % e
+
+        try:
+            # write input file
+            if obj.QMSoftware in ['Gaussian']:
+                fout = open('%s/A_%s-%s.com' % (job_dir, JobType, obj.JobID), 'w')
+            elif obj.QMSoftware in ['NWChem']:
+                fout = open('%s/A_%s-%s.nw' % (job_dir, JobType, obj.JobID), 'w')
+            elif obj.QMSoftware in ['Arrows']:
+                fout = open('%s/A_%s-%s.arrows' % (job_dir, JobType, obj.JobID), 'w')
+            fout.write(inp)
+            fout.close()
+
+            obj.Successful = True
+            obj.CurrentStatus = '2'
+        except:
+            obj.FailedReason = 'Could not write the input file for A_%s_%s.' % (JobType, obj.JobID)
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
+        if obj.QMSoftware in ['Arrows']:
+            mail_subject = 'A_%s_%s' % (JobType, obj.JobID)
+            from_address = 'plian@utk.edu'
+            to_address = ['arrows@emsl.pnnl.gov']
+            try:
+                send_mail(mail_subject, inp, from_address, to_address, fail_silently=False)
+                obj.Successful = True
+                obj.CurrentStatus = '1'
+            except Exception as e:
+                obj.FailedReason = 'Could not send emails for A_%s_%s. (%s)' % (JobType, obj.JobID, e)
+                obj.CurrentStatus = '3'
+                obj.Successful = False
+
+
+        #### generate the input files for conf_HA
+        try:
+            if obj.QMSoftwareP1 in ['Gaussian']:
+                inp = qmclac.gen_g09input(conf_HA)
+            elif obj.QMSoftwareP1 in ['NWChem']:
+                inp = qmclac.gen_NWinput(conf_HA)
+            elif obj.QMSoftwareP1 in ['Arrows']:
+                inp = qmclac.gen_Arrowsinput(conf_HA)
+            obj.Successful = True
+        except Exception as e:
+            obj.FailedReason = 'Could not generate input file for HA_%s_%s' % (JobType, obj.JobID)
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+            print 'Could not generate input file: %s' % e
+
+        try:
+            # write input file
+            if obj.QMSoftwareP1 in ['Gaussian']:
+                fout = open('%s/HA_%s-%s.com' % (job_dir, JobType, obj.JobID), 'w')
+            elif obj.QMSoftwareP1 in ['NWChem']:
+                fout = open('%s/HA_%s-%s.nw' % (job_dir, JobType, obj.JobID), 'w')
+            elif obj.QMSoftwareP1 in ['Arrows']:
+                fout = open('%s/HA_%s-%s.arrows' % (job_dir, JobType, obj.JobID), 'w')
+            fout.write(inp)
+            fout.close()
+
+            obj.Successful = True
+            obj.CurrentStatus = '2'
+        except:
+            obj.FailedReason = 'Could not write the input file for HA_%s_%s.' % (JobType, obj.JobID)
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
+        if obj.QMSoftwareP1 in ['Arrows']:
+            mail_subject = 'HA_%s_%s' % (JobType, obj.JobID)
+            from_address = 'plian@utk.edu'
+            to_address = ['arrows@emsl.pnnl.gov']
+            try:
+                send_mail(mail_subject, inp, from_address, to_address, fail_silently=False)
+                obj.Successful = True
+                obj.CurrentStatus = '1'
+            except Exception as e:
+                obj.FailedReason = 'Could not send emails for HA_%s_%s. (%s)' % (JobType, obj.JobID, e)
+                obj.CurrentStatus = '3'
+                obj.Successful = False
+
+        obj.save()
+        return
+
+    def LogKCollectResults(self, obj, JobType='logk'):
         # get basic info
         JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
         job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
