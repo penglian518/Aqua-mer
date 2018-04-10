@@ -17,14 +17,21 @@
         <p>
             The log <i>K</i> calculation uses the following equation,
             <p><b>M<sup>+</sup> + L<sup>-</sup> ----> ML&nbsp;&nbsp;&nbsp;&nbsp;<i>K</i> = [ML]/[M<sup>+</sup>][L<sup>-</sup>]</b></p>
-            therefore, it requires the user to provide both the <b>ligand (L<sup>-</sup>)</b>, the <b>metal ion (M+)</b> and
+            therefore, it requires the user to provide both the <b>metal ion (M+)</b>, the <b>ligand (L<sup>-</sup>)</b> and
             the <b>complex (ML)</b> forms of the compound.
         </p>
     </div>
-
+    <br>
+    <br>
 
     <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST' onsubmit="return validateForm()">
         {% csrf_token %}
+        <table>
+            {{ formMetal }}
+        </table>
+        <br>
+        <br>
+
         <table>
         {{ form }}
         <td>

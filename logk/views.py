@@ -3,7 +3,7 @@ from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import model_to_dict
 
-from .models import LogKJob, UploadForm, QueryForm, SmilesForm, pKaInputForm, UploadFormP1, SmilesFormP1, TransToAForm
+from .models import LogKJob, UploadForm, QueryForm, SmilesForm, paraInputForm, UploadFormP1, SmilesFormP1, TransToAForm, MetalForm
 from toolkit.models import ToolkitJob
 from cyshg.models import AllJobIDs
 
@@ -47,6 +47,7 @@ def smiles(request, JobID):
     if request.method == 'POST':
         form = SmilesForm(request.POST, request.FILES, instance=SPJob)
         formP1 = SmilesFormP1(request.POST, request.FILES, instance=SPJob)
+        formMetal = MetalForm(request.POST, request.FILES, instance=SPJob)
         if form.is_valid():
             model_instance = form.save(commit=False)
             model_instance.JobID = JobID
@@ -59,12 +60,19 @@ def smiles(request, JobID):
             model_instance.CurrentStep = "1"
             model_instance.Successful = True
             model_instance.save()
+        if formMetal.is_valid():
+            model_instance = formMetal.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "1"
+            model_instance.Successful = True
+            model_instance.save()
         return redirect('/logk/parameters/%d' % int(JobID))
     else:
         form = SmilesForm(instance=SPJob)
         formP1 = SmilesFormP1(instance=SPJob)
+        formMetal = MetalForm(instance=SPJob)
 
-    return render(request, 'logk/smiles.html', {'form': form, 'formP1': formP1, 'JobID': JobID})
+    return render(request, 'logk/smiles.html', {'form': form, 'formP1': formP1, 'formMetal': MetalForm, 'JobID': JobID})
 
 def smiles_single(request, JobID, Mol):
     clientStatistics(request)
@@ -76,10 +84,12 @@ def smiles_single(request, JobID, Mol):
         SPJob = LogKJob(JobID=JobID)
 
     if request.method == 'POST':
-        if Mol in ['A']:
+        if Mol in ['A', 'L']:
             form = SmilesForm(request.POST, request.FILES, instance=SPJob)
-        elif Mol in ['HA']:
+        elif Mol in ['HA', 'ML']:
             form = SmilesFormP1(request.POST, request.FILES, instance=SPJob)
+
+        formMetal = MetalForm(request.POST, request.FILES, instance=SPJob)
 
         if form.is_valid():
             model_instance = form.save(commit=False)
@@ -87,14 +97,21 @@ def smiles_single(request, JobID, Mol):
             model_instance.CurrentStep = "1"
             model_instance.Successful = True
             model_instance.save()
-            return redirect('/logk/parameters/%d' % int(JobID))
+        if formMetal.is_valid():
+            model_instance = formMetal.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "1"
+            model_instance.Successful = True
+            model_instance.save()
+        return redirect('/logk/parameters/%d' % int(JobID))
     else:
         if Mol in ['A']:
             form = SmilesForm(instance=SPJob)
         elif Mol in ['HA']:
             form = SmilesFormP1(instance=SPJob)
+        formMetal = MetalForm(instance=SPJob)
 
-    return_dict = {'form': form, 'JobID': JobID, 'Mol': Mol}
+    return_dict = {'form': form, 'formMetal': MetalForm, 'JobID': JobID, 'Mol': Mol}
     return render(request, 'logk/smiles_single.html', return_dict)
 
 def upload(request, Mol, JobID):
@@ -109,9 +126,9 @@ def upload(request, Mol, JobID):
         SPJob = LogKJob(JobID=JobID)
 
     if request.method == 'POST':
-        if Mol in ['A', 'A-']:
+        if Mol in ['A', 'A-', 'L', 'L-']:
             form = UploadForm(request.POST, request.FILES, instance=SPJob)
-        elif Mol in ['HA']:
+        elif Mol in ['HA', 'ML']:
             form = UploadFormP1(request.POST, request.FILES, instance=SPJob)
         if form.is_valid():
             model_instance = form.save(commit=False)
@@ -121,9 +138,9 @@ def upload(request, Mol, JobID):
             model_instance.save()
             return redirect('/logk/upload/success/0/')
     else:
-        if Mol in ['A', 'A-']:
+        if Mol in ['A', 'A-', 'L', 'L-']:
             form = UploadForm(instance=SPJob)
-        elif Mol in ['HA']:
+        elif Mol in ['HA', 'ML']:
             form = UploadFormP1(instance=SPJob)
 
     return render(request, 'logk/upload.html', {'form': form})
@@ -191,7 +208,7 @@ def parameters_input(request, JobID):
     clientStatistics(request)
     item = get_object_or_404(LogKJob, JobID=JobID)
     if request.method == 'POST':
-        form = pKaInputForm(request.POST, instance=item)
+        form = paraInputForm(request.POST, instance=item)
         if form.is_valid():
             model_instance = form.save(commit=False)
             model_instance.JobID = JobID
@@ -201,7 +218,7 @@ def parameters_input(request, JobID):
             return redirect('/logk/review/%d' % int(model_instance.JobID))
 
     else:
-        form = pKaInputForm(instance=item)
+        form = paraInputForm(instance=item)
 
     seqences = ['QMSoftware', 'QMTitle', 'QMCalType', 'QMProcessors', 'QMMemory', 'QMFunctional', 'QMBasisSet',
                   'QMCharge', 'QMMultiplicity', 'QMCoordinateFormat', 'QMSolvationModel', 'QMSolvent',
@@ -378,10 +395,12 @@ def inputcoor(request, JobID, JobType='logk', Mol='A'):
     # read xyz file
     job_dir = get_job_dir(JobID)
 
-    if Mol in ['A']:
-        xyzfile = '%s/A_%s-%s.xyz' % (job_dir, JobType, JobID)
-    elif Mol in ['HA']:
-        xyzfile = '%s/HA_%s-%s.xyz' % (job_dir, JobType, JobID)
+    if Mol in ['L', 'A']:
+        xyzfile = '%s/L_%s-%s.xyz' % (job_dir, JobType, JobID)
+    elif Mol in ['ML', 'HA']:
+        xyzfile = '%s/ML_%s-%s.xyz' % (job_dir, JobType, JobID)
+    elif Mol in ['M']:
+        xyzfile = '%s/M_%s-%s.xyz' % (job_dir, JobType, JobID)
     fcon = ''.join(open(xyzfile).readlines())
 
     return HttpResponse(fcon, content_type='text/plain')
@@ -395,16 +414,21 @@ def inputfile(request, JobID, JobType='logk', Mol='A'):
     # read xyz file
     job_dir = get_job_dir(JobID)
 
-    if Mol in ['A']:
+    if Mol in ['L', 'A']:
         if item.QMSoftware == 'Gaussian':
-            inputfile = '%s/A_%s-%s.com' % (job_dir, JobType, JobID)
+            inputfile = '%s/L_%s-%s.com' % (job_dir, JobType, JobID)
         elif item.QMSoftware == 'NWChem':
-            inputfile = '%s/A_%s-%s.nw' % (job_dir, JobType, JobID)
-    elif Mol in ['HA']:
+            inputfile = '%s/L_%s-%s.nw' % (job_dir, JobType, JobID)
+    elif Mol in ['ML', 'HA']:
         if item.QMSoftwareP1 == 'Gaussian':
-            inputfile = '%s/HA_%s-%s.com' % (job_dir, JobType, JobID)
+            inputfile = '%s/ML_%s-%s.com' % (job_dir, JobType, JobID)
         elif item.QMSoftwareP1 == 'NWChem':
-            inputfile = '%s/HA_%s-%s.nw' % (job_dir, JobType, JobID)
+            inputfile = '%s/ML_%s-%s.nw' % (job_dir, JobType, JobID)
+    elif Mol in ['M']:
+        if item.QMSoftwareM == 'Gaussian':
+            inputfile = '%s/M_%s-%s.com' % (job_dir, JobType, JobID)
+        elif item.QMSoftwareM == 'NWChem':
+            inputfile = '%s/M_%s-%s.nw' % (job_dir, JobType, JobID)
 
     fcon = ''.join(open(inputfile).readlines())
 

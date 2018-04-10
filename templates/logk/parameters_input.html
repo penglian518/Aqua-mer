@@ -19,7 +19,7 @@
 
         <table>
             <thead>
-                <tr><th>Parameters</th><th>Ligand (L-)</th><th>Complex (ML)</th></tr>
+                <tr><th>Parameters</th><th>Ligand (L-)</th><th>Complex (ML)</th><th>Metal (M+)</th></tr>
             </thead>
 
             <tbody>
@@ -28,6 +28,8 @@
                     {% if field.name == i %}
                         <tr><td>{{ field.label_tag }}</td><td>{{ field }} {{ field.errors }} {{ field.help_text }}</td>
                     {% elif field.name == i|add:"P1" %}
+                        <td>{{ field }} {{ field.errors }} {{ field.help_text }}</td>
+                    {% elif field.name == i|add:"M" %}
                         <td>{{ field }} {{ field.errors }} {{ field.help_text }}</td></tr>
                     {% endif %}
 

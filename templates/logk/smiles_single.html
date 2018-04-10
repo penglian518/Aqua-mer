@@ -21,10 +21,17 @@
             the <b>complex (ML)</b> forms of the compound.
         </p>
     </div>
-
+    <br>
+    <br>
 
     <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST' onsubmit="return validateForm()">
         {% csrf_token %}
+        <table>
+            {{ formMetal }}
+        </table>
+        <br>
+        <br>
+
         <table>
         {{ form }}
         <td>

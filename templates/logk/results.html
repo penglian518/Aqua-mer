@@ -17,7 +17,7 @@
         <p>Due to the license issue, only the input file for {{ Item.QMSoftware }} is provide. The user can do the calculation locally
         and upload the output file to do the analysis online.</p>
         <p>
-            <b>A_{{ Item.Name }}_{{ Item.JobID }}.com</b><br>
+            <b>L_{{ Item.Name }}_{{ Item.JobID }}.com</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
             <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/inputfile/{{ Item.JobID }}/A/" ></iframe>
         </p>
@@ -25,7 +25,7 @@
         <p>The bellow is your input file for {{ Item.QMSoftware }}. The user can do the calculation locally
         and upload the output file to do the analysis online.</p>
         <p>
-            <b>A_{{ Item.Name }}_{{ Item.JobID }}.nw</b><br>
+            <b>L_{{ Item.Name }}_{{ Item.JobID }}.nw</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
             <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/inputfile/{{ Item.JobID }}/A/" ></iframe>
         </p>
@@ -42,7 +42,7 @@
         <p>Due to the license issue, only the input file for {{ Item.QMSoftwareP1 }} is provide. The user can do the calculation locally
         and upload the output file to do the analysis online.</p>
         <p>
-            <b>HA_{{ Item.Name }}_{{ Item.JobID }}.com</b><br>
+            <b>ML_{{ Item.Name }}_{{ Item.JobID }}.com</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
             <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/inputfile/{{ Item.JobID }}/HA/" ></iframe>
         </p>
@@ -50,11 +50,35 @@
         <p>The bellow is your input file for {{ Item.QMSoftwareP1 }}. The user can do the calculation locally
         and upload the output file to do the analysis online.</p>
         <p>
-            <b>HA_{{ Item.Name }}_{{ Item.JobID }}.nw</b><br>
+            <b>ML_{{ Item.Name }}_{{ Item.JobID }}.nw</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
             <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/inputfile/{{ Item.JobID }}/HA/" ></iframe>
         </p>
     {% elif Item.QMSoftwareP1 == 'Arrows' %}
+        <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/logk/download/{{ Item.JobID }}">HERE</a> to download the structure files.</p>
+        <p>You can also redo clustering, click <a href="/logk/reclustering/{{ Item.JobID }}">HERE</a>.</p>
+    {% endif %}
+
+
+    <h3>Input file for <i>metal ion (M+)</i> molecule:</b></h3>
+
+    {% if Item.QMSoftwareM == 'Gaussian' %}
+        <p>Due to the license issue, only the input file for {{ Item.QMSoftwareM }} is provide. The user can do the calculation locally
+        and upload the output file to do the analysis online.</p>
+        <p>
+            <b>M_{{ Item.Name }}_{{ Item.JobID }}.com</b><br>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/inputfile/{{ Item.JobID }}/M/" ></iframe>
+        </p>
+    {% elif Item.QMSoftwareM == 'NWChem' %}
+        <p>The bellow is your input file for {{ Item.QMSoftwareM }}. The user can do the calculation locally
+        and upload the output file to do the analysis online.</p>
+        <p>
+            <b>M_{{ Item.Name }}_{{ Item.JobID }}.nw</b><br>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/inputfile/{{ Item.JobID }}/M/" ></iframe>
+        </p>
+    {% elif Item.QMSoftwareM == 'Arrows' %}
         <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/logk/download/{{ Item.JobID }}">HERE</a> to download the structure files.</p>
         <p>You can also redo clustering, click <a href="/logk/reclustering/{{ Item.JobID }}">HERE</a>.</p>
     {% endif %}

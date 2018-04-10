@@ -22,18 +22,25 @@ class JobManagement:
         except:
             pass
         if JobType in ['pka', 'logk']:
+            if JobType in ['pka']:
+                ligand_name = 'A'
+                complex_name = 'HA'
+            elif JobType in ['logk']:
+                ligand_name = 'L'
+                complex_name = 'ML'
+
             if obj.UploadedFile:
                 file_name = os.path.basename(obj.UploadedFile.path)
                 file_type = obj.UploadedFileType
 
                 uploaded_file = '%s/%s' % (job_dir, file_name)
-                input_file = '%s/A_%s.%s' % (job_dir, mol_name, file_type)
+                input_file = '%s/%s_%s.%s' % (job_dir, ligand_name, mol_name, file_type)
                 # copy input file to input.file_type
                 shutil.copy(uploaded_file, input_file)
 
                 # convert smi to xyz file
                 if file_type not in ['xyz']:
-                    cmd = '%s -i%s %s -O %s/A_%s.xyz' % (self.obabel, file_type, input_file, job_dir, mol_name)
+                    cmd = '%s -i%s %s -O %s/%s_%s.xyz' % (self.obabel, file_type, input_file, job_dir, ligand_name, mol_name)
                     cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                     out, err = cmd.communicate()
             if obj.UploadedFileP1:
@@ -41,35 +48,44 @@ class JobManagement:
                 file_type = obj.UploadedFileTypeP1
 
                 uploaded_file = '%s/%s' % (job_dir, file_name)
-                input_file = '%s/HA_%s.%s' % (job_dir, mol_name, file_type)
+                input_file = '%s/%s_%s.%s' % (job_dir, complex_name, mol_name, file_type)
                 # copy input file to input.file_type
                 shutil.copy(uploaded_file, input_file)
 
                 # convert smi to xyz file
                 if file_type not in ['xyz']:
-                    cmd = '%s -i%s %s -O %s/HA_%s.xyz' % (self.obabel, file_type, input_file, job_dir, mol_name)
+                    cmd = '%s -i%s %s -O %s/%s_%s.xyz' % (self.obabel, file_type, input_file, job_dir, complex_name, mol_name)
                     cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                     out, err = cmd.communicate()
             if obj.SmilesStr:
                 file_type = 'smi'
 
-                input_file = '%s/A_%s.%s' % (job_dir, mol_name, file_type)
+                input_file = '%s/%s_%s.%s' % (job_dir, ligand_name, mol_name, file_type)
                 # write the smiles string to molecule.smi file
                 open(input_file, 'w').write(obj.SmilesStr)
                 # convert smi to xyz file
-                cmd = '%s -i%s %s -O %s/A_%s.xyz --gen3D' % (self.obabel, file_type, input_file, job_dir, mol_name)
+                cmd = '%s -i%s %s -O %s/%s_%s.xyz --gen3D' % (self.obabel, file_type, input_file, job_dir, ligand_name, mol_name)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             if obj.SmilesStrP1:
                 file_type = 'smi'
 
-                input_file = '%s/HA_%s.%s' % (job_dir, mol_name, file_type)
+                input_file = '%s/%s_%s.%s' % (job_dir, complex_name, mol_name, file_type)
                 # write the smiles string to molecule.smi file
                 open(input_file, 'w').write(obj.SmilesStrP1)
                 # convert smi to xyz file
-                cmd = '%s -i%s %s -O %s/HA_%s.xyz --gen3D' % (self.obabel, file_type, input_file, job_dir, mol_name)
+                cmd = '%s -i%s %s -O %s/%s_%s.xyz --gen3D' % (self.obabel, file_type, input_file, job_dir, complex_name, mol_name)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
+
+            if JobType in ['logk']:
+                input_file = '%s/M_%s.xyz' % (job_dir, mol_name)
+
+                # string in xyz file
+                M_coor = "1\n\n%s 0.0 0.0 0.0\n" % obj.QMMetal[:2]
+                # write the smiles string to molecule.smi file
+                open(input_file, 'w').write(M_coor)
+
         else:
             if obj.UploadedFile:
                 file_name = os.path.basename(obj.UploadedFile.path)
@@ -566,25 +582,25 @@ class JobManagement:
 
         # generate the conf dicts
         try:
-            conf_A, conf_HA = qmclac.gen_conf_dict(obj)
+            conf_L, conf_ML, conf_M = qmclac.gen_conf_dict(obj)
             obj.Successful = True
         except:
-            obj.FailedReason = 'Could not generate configuration dict for A_%s_%s.' % (JobType,obj.JobID)
+            obj.FailedReason = 'Could not generate configuration dict for L_%s_%s.' % (JobType,obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
 
 
-        #### generate the input files for conf_A
+        #### generate the input files for conf_L
         try:
             if obj.QMSoftware in ['Gaussian']:
-                inp = qmclac.gen_g09input(conf_A)
+                inp = qmclac.gen_g09input(conf_L)
             elif obj.QMSoftware in ['NWChem']:
-                inp = qmclac.gen_NWinput(conf_A)
+                inp = qmclac.gen_NWinput(conf_L)
             elif obj.QMSoftware in ['Arrows']:
-                inp = qmclac.gen_Arrowsinput(conf_A)
+                inp = qmclac.gen_Arrowsinput(conf_L)
             obj.Successful = True
         except Exception as e:
-            obj.FailedReason = 'Could not generate input file for A_%s_%s' % (JobType, obj.JobID)
+            obj.FailedReason = 'Could not generate input file for L_%s_%s' % (JobType, obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
             print 'Could not generate input file: %s' % e
@@ -592,23 +608,23 @@ class JobManagement:
         try:
             # write input file
             if obj.QMSoftware in ['Gaussian']:
-                fout = open('%s/A_%s-%s.com' % (job_dir, JobType, obj.JobID), 'w')
+                fout = open('%s/L_%s-%s.com' % (job_dir, JobType, obj.JobID), 'w')
             elif obj.QMSoftware in ['NWChem']:
-                fout = open('%s/A_%s-%s.nw' % (job_dir, JobType, obj.JobID), 'w')
+                fout = open('%s/L_%s-%s.nw' % (job_dir, JobType, obj.JobID), 'w')
             elif obj.QMSoftware in ['Arrows']:
-                fout = open('%s/A_%s-%s.arrows' % (job_dir, JobType, obj.JobID), 'w')
+                fout = open('%s/L_%s-%s.arrows' % (job_dir, JobType, obj.JobID), 'w')
             fout.write(inp)
             fout.close()
 
             obj.Successful = True
             obj.CurrentStatus = '2'
         except:
-            obj.FailedReason = 'Could not write the input file for A_%s_%s.' % (JobType, obj.JobID)
+            obj.FailedReason = 'Could not write the input file for L_%s_%s.' % (JobType, obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
 
         if obj.QMSoftware in ['Arrows']:
-            mail_subject = 'A_%s_%s' % (JobType, obj.JobID)
+            mail_subject = 'L_%s_%s' % (JobType, obj.JobID)
             from_address = 'plian@utk.edu'
             to_address = ['arrows@emsl.pnnl.gov']
             try:
@@ -616,22 +632,22 @@ class JobManagement:
                 obj.Successful = True
                 obj.CurrentStatus = '1'
             except Exception as e:
-                obj.FailedReason = 'Could not send emails for A_%s_%s. (%s)' % (JobType, obj.JobID, e)
+                obj.FailedReason = 'Could not send emails for L_%s_%s. (%s)' % (JobType, obj.JobID, e)
                 obj.CurrentStatus = '3'
                 obj.Successful = False
 
 
-        #### generate the input files for conf_HA
+        #### generate the input files for conf_ML
         try:
             if obj.QMSoftwareP1 in ['Gaussian']:
-                inp = qmclac.gen_g09input(conf_HA)
+                inp = qmclac.gen_g09input(conf_ML)
             elif obj.QMSoftwareP1 in ['NWChem']:
-                inp = qmclac.gen_NWinput(conf_HA)
+                inp = qmclac.gen_NWinput(conf_ML)
             elif obj.QMSoftwareP1 in ['Arrows']:
-                inp = qmclac.gen_Arrowsinput(conf_HA)
+                inp = qmclac.gen_Arrowsinput(conf_ML)
             obj.Successful = True
         except Exception as e:
-            obj.FailedReason = 'Could not generate input file for HA_%s_%s' % (JobType, obj.JobID)
+            obj.FailedReason = 'Could not generate input file for ML_%s_%s' % (JobType, obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
             print 'Could not generate input file: %s' % e
@@ -639,23 +655,23 @@ class JobManagement:
         try:
             # write input file
             if obj.QMSoftwareP1 in ['Gaussian']:
-                fout = open('%s/HA_%s-%s.com' % (job_dir, JobType, obj.JobID), 'w')
+                fout = open('%s/ML_%s-%s.com' % (job_dir, JobType, obj.JobID), 'w')
             elif obj.QMSoftwareP1 in ['NWChem']:
-                fout = open('%s/HA_%s-%s.nw' % (job_dir, JobType, obj.JobID), 'w')
+                fout = open('%s/ML_%s-%s.nw' % (job_dir, JobType, obj.JobID), 'w')
             elif obj.QMSoftwareP1 in ['Arrows']:
-                fout = open('%s/HA_%s-%s.arrows' % (job_dir, JobType, obj.JobID), 'w')
+                fout = open('%s/ML_%s-%s.arrows' % (job_dir, JobType, obj.JobID), 'w')
             fout.write(inp)
             fout.close()
 
             obj.Successful = True
             obj.CurrentStatus = '2'
         except:
-            obj.FailedReason = 'Could not write the input file for HA_%s_%s.' % (JobType, obj.JobID)
+            obj.FailedReason = 'Could not write the input file for ML_%s_%s.' % (JobType, obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
 
         if obj.QMSoftwareP1 in ['Arrows']:
-            mail_subject = 'HA_%s_%s' % (JobType, obj.JobID)
+            mail_subject = 'ML_%s_%s' % (JobType, obj.JobID)
             from_address = 'plian@utk.edu'
             to_address = ['arrows@emsl.pnnl.gov']
             try:
@@ -663,9 +679,57 @@ class JobManagement:
                 obj.Successful = True
                 obj.CurrentStatus = '1'
             except Exception as e:
-                obj.FailedReason = 'Could not send emails for HA_%s_%s. (%s)' % (JobType, obj.JobID, e)
+                obj.FailedReason = 'Could not send emails for ML_%s_%s. (%s)' % (JobType, obj.JobID, e)
                 obj.CurrentStatus = '3'
                 obj.Successful = False
+
+        #### generate the input files for conf_M
+        try:
+            if obj.QMSoftwareM in ['Gaussian']:
+                inp = qmclac.gen_g09input(conf_M)
+            elif obj.QMSoftwareM in ['NWChem']:
+                inp = qmclac.gen_NWinput(conf_M)
+            elif obj.QMSoftwareM in ['Arrows']:
+                inp = qmclac.gen_Arrowsinput(conf_M)
+            obj.Successful = True
+        except Exception as e:
+            obj.FailedReason = 'Could not generate input file for M_%s_%s' % (JobType, obj.JobID)
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+            print 'Could not generate input file: %s' % e
+
+        try:
+            # write input file
+            if obj.QMSoftwareM in ['Gaussian']:
+                fout = open('%s/M_%s-%s.com' % (job_dir, JobType, obj.JobID), 'w')
+            elif obj.QMSoftwareM in ['NWChem']:
+                fout = open('%s/M_%s-%s.nw' % (job_dir, JobType, obj.JobID), 'w')
+            elif obj.QMSoftwareM in ['Arrows']:
+                fout = open('%s/M_%s-%s.arrows' % (job_dir, JobType, obj.JobID), 'w')
+            fout.write(inp)
+            fout.close()
+
+            obj.Successful = True
+            obj.CurrentStatus = '2'
+        except:
+            obj.FailedReason = 'Could not write the input file for M_%s_%s.' % (JobType, obj.JobID)
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
+        if obj.QMSoftwareM in ['Arrows']:
+            mail_subject = 'M_%s_%s' % (JobType, obj.JobID)
+            from_address = 'plian@utk.edu'
+            to_address = ['arrows@emsl.pnnl.gov']
+            try:
+                send_mail(mail_subject, inp, from_address, to_address, fail_silently=False)
+                obj.Successful = True
+                obj.CurrentStatus = '1'
+            except Exception as e:
+                obj.FailedReason = 'Could not send emails for M_%s_%s. (%s)' % (JobType, obj.JobID, e)
+                obj.CurrentStatus = '3'
+                obj.Successful = False
+
+
 
         obj.save()
         return
