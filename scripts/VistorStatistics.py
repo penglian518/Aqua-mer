@@ -1,4 +1,5 @@
 from ipware import get_client_ip
+from datetime import datetime
 from cyshg.models import StatisticsData
 
 
@@ -10,6 +11,7 @@ def clientStatistics(request):
     u.IP = IP[0]
     u.IPType = IP[1]
     u.PagesVisted = url
+    u.Date = datetime.now()
     u.save()
 
     return
