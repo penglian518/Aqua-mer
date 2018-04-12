@@ -8,9 +8,41 @@
 
 <!-- content on the right -->
 <div id="content">
-<div id="title">Instructions</div>
+<div id="title">Association constant (log <i>K</i>)</div>
 <div id=main>
-    under construction
+    Association constant (log <i>K</i>) is an equilibrium constant for the formation of a complex in solution.
+    It is a measure of the strength of the interaction between the reactants that come together to form the complex.
+    Here, it refers to the interaction of a metal ion with a ligand.
+    Log <i>K</i> provides the information required  to calculate the concentration(s) of the complex(es) in solution (speciation).
+    It can be measured by titrations combined with different measurements, such as absorbance spectra, fluorescence spectra and NMR spectra.
+    However, due to the practical reasons, experimental measurements of log <i>K</i> are not always possible.
+    Therefore, theoretical calculations with quantum mechanics (QM) methods provide an feasible option to evaluate it.
+    This module aims to design an user-friendly interface for researchers to perform the calculation with QM methods.
+
+    <h3>Theoretical model</h3>
+    <p>
+    QM calculation of log <i>K</i> based on stepwise reactions. For example, given reaction<br>
+    <p><b>M<sup>2+</sup> + 2 L<sup>-</sup> ----> ML<sub>2</sub>&nbsp;&nbsp;&nbsp;&nbsp; <i>&beta;</i></b></p>
+    The stepwise reactions are:
+    <p><b>M<sup>2+</sup> + L<sup>-</sup> ----> ML<sup>+</sup>&nbsp;&nbsp;&nbsp;&nbsp;<i>K</i><sub>1</sub> = [ML<sup>+</sup>]/[M<sup>2+</sup>][L<sup>-</sup>]</b></p>
+    <p><b>ML<sup>+</sup> + L<sup>-</sup> ----> ML<sub>2</sub>&nbsp;&nbsp;&nbsp;&nbsp;<i>K</i><sub>2</sub> = [ML<sub>2</sub>]/[ML<sup>+</sup>][L<sup>-</sup>]</b></p>
+    Once the log <i>K</i><sub>1</sub> and log <i>K</i><sub>2</sub> are calculated, then the log <i>&beta;</i> can be obtained by,
+    <p><b>log <i>&beta;</i> = log <i>K</i><sub>1</sub> + log <i>K</i><sub>2</sub></b></p>
+    Therefore, the user should perform QM calculation twice. For each step, the structures of reactants and products are required.
+    </p>
+    <br>
+
+    <h3>Flowchart of log <i>K</i> calculation module</h3>
+    <div style="max-width:85%">
+
+    </div>
+
+    <h3>Start from <a href="/logk/start">"Step 1. Input compounds"</a></h3>
+  </p>
+
+
+
+
 
 </div></div>
 {% endblock %}

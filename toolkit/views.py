@@ -59,6 +59,11 @@ def smiles(request):
 
     return render(request, 'toolkit/smiles.html', {'form': form})
 
+def review_doc(request):
+    clientStatistics(request)
+    return render(request, 'toolkit/review_doc.html')
+
+
 
 def reviewcoors(request, JobID):
     clientStatistics(request)

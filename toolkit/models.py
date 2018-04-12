@@ -91,7 +91,7 @@ class CalculationTypeForm(ModelForm):
 
         fields = ['JobID', 'CurrentStep', 'Successful', 'Name']
         labels = {
-            'Name': _('Which kind of calculation do you want to perform?'),
+            'Name': _(''),
         }
         widgets = {
             'JobID': forms.HiddenInput(),

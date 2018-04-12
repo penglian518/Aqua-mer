@@ -1,0 +1,36 @@
+{% extends 'base_index.html' %}
+{% load static %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'toolkit/memu.html' %}
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 2. Review the 3D structure & Select a calculation module</div>
+<div id=main>
+    This step provides an interface to review the 3D structure of the molecule you input/uploaded.
+    After that, you can select a module to perform your calculation.
+    It will lead you to the detailed parameter input page according to your selection.
+    Currently, four independent modules are available. <br>
+    <br>
+    <li>Conformational search</li>
+    <li>&Delta;G<sub>solv</sub> calculation</li>
+    <li>p<i>K</i><sub>a</sub> calculation</li>
+    <li>log <i>K</i> calculation</li>
+
+    <br>
+    <br>
+    <p>
+        <h3>Start from <a href="/toolkit/smiles">"Step 1. Input a compound"</a></h3>
+    </p>
+
+</div>
+
+    <br>
+    <br>
+
+
+</div></div>
+{% endblock %}

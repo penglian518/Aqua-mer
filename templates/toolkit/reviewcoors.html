@@ -12,16 +12,18 @@
 
 <!-- content on the right -->
 <div id="content">
-<div id="title">Step 1. Upload a compound</div>
+<div id="title">Step 2. Review the 3D structure & Select a calculation module</div>
 <div id=main>
     <p>
-        Please double check your molecule and select the calculation you want to do.
+        Below is the 3D structure of the molecule you input/uploaded.
+        You can rotate the molecule by dragging or zoom in/out by scrolling.
     </p>
 
     <div style="height: 300px; width: 500px; position: relative;" class='viewer_3Dmoljs'
          data-href='/toolkit/inputcoor/{{ Item.JobID }}'
          data-backgroundcolor='0xffffff' data-type="xyz" data-select1="all" data-style1='stick'></div>
 
+    <h3>Please double check the structure and select the calculation you want to perform.</h3>
     <form enctype="multipart/form-data" method='POST'>
         {% csrf_token %}
 
