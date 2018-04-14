@@ -8,9 +8,41 @@
 
 <!-- content on the right -->
 <div id="content">
-<div id="title">Instructions</div>
+    <div id="title">Proton disassociation constant (p<i>K</i><sub>a</sub>) calculation</div>
 <div id=main>
-    under construction
+    Proton disassociation constant (p<i>K</i><sub>a</sub>) is an equilibrium constant for the disassociation of an acid in solution.
+    It is a quantitative measure of the strength of an acid in solution.
+    p<i>K</i><sub>a</sub> provides the information required  to calculate the concentration(s) of the proton, acid, and the conjugate base in solution.
+    It can be measured by titrations combined with different measurements, such as absorbance spectra, fluorescence spectra and NMR spectra.
+    However, due to the practical reasons, experimental measurements of p<i>K</i><sub>a</sub> are not always possible.
+    Therefore, theoretical calculations with quantum mechanics (QM) methods provide an feasible option to evaluate it.
+    This module aims to design an user-friendly interface for researchers to perform the calculation with QM methods.
+
+    <h3>Theoretical model</h3>
+    <p>
+        QM calculation of p<i>K</i><sub>a</sub> based on the following equation,
+        <p><b>HA ----> A<sup>-</sup> + H<sup>+</sup>&nbsp;&nbsp;&nbsp;&nbsp;<i>K</i><sub>a</sub> = [A<sup>-</sup>][H<sup>+</sup>]/[HA]&nbsp;&nbsp;&nbsp;&nbsp;
+        <br>
+        <br>
+        p<i>K</i><sub>a</sub> = -log <i>K</i><sub>a</sub></b></p>
+        therefore, it requires the user to provide both the <b>deprotonated (A<sup>-</sup>)</b> and
+        the <b>protonated (HA)</b> forms of the compound.
+    </p>
+    <br>
+
+    <h3>Flowchart of p<i>K</i><sub>a</sub> calculation module</h3>
+    <div style="max-width:90%">
+        <div class="mxgraph" style="max-width:100%;" data-mxgraph="{&quot;highlight&quot;:&quot;#0000ff&quot;,&quot;lightbox&quot;:false,&quot;nav&quot;:true,&quot;edit&quot;:&quot;_blank&quot;,&quot;xml&quot;:&quot;&lt;mxfile userAgent=\&quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36\&quot; version=\&quot;8.5.9\&quot; editor=\&quot;www.draw.io\&quot; type=\&quot;device\&quot;&gt;&lt;diagram name=\&quot;Page-1\&quot; id=\&quot;efa7a0a1-bf9b-a30e-e6df-94a7791c09e9\&quot;&gt;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&lt;/diagram&gt;&lt;/mxfile&gt;&quot;}"></div>
+    </div>
+    <br>
+    <h3>Start from <a href="/pka/start">"Step 1. Input compounds"</a></h3>
+  </p>
+
+
+
+
 
 </div></div>
+
+<script type="text/javascript" src="https://www.draw.io/js/viewer.min.js"></script>
 {% endblock %}

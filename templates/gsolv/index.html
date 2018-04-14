@@ -8,9 +8,37 @@
 
 <!-- content on the right -->
 <div id="content">
-<div id="title">Instructions</div>
+    <div id="title">Solvation free energy (&Delta;G<sub>solv</sub>) calculation</div>
 <div id=main>
-    under construction
+    Solvation describes the interaction of solvent with molecules or ions in a solute, which leads to stablilization of the solute sepcies in the solution.
+    Solvation free energy (&Delta;G<sub>solv</sub>) is the overall Gibbs free energy of the solution process.
+    The solvation process will be thermodynamically favored only if &Delta;G<sub>solv</sub> is decreased.
+    It is a quantitative measure of the strength of the solubility of a compound in solution.
+    It can be measured experimentally, however, due to the practical reasons, experimental measurements of &Delta;G<sub>solv</sub> are not always possible.
+    Therefore, theoretical calculations with quantum mechanics (QM) methods provide an feasible option to evaluate it.
+    This module aims to design an user-friendly interface for researchers to perform the calculation with QM methods.
+
+    <h3>Theoretical model</h3>
+    <p>
+        Continuum solvation model
+        vs
+        Explicit solvation model
+    </p>
+    <br>
+
+    <h3>Flowchart of &Delta;G<sub>solv</sub> calculation module</h3>
+    <div style="max-width:90%">
+        <div class="mxgraph" style="max-width:100%;" data-mxgraph="{&quot;highlight&quot;:&quot;#0000ff&quot;,&quot;lightbox&quot;:false,&quot;nav&quot;:true,&quot;edit&quot;:&quot;_blank&quot;,&quot;xml&quot;:&quot;&lt;mxfile userAgent=\&quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36\&quot; version=\&quot;8.5.9\&quot; editor=\&quot;www.draw.io\&quot; type=\&quot;device\&quot;&gt;&lt;diagram name=\&quot;Page-1\&quot; id=\&quot;efa7a0a1-bf9b-a30e-e6df-94a7791c09e9\&quot;&gt;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&lt;/diagram&gt;&lt;/mxfile&gt;&quot;}"></div>
+    </div>
+    <br>
+    <h3>Start from <a href="/gsolv/smiles">"Step 1. Input a compound"</a></h3>
+  </p>
+
+
+
+
 
 </div></div>
+
+<script type="text/javascript" src="https://www.draw.io/js/viewer.min.js"></script>
 {% endblock %}
