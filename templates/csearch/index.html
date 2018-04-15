@@ -37,10 +37,17 @@
     Explicit solvent, implicit solvent, and in gas phase are available. <p>
 
     <br>
-
-    <b>Please start from <a href="/csearch/smiles">"Step 1. Upload a compound"</a></b>
+    <h3>Flowchart of conformational search module</h3>
+    <div style="max-width:90%">
+        <div class="mxgraph" style="max-width:100%;" data-mxgraph="{&quot;highlight&quot;:&quot;#0000ff&quot;,&quot;lightbox&quot;:false,&quot;nav&quot;:true,&quot;edit&quot;:&quot;_blank&quot;,&quot;xml&quot;:&quot;&lt;mxfile userAgent=\&quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36\&quot; version=\&quot;8.5.9\&quot; editor=\&quot;www.draw.io\&quot; type=\&quot;device\&quot;&gt;&lt;diagram name=\&quot;Page-1\&quot; id=\&quot;efa7a0a1-bf9b-a30e-e6df-94a7791c09e9\&quot;&gt;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&lt;/diagram&gt;&lt;/mxfile&gt;&quot;}"></div>
+    </div>
+    <br>
+    <h3>Start from <a href="/csearch/smiles">"Step 1. Upload a compound"</a></h3>
     <br>
 
 
 </div></div>
+
+
+<script type="text/javascript" src="https://www.draw.io/js/viewer.min.js"></script>
 {% endblock %}
