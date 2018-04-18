@@ -9,7 +9,7 @@
     <ul class="menu">
       <li><a href="/hgspeci">Speciation Calculator</a></li>
       <li><a href="/expdata">Experimental Input Data</a></li>
-      <li><a href="/calcdata">Computated Input Data</a></li>
+      <li><a href="/calcdata">Computed Input Data</a></li>
       <li><a href="/toolkit">Toolkit for Generating Input Data</a></li>
       <li><a href="/faq">FAQ</a></li>
 
@@ -23,30 +23,30 @@
 <div id=main>
     <p>Welcome to AQUA-MER, a database and toolkit for researchers working on environmental mercury geochemistry.</p>
 
-    <p>AQUA-MER is useful for researchers who want to know how mercury will <i>speciate</i> in defined environments i.e.
+    <p>AQUA-MER is useful for researchers who want to investigate mercury <i>speciation</i> in defined environments i.e.,
         to which chemical elements and groups it will bind and in what proportions, given an input of concentrations
         of chemicals.</p>
 
     <p><i>AQUA-MER</i><br>
-        &nbsp;&nbsp;&nbsp;&nbsp;a)	Contains a database of thermodynamic associations of mercury in aqueous solutions. <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;a)	Contains a database of thermodynamic stability constants of mercury in aqueous solutions. <br>
         &nbsp;&nbsp;&nbsp;&nbsp;b)	Calculates speciation profiles as a function of pH given input concentrations of chemicals,
-        using the well-known program, <a target="_blank" href="https://wwwbrr.cr.usgs.gov/projects/GWC_coupled/phreeqc/">PHREEQC</a>, from U.S. Geological Survery (USGS).  <br>
+        using the well known program, <a target="_blank" href="https://wwwbrr.cr.usgs.gov/projects/GWC_coupled/phreeqc/">PHREEQC</a>, from U.S. Geological Survery (USGS).  <br>
     </p>
 
     {% load static %}
     <p align="center"><img src="{% static 'img/Hg.jpg' %}" border=0 width=600></p>
 
     <p><h3>Background</h3>
-        In order to calculate speciation profiles it is necessary to know the
-        <b>association constants (log <i>K</i>)</b> of mercury with the chemicals present. AQUA-MER is compiling a list of
-        association constants from three sources:<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;a)	Experimental, where available. <br>
-        &nbsp;&nbsp;&nbsp;&nbsp;b)	Previously calculated, using a validated quantum chemical methodology. <br>
-        &nbsp;&nbsp;&nbsp;&nbsp;c)	In cases where neither a) nor b) exist AQUA-MER provides a <a target="_blank" href="/toolkit"><b>toolkit</b></a>
+        To calculate speciation profiles, it is necessary to know the
+        <b>stability constants (i.e., log <i>K</i>)</b> of mercury with the chemicals present. AQUA-MER includes 
+        speciation constants compiled from three sources:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;(a)	Experimental measurements from the scientific literature, when available. <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;(b)	Previously calculated values, using a validated quantum chemical method. <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;(c)	For cases in which neither (a) nor (b) exists, AQUA-MER provides a <a target="_blank" href="/toolkit"><b>toolkit</b></a>
         that researchers can use to calculate the values themselves. <br>
     </p>
 
-    <p>Before proceeding, please make sure you have A) the list of chemicals in your environmental sample B) their concentrations.<br>
+    <p>Before proceeding, please make sure you have (A) the list of chemicals in your environmental sample, and (B) their concentrations.<br>
         Have you got them? Yes? Then <a href="/hgspeci/"><b>LET'S GET STARTED</b></a>.
     </p>
 
