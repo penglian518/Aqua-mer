@@ -15,7 +15,7 @@
     in the database file and only additions and modifications are included in the input file.</p></div>
 
 <h3>Annotation <a href="https://wwwbrr.cr.usgs.gov/projects/GWC_coupled/phreeqc/html/final-40.html#33835"> (Details) </a></h3>
-<table id="annotation" class="display compact pure-table">
+<table id="annotation" class="clean compact">
     <thead>
         <tr>
             <th align="left">Keyword</th>
@@ -67,8 +67,8 @@
 
     <br>
 
-<h3>Reference</h3>
-<table id="ref" class="display compact pure-table">
+<h3>References</h3>
+<table id="ref" class="clean compact">
     <thead>
         <tr>
             <th align="left">RefID</th>
@@ -88,6 +88,17 @@
         {% endfor %}
     </tbody>
 </table>
+
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('.clean').DataTable({
+        paging: false,
+        searching: false,
+        ordering: false,
+        info: false,
+    });
+    } );
+</script>
 
 </div></div>
 {% endblock %}

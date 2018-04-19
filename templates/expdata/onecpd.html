@@ -12,9 +12,9 @@
     } );
 </script>
 
-<h2>Basic Information</h2>
+<h3>Basic Information</h3>
 <table id="basic" class="hover compact pure-table sortable">
-    <thead>
+    <thead align="left">
         <tr>
             <th>MolID</th>
             <th>PubChemID</th>
@@ -70,9 +70,9 @@
     });
     } );
 </script>
-<h2>Solvation Free Energy</h2>
+<h3>Solvation Free Energy</h3>
 <table id="dgsolv" class="hover compact pure-table sortable">
-    <thead>
+    <thead align="left">
         <tr>
             <th>MolID</th>
             <th>Name</th>
@@ -110,9 +110,9 @@
     } );
 </script>
 
-<h2>p<i>K</i><sub>a</sub></h2>
+<h3>p<i>K</i><sub>a</sub></h3>
 <table id="pKa" class="hover compact pure-table sortable">
-    <thead>
+    <thead align="left">
         <tr>
             <th>MolID</th>
             <th>Name</th>
@@ -125,7 +125,7 @@
             <th>&#916;<sub>r</sub>H&deg; (kcal/mol)</th>
             <th>&#916;<sub>r</sub>S&deg; (kcal/mol)</th>
             <th>&#916;<sub>r</sub>G&deg; (kcal/mol)</th>
-            <th>Ref. for Thermal</th>
+            <th>Ref. for Thermal Dynamics Data</th>
         </tr>
     </thead>
     <tbody>
@@ -166,9 +166,9 @@
     } );
 </script>
 
-<h2>Stability Constants</h2>
+<h3>Stability Constants</h3>
 <table id="stability" class="hover compact pure-table sortable">
-    <thead>
+    <thead align="left">
         <tr>
             <th>MolID</th>
             <th>Name</th>
@@ -183,7 +183,7 @@
             <th>&#916;<sub>r</sub>H&deg; (kcal/mol)</th>
             <th>&#916;<sub>r</sub>S&deg; (kcal/mol)</th>
             <th>&#916;<sub>r</sub>G&deg; (kcal/mol)</th>
-            <th>Ref. for Thermal</th>
+            <th>Ref. for Thermal Dynamics Data</th>
         </tr>
     </thead>
     <tbody>
@@ -221,19 +221,9 @@
 
 
 {% block table5 %}
-<script type="text/javascript" class="init">
-    $(document).ready(function() {
-    $('#ref').DataTable({
-        paging: false,
-        searching: false,
-        ordering: false
-    });
-    } );
-</script>
-
-<h2>Reference</h2>
-<table id="ref" class="compact hover pure-table">
-    <thead>
+<h3>References</h3>
+<table id="ref" class="clean compact">
+    <thead align="left">
         <tr>
             <th>RefID</th>
             <th>Reference</th>
@@ -252,6 +242,18 @@
         {% endfor %}
     </tbody>
 </table>
+
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('.clean').DataTable({
+        paging: false,
+        searching: false,
+        ordering: false,
+        info: false,
+    });
+    } );
+</script>
+
 <br>
 <br>
 {% endblock %}

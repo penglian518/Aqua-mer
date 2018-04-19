@@ -3,17 +3,7 @@
 
 {% block content %}
 <!-- nav box on the left -->
-  <div id="col1" style="padding-bottom: 20">
-    <div id="menu">
-      <h3>Experimental Data</h3>
-      <ul>
-        <li><a href="/expdata/basic/">1. Basic information</a></li>
-        <li><a href="/expdata/dgsolv/">2. Solvation free energy</a></li>
-        <li><a href="/expdata/pka/">3. p<i>K</i><sub>a</sub></a></li>
-        <li><a href="/expdata/stability/">4. Stability Constant</a></li>
-      </ul>
-    </div>
-  </div>
+{% include 'expdata/memu.html' %}
 
 <!-- content on the right -->
 <div id="content">

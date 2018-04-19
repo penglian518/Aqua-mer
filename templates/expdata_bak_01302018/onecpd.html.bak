@@ -176,7 +176,7 @@
 
 
 {% block table5 %}
-<h3>Reference</h3>
+<h3>References</h3>
 <table class="pure-table">
     <tr>
         <th>RefID</th>

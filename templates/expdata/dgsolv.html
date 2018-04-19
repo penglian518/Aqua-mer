@@ -2,15 +2,24 @@
 
 
 {% block table1 %}
+<!-- nav box on the left -->
+{% include 'expdata/memu.html' %}
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Solvation free energy</div>
+<div id=main>
+
 <script type="text/javascript" class="init">
     $(document).ready(function() {
     $('#dgsolv').DataTable();
     } );
 </script>
 
-<h2>Solvation Free Energy</h2>
+<h3>Solvation free energy</h3>
 <table id="dgsolv" class="display pure-table sortable">
-    <thead>
+    <thead align="left">
         <tr>
             <th>MolID</th>
             <th>Name</th>
@@ -39,19 +48,9 @@
 
 
 {% block table2 %}
-<script type="text/javascript" class="init">
-    $(document).ready(function() {
-    $('#ref').DataTable({
-        paging: false,
-        searching: false,
-        ordering: false
-    });
-    } );
-</script>
-
-<h2>Reference</h2>
-<table id="ref" class="display compact pure-table">
-    <thead>
+<h3>References</h3>
+<table id="ref" class="clean compact">
+    <thead align="left">
         <tr>
             <th>RefID</th>
             <th>Reference</th>
@@ -70,6 +69,19 @@
         {% endfor %}
     </tbody>
 </table>
+
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('.clean').DataTable({
+        paging: false,
+        searching: false,
+        ordering: false,
+        info: false,
+    });
+    } );
+</script>
+
 <br>
 <br>
+</div></div>
 {% endblock %}

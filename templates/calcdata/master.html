@@ -18,8 +18,8 @@
 </p></div>
 
 <h3>Annotation <a href="https://wwwbrr.cr.usgs.gov/projects/GWC_coupled/phreeqc/html/final-57.html#19910"> (Details) </a></h3>
-<table id="annotation" class="display compact pure-table">
-    <thead>
+<table id="annotation" class="clean compact">
+    <thead align="left">
         <tr>
             <th align="left">Keyword</th>
             <th align="left">Explanation</th>
@@ -54,7 +54,7 @@
 
 <h3>Solution master species</h3>
 <table id="master" class="display pure-table sortable">
-    <thead>
+    <thead align="left">
         <tr>
             <th align="left">Element</th>
             <th align="left">Species</th>
@@ -98,12 +98,12 @@
     <p>
 
     <br>
-<h3>Reference</h3>
-<table id="ref" class="display compact pure-table">
-    <thead>
+<h3>References</h3>
+<table id="ref" class="clean compact">
+    <thead align="left">
         <tr>
-            <th align="left">RefID</th>
-            <th align="left">Reference</th>
+            <th>RefID</th>
+            <th>Reference</th>
         </tr>
     </thead>
         <tbody>
@@ -119,6 +119,18 @@
         {% endfor %}
     </tbody>
 </table>
+
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('.clean').DataTable({
+        paging: false,
+        searching: false,
+        ordering: false,
+        info: false,
+    });
+    } );
+</script>
+
 
 </div></div>
 {% endblock %}

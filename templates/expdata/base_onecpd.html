@@ -5,14 +5,14 @@
 <head>
   {% include 'head.html' %}
 
-    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
     <script
             src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.3/jquery.js"
 			integrity="sha256-1XMpEtA4eKXNNpXcJ1pmMPs8JV+nwLdEqwiJeCQEkyc="
 			crossorigin="anonymous">
 
     </script>
-    <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 
 </head>
 
@@ -22,7 +22,15 @@
 
   <!-- body -->
   <div id="body">
-    <div id="main">
+        <!-- nav box on the left -->
+        {% include 'expdata/memu.html' %}
+
+
+        <!-- content on the right -->
+        <div id="content">
+        <div id="title">Experimental data for molecule <b>{{ MolID }}</b></div>
+        <div id=main>
+
 
         {% block table1 %}
         {% endblock %}
@@ -39,7 +47,7 @@
         {% block table5 %}
         {% endblock %}
 
-    </div>
+        </div></div>
   </div>
 
   <!-- footer -->

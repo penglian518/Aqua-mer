@@ -60,9 +60,9 @@ class ReactantsAdmin(admin.ModelAdmin):
     list_display = ('Reactants', )
 
 admin.site.register(Compound, CompoundAdmin)
-#admin.site.register(PKA, PKAAdmin)
-#admin.site.register(StabilityConstants, StabilityConstantsAdmin)
-#admin.site.register(dGsolv, dGsolvAdmin)
+admin.site.register(PKA, PKAAdmin)
+admin.site.register(StabilityConstants, StabilityConstantsAdmin)
+admin.site.register(dGsolv, dGsolvAdmin)
 admin.site.register(Refs, RefsAdmin)
 admin.site.register(Electrolyte, ElectrolyteAdmin)
 admin.site.register(Reactants, ReactantsAdmin)

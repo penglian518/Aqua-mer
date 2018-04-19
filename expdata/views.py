@@ -127,5 +127,6 @@ def onecpd(request, args, value):
                    'stabilities': all_stabilities,
                    'dgsolvs': all_dgsov,
                    'refs': all_refs,
+                   'MolID': value,
                    },
                   )

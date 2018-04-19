@@ -2,15 +2,25 @@
 
 
 {% block table1 %}
+<!-- nav box on the left -->
+{% include 'expdata/memu.html' %}
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Stability constants</div>
+<div id=main>
+
+
 <script type="text/javascript" class="init">
     $(document).ready(function() {
     $('#stability').DataTable();
     } );
 </script>
 
-<h2>Stability Constants</h2>
+<h3>Log <i>K</i></h3>
 <table id="stability" class="display compact pure-table sortable">
-    <thead>
+    <thead align="left">
         <tr>
             <th>MolID</th>
             <th>Name</th>
@@ -25,7 +35,7 @@
             <th>&#916;<sub>r</sub>H&deg; (kcal/mol)</th>
             <th>&#916;<sub>r</sub>S&deg; (kcal/mol)</th>
             <th>&#916;<sub>r</sub>G&deg; (kcal/mol)</th>
-            <th>Ref. for Thermal</th>
+            <th>Ref. for Thermal Dynamics Data</th>
         </tr>
     </thead>
     <tbody>
@@ -63,19 +73,9 @@
 
 
 {% block table2 %}
-<script type="text/javascript" class="init">
-    $(document).ready(function() {
-    $('#ref').DataTable({
-        paging: false,
-        searching: false,
-        ordering: false
-    });
-    } );
-</script>
-
-<h2>Reference</h2>
-<table id="ref" class="display compact pure-table">
-    <thead>
+<h3>References</h3>
+<table id="ref" class="clean compact">
+    <thead align="left">
         <tr>
             <th>RefID</th>
             <th>Reference</th>
@@ -94,6 +94,19 @@
         {% endfor %}
     </tbody>
 </table>
+
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('.clean').DataTable({
+        paging: false,
+        searching: false,
+        ordering: false,
+        info: false,
+    });
+    } );
+</script>
+
 <br>
 <br>
+</div></div>
 {% endblock %}

@@ -1,14 +1,23 @@
 {% extends 'expdata/base_tables.html' %}
 
 {% block table1 %}
+<!-- nav box on the left -->
+{% include 'expdata/memu.html' %}
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Basic information of molecules</div>
+<div id=main>
+
 <script type="text/javascript" class="init">
     $(document).ready(function() {
     $('#basic').DataTable();
     } );
 </script>
 
-<h2>Annotation</h2>
-<table id="annotation" class="display compact pure-table">
+<h3>Annotation</h3>
+<table id="annotation" class="clean compact">
     <thead>
         <tr>
             <th align="left">Keyword</th>
@@ -26,7 +35,7 @@
 </table>
 <br>
 
-<h2>Basic Information</h2>
+<h3>Basic Information</h3>
 <table id="basic" class="display compact pure-table sortable">
     <thead>
         <tr>
@@ -66,6 +75,19 @@
     {% endfor %}
     </tbody>
 </table>
+
+<script type="text/javascript" class="init">
+    $(document).ready(function() {
+    $('.clean').DataTable({
+        paging: false,
+        searching: false,
+        ordering: false,
+        info: false,
+    });
+    } );
+</script>
+
 <br>
 <br>
+</div></div>
 {% endblock %}
