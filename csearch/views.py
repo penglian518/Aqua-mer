@@ -137,7 +137,7 @@ def results(request, JobID, JobType='csearch'):
             jobmanger.CSearchJobPrepare(obj=item)
 
         # run the calculations in background
-        Exec_thread = threading.Thread(target=jobmanger.JobExec, kwargs={"obj": item, 'JobType':JobType})
+        Exec_thread = threading.Thread(target=jobmanger.JobExec, kwargs={"obj": item, 'JobType': JobType})
         Exec_thread.start()
 
 

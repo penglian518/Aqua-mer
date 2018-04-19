@@ -129,12 +129,11 @@ class JobManagement:
         elif JobType in ['hgspeci']:
             jobscript = 'runPhreeqc.sh'
         else:
-            obj.FailedReason = 'Could not find script file (%s) for JobType (%s)' % (jobscript, JobType)
+            obj.FailedReason = 'Could not find script file for JobType (%s)' % (JobType)
             # change the job status in DB to '3' error
             obj.CurrentStatus = '3'
             obj.Successful = False
             obj.save()
-            logging.warn(err)
             return
 
         runJob = subprocess.Popen('sh %s' % jobscript, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -239,7 +238,6 @@ class JobManagement:
                 obj.CurrentStatus = '3'
                 obj.Successful = False
                 obj.save()
-                logging.warn(err)
         return
 
     def CSearchJobReclustering(self, obj, JobType='csearch'):
