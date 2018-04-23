@@ -129,7 +129,7 @@ class JobManagement:
         elif JobType in ['hgspeci']:
             jobscript = 'runPhreeqc.sh'
         else:
-            obj.FailedReason = 'Could not find script file for JobType (%s)' % (JobType)
+            obj.FailedReason += 'Could not find script file for JobType (%s)' % (JobType)
             # change the job status in DB to '3' error
             obj.CurrentStatus = '3'
             obj.Successful = False
@@ -148,7 +148,7 @@ class JobManagement:
                 try:
                     self.HgspeciCollectResults(obj=obj, JobType=JobType)
                 except:
-                    obj.FailedReason = 'Could not collect the results for (%s)' % str(job_id)
+                    obj.FailedReason += 'Could not collect the results for (%s)' % str(job_id)
                     # change the job status in DB to '3' error
                     obj.CurrentStatus = '3'
                     obj.Successful = False
@@ -157,10 +157,10 @@ class JobManagement:
             # change the job status in DB to '2' finished
             obj.CurrentStatus = '2'
             obj.Successful = True
-            obj.FailedReason = ''
+            obj.FailedReason += ''
             obj.save()
         except:
-            obj.FailedReason = 'Could not run the script file (%s)' % jobscript
+            obj.FailedReason += 'Could not run the script file (%s)' % jobscript
             # change the job status in DB to '3' error
             obj.CurrentStatus = '3'
             obj.Successful = False
@@ -168,6 +168,80 @@ class JobManagement:
             logging.warn(err)
 
         return
+
+    def JobExec_v1(self, obj, JobType='csearch'):
+        '''
+        Submit the job on this computer.
+        '''
+        # get basic info
+        job_id = obj.JobID
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+        os.chdir(job_dir)
+
+        # open a sub process for submitting
+        runJob = subprocess.Popen('qsub submit.sh', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+
+        # submit the script
+        try:
+            # run the calculation
+            err, out = runJob.communicate()
+
+        except:
+            obj.FailedReason += 'Could not submit the script file submit.sh'
+            # change the job status in DB to '3' error
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+            obj.save()
+            logging.warn(err)
+
+        return
+
+    def CheckJob(self, obj, JobType='csearch'):
+        '''
+        Check the status fo the jobs.
+        '''
+        # get basic info
+        job_id = obj.JobID
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+        os.chdir(job_dir)
+
+        try:
+            os.makedirs(job_dir)
+        except:
+            pass
+
+        # get PBS log files
+        # the job name should be in the format of "JobID-JobType"!
+        pbs_outfiles = [i for i in os.listdir('.') if i.startswith('%d-%s.o' % (job_id, JobType))]
+
+        if len(pbs_outfiles) > 0:
+            # get the latest one
+            pbs_outfile = sorted(pbs_outfiles)[-1]
+            fout = open(pbs_outfile).readlines()
+
+            if JobType in ['csearch']:
+                flag_line = [l for l in fout if l.find("Job is Done!")>=0]
+
+                if len(flag_line) > 0:
+                    # change the job status in DB to '2' finished
+                    obj.CurrentStatus = '2'
+                    obj.save()
+
+            elif JobType in ['csearch_reclustering']:
+                flag_line = [l for l in fout if l.find("Reclustering Job is Done!")>=0]
+
+                if len(flag_line) > 0:
+                    # change the job status in DB to '2' finished
+                    obj.CurrentStatus = '2'
+                    obj.save()
+
+
+
+        return
+
+
 
     def Zip4Downlaod(self, obj, JobType='csearch'):
         '''
@@ -184,7 +258,7 @@ class JobManagement:
         try:
             shutil.make_archive('%s-%d' % (JobType, job_id), 'zip', dir_download)
         except:
-            obj.FailedReason = 'Could not create zip file (%s-%d.zip).' % (JobType, job_id)
+            obj.FailedReason += 'Could not create zip file (%s-%d.zip).' % (JobType, job_id)
             # change the job status in DB to '3' error
             obj.CurrentStatus = '3'
             obj.Successful = False
@@ -204,6 +278,7 @@ class JobManagement:
         except:
             pass
 
+        # rename the uploaded or input smiles file
         if obj.UploadedFile:
             file_name = os.path.basename(obj.UploadedFile.path)
             file_type = obj.UploadedFileType
@@ -219,25 +294,59 @@ class JobManagement:
             # write the smiles string to molecule.smi file
             open(input_file, 'w').write(obj.SmilesStr)
 
-        # exec script
+        # path of exec and submit script
         exe_file = '%s/CSearch.run' % job_dir
+        sub_file = '%s/submit.sh' % job_dir
 
-
+        # generate the exec script file
         if obj.CSearchType in ['Random']:
             cmd_line = '%s/scripts/CSearchRandom.py --NRotamers %d --Forcefield %s --NStep %d --eps %s ' \
-                       '--minSamples %d %s-%d.%s >> CSearch.log 2>&1' \
+                       '--minSamples %d %s-%d.%s >> CSearch.log 2>&1\n' \
+                       'chmod -R g+rw %s-%d\n' \
+                       'find . -type d -exec chmod 770 {} +' \
                        % (self.DjangoHome, obj.RandomNRotamers, obj.RandomForcefield, obj.RandomNSteps, str(obj.RandomEPS),
-                          obj.RandomNMinSamples, JobType, job_id, file_type)
+                          obj.RandomNMinSamples, JobType, job_id, file_type, JobType, job_id)
             # write the command line to exe_file
             try:
                 exe_filehandle = open(exe_file, 'w')
                 exe_filehandle.write(cmd_line + '\n')
                 exe_filehandle.close()
             except:
-                obj.FailedReason = 'Could not generate commandline file (CSearch.run)'
+                obj.FailedReason += 'Could not generate commandline file (CSearch.run)'
                 obj.CurrentStatus = '3'
                 obj.Successful = False
                 obj.save()
+
+        # generate the submit file
+        # the job name should be in the format of "JobID-JobType"!
+        sub_str = '''#!/bin/bash
+#PBS -N %d-%s
+#PBS -l nodes=1:ppn=1
+#PBS -j oe
+#PBS -l walltime=24:00:00
+#PBS -W umask=0007
+#PBS -W group_list=www-data
+
+cd $PBS_O_WORKDIR
+
+# run the job
+./CSearch.run
+
+# signal
+echo "Job is Done!"
+        ''' % (job_id, JobType)
+
+        # write the sub_file
+        try:
+            sub_filehandle = open(sub_file, 'w')
+            sub_filehandle.write(sub_str + '\n')
+            sub_filehandle.close()
+        except:
+            obj.FailedReason += 'Could not generate submit file (submit.sh)'
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+            obj.save()
+
         return
 
     def CSearchJobReclustering(self, obj, JobType='csearch'):
@@ -251,6 +360,7 @@ class JobManagement:
         except:
             pass
 
+        # rename the uploaded or input smiles file
         if obj.UploadedFile:
             file_name = os.path.basename(obj.UploadedFile.path)
             file_type = obj.UploadedFileType
@@ -266,27 +376,59 @@ class JobManagement:
             # write the smiles string to molecule.smi file
             open(input_file, 'w').write(obj.SmilesStr)
 
-        # exec script
+        # path of exec and submit script
         exe_file = '%s/CSearch.run' % job_dir
+        sub_file = '%s/submit.sh' % job_dir
 
 
-
+        # generate the exec script file
         if obj.CSearchType in ['Random']:
             cmd_line = '%s/scripts/CSearchRandom.py --eps %s ' \
-                       '--minSamples %d reclustering %s-%d.%s >> CSearch-reclustering.log 2>&1' \
+                       '--minSamples %d reclustering %s-%d.%s >> CSearch-reclustering.log 2>&1\n' \
+                       'chmod -R 770 %s-%d\n' \
+                       'find . -type d -exec chmod 770 {} +' \
                        % (self.DjangoHome, str(obj.RandomEPS),
-                          obj.RandomNMinSamples, JobType, job_id, file_type)
+                          obj.RandomNMinSamples, JobType, job_id, file_type, JobType, job_id)
             # write the command line to exe_file
             try:
                 exe_filehandle = open(exe_file, 'w')
                 exe_filehandle.write(cmd_line + '\n')
                 exe_filehandle.close()
             except:
-                obj.FailedReason = 'Could not generate commandline file (CSearch.run)'
+                obj.FailedReason += 'Could not generate commandline file (CSearch.run)'
                 obj.CurrentStatus = '3'
                 obj.Successful = False
                 obj.save()
-                logging.warn(err)
+
+        # generate the submit file
+        # the job name should be in the format of "JobID-JobType"!
+        sub_str = '''#!/bin/bash
+#PBS -N %d-%s
+#PBS -l nodes=1:ppn=1
+#PBS -j oe
+#PBS -l walltime=24:00:00
+#PBS -W umask=0007
+#PBS -W group_list=www-data
+
+cd $PBS_O_WORKDIR
+
+# run the job
+./CSearch.run
+
+# signal
+echo "Reclustering Job is Done!"
+        ''' % (job_id, JobType)
+
+        # write the sub_file
+        try:
+            sub_filehandle = open(sub_file, 'w')
+            sub_filehandle.write(sub_str + '\n')
+            sub_filehandle.close()
+        except:
+            obj.FailedReason += 'Could not generate submit file (submit.sh)'
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+            obj.save()
         return
 
 
@@ -306,7 +448,7 @@ class JobManagement:
             phreeqc.genInputFile(obj=obj, outdir=job_dir)
             obj.Successful = True
         except Exception as e:
-            obj.FailedReason = 'Could not generate input file for phreeqc'
+            obj.FailedReason += 'Could not generate input file for phreeqc'
             obj.CurrentStatus = '3'
             obj.Successful = False
             print 'Could not generate input file: %s' % e
@@ -314,14 +456,14 @@ class JobManagement:
             phreeqc.genDatabaseFile(obj=obj, outdir=job_dir)
             obj.Successful = True
         except:
-            obj.FailedReason = 'Could not generate database file for phreeqc.'
+            obj.FailedReason += 'Could not generate database file for phreeqc.'
             obj.CurrentStatus = '3'
             obj.Successful = False
         try:
             phreeqc.genJobScript(obj=obj, outdir=job_dir)
             obj.Successful = True
         except:
-            obj.FailedReason = 'Could not generate job script for running phreeqc.'
+            obj.FailedReason += 'Could not generate job script for running phreeqc.'
             obj.CurrentStatus = '3'
             obj.Successful = False
 
@@ -366,7 +508,7 @@ class JobManagement:
             conf = qmclac.gen_conf_dict(obj)
             obj.Successful = True
         except:
-            obj.FailedReason = 'Could not generate configuration dict for %s.' % JobType
+            obj.FailedReason += 'Could not generate configuration dict for %s.' % JobType
             obj.CurrentStatus = '3'
             obj.Successful = False
 
@@ -380,7 +522,7 @@ class JobManagement:
                 inp = qmclac.gen_Arrowsinput(conf)
             obj.Successful = True
         except Exception as e:
-            obj.FailedReason = 'Could not generate input file for %s' % JobType
+            obj.FailedReason += 'Could not generate input file for %s' % JobType
             obj.CurrentStatus = '3'
             obj.Successful = False
             print 'Could not generate input file: %s' % e
@@ -399,7 +541,7 @@ class JobManagement:
             obj.Successful = True
             obj.CurrentStatus = '2'
         except:
-            obj.FailedReason = 'Could not write the input file for %s.' % JobType
+            obj.FailedReason += 'Could not write the input file for %s.' % JobType
             obj.CurrentStatus = '3'
             obj.Successful = False
 
@@ -412,7 +554,7 @@ class JobManagement:
                 obj.Successful = True
                 obj.CurrentStatus = '1'
             except Exception as e:
-                obj.FailedReason = 'Could not send emails for %s_%s. (%s)' % (JobType, obj.JobID, e)
+                obj.FailedReason += 'Could not send emails for %s_%s. (%s)' % (JobType, obj.JobID, e)
                 obj.CurrentStatus = '3'
                 obj.Successful = False
 
@@ -452,7 +594,7 @@ class JobManagement:
             conf_A, conf_HA = qmclac.gen_conf_dict(obj)
             obj.Successful = True
         except:
-            obj.FailedReason = 'Could not generate configuration dict for A_%s_%s.' % (JobType,obj.JobID)
+            obj.FailedReason += 'Could not generate configuration dict for A_%s_%s.' % (JobType,obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
 
@@ -467,7 +609,7 @@ class JobManagement:
                 inp = qmclac.gen_Arrowsinput(conf_A)
             obj.Successful = True
         except Exception as e:
-            obj.FailedReason = 'Could not generate input file for A_%s_%s' % (JobType, obj.JobID)
+            obj.FailedReason += 'Could not generate input file for A_%s_%s' % (JobType, obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
             print 'Could not generate input file: %s' % e
@@ -486,7 +628,7 @@ class JobManagement:
             obj.Successful = True
             obj.CurrentStatus = '2'
         except:
-            obj.FailedReason = 'Could not write the input file for A_%s_%s.' % (JobType, obj.JobID)
+            obj.FailedReason += 'Could not write the input file for A_%s_%s.' % (JobType, obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
 
@@ -499,7 +641,7 @@ class JobManagement:
                 obj.Successful = True
                 obj.CurrentStatus = '1'
             except Exception as e:
-                obj.FailedReason = 'Could not send emails for A_%s_%s. (%s)' % (JobType, obj.JobID, e)
+                obj.FailedReason += 'Could not send emails for A_%s_%s. (%s)' % (JobType, obj.JobID, e)
                 obj.CurrentStatus = '3'
                 obj.Successful = False
 
@@ -514,7 +656,7 @@ class JobManagement:
                 inp = qmclac.gen_Arrowsinput(conf_HA)
             obj.Successful = True
         except Exception as e:
-            obj.FailedReason = 'Could not generate input file for HA_%s_%s' % (JobType, obj.JobID)
+            obj.FailedReason += 'Could not generate input file for HA_%s_%s' % (JobType, obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
             print 'Could not generate input file: %s' % e
@@ -533,7 +675,7 @@ class JobManagement:
             obj.Successful = True
             obj.CurrentStatus = '2'
         except:
-            obj.FailedReason = 'Could not write the input file for HA_%s_%s.' % (JobType, obj.JobID)
+            obj.FailedReason += 'Could not write the input file for HA_%s_%s.' % (JobType, obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
 
@@ -546,7 +688,7 @@ class JobManagement:
                 obj.Successful = True
                 obj.CurrentStatus = '1'
             except Exception as e:
-                obj.FailedReason = 'Could not send emails for HA_%s_%s. (%s)' % (JobType, obj.JobID, e)
+                obj.FailedReason += 'Could not send emails for HA_%s_%s. (%s)' % (JobType, obj.JobID, e)
                 obj.CurrentStatus = '3'
                 obj.Successful = False
 
@@ -583,7 +725,7 @@ class JobManagement:
             conf_L, conf_ML, conf_M = qmclac.gen_conf_dict(obj)
             obj.Successful = True
         except:
-            obj.FailedReason = 'Could not generate configuration dict for L_%s_%s.' % (JobType,obj.JobID)
+            obj.FailedReason += 'Could not generate configuration dict for L_%s_%s.' % (JobType,obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
 
@@ -598,7 +740,7 @@ class JobManagement:
                 inp = qmclac.gen_Arrowsinput(conf_L)
             obj.Successful = True
         except Exception as e:
-            obj.FailedReason = 'Could not generate input file for L_%s_%s' % (JobType, obj.JobID)
+            obj.FailedReason += 'Could not generate input file for L_%s_%s' % (JobType, obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
             print 'Could not generate input file: %s' % e
@@ -617,7 +759,7 @@ class JobManagement:
             obj.Successful = True
             obj.CurrentStatus = '2'
         except:
-            obj.FailedReason = 'Could not write the input file for L_%s_%s.' % (JobType, obj.JobID)
+            obj.FailedReason += 'Could not write the input file for L_%s_%s.' % (JobType, obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
 
@@ -630,7 +772,7 @@ class JobManagement:
                 obj.Successful = True
                 obj.CurrentStatus = '1'
             except Exception as e:
-                obj.FailedReason = 'Could not send emails for L_%s_%s. (%s)' % (JobType, obj.JobID, e)
+                obj.FailedReason += 'Could not send emails for L_%s_%s. (%s)' % (JobType, obj.JobID, e)
                 obj.CurrentStatus = '3'
                 obj.Successful = False
 
@@ -645,7 +787,7 @@ class JobManagement:
                 inp = qmclac.gen_Arrowsinput(conf_ML)
             obj.Successful = True
         except Exception as e:
-            obj.FailedReason = 'Could not generate input file for ML_%s_%s' % (JobType, obj.JobID)
+            obj.FailedReason += 'Could not generate input file for ML_%s_%s' % (JobType, obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
             print 'Could not generate input file: %s' % e
@@ -664,7 +806,7 @@ class JobManagement:
             obj.Successful = True
             obj.CurrentStatus = '2'
         except:
-            obj.FailedReason = 'Could not write the input file for ML_%s_%s.' % (JobType, obj.JobID)
+            obj.FailedReason += 'Could not write the input file for ML_%s_%s.' % (JobType, obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
 
@@ -677,7 +819,7 @@ class JobManagement:
                 obj.Successful = True
                 obj.CurrentStatus = '1'
             except Exception as e:
-                obj.FailedReason = 'Could not send emails for ML_%s_%s. (%s)' % (JobType, obj.JobID, e)
+                obj.FailedReason += 'Could not send emails for ML_%s_%s. (%s)' % (JobType, obj.JobID, e)
                 obj.CurrentStatus = '3'
                 obj.Successful = False
 
@@ -691,7 +833,7 @@ class JobManagement:
                 inp = qmclac.gen_Arrowsinput(conf_M)
             obj.Successful = True
         except Exception as e:
-            obj.FailedReason = 'Could not generate input file for M_%s_%s' % (JobType, obj.JobID)
+            obj.FailedReason += 'Could not generate input file for M_%s_%s' % (JobType, obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
             print 'Could not generate input file: %s' % e
@@ -710,7 +852,7 @@ class JobManagement:
             obj.Successful = True
             obj.CurrentStatus = '2'
         except:
-            obj.FailedReason = 'Could not write the input file for M_%s_%s.' % (JobType, obj.JobID)
+            obj.FailedReason += 'Could not write the input file for M_%s_%s.' % (JobType, obj.JobID)
             obj.CurrentStatus = '3'
             obj.Successful = False
 
@@ -723,7 +865,7 @@ class JobManagement:
                 obj.Successful = True
                 obj.CurrentStatus = '1'
             except Exception as e:
-                obj.FailedReason = 'Could not send emails for M_%s_%s. (%s)' % (JobType, obj.JobID, e)
+                obj.FailedReason += 'Could not send emails for M_%s_%s. (%s)' % (JobType, obj.JobID, e)
                 obj.CurrentStatus = '3'
                 obj.Successful = False
 
@@ -744,3 +886,5 @@ class JobManagement:
 
         return
 
+if __name__ == '__main__':
+    print("This is JobManager")

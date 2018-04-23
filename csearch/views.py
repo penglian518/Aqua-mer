@@ -121,6 +121,10 @@ def results(request, JobID, JobType='csearch'):
     # if the job has finished, display the results.
     item = get_object_or_404(CSearchJob, JobID=JobID)
 
+    # check the job status
+    jobmanger = JobManagement()
+    jobmanger.CheckJob(obj=item, JobType=JobType)
+
     if item.CurrentStatus == '0':
         # the job is 'to be start', submit the job and jump to '1'
 
@@ -130,16 +134,16 @@ def results(request, JobID, JobType='csearch'):
         # b. submit the job
 
         # generate command line file
-        jobmanger = JobManagement()
         if item.RandomReclustering:
             jobmanger.CSearchJobReclustering(obj=item)
         else:
             jobmanger.CSearchJobPrepare(obj=item)
 
+        # submit the job
+        jobmanger.JobExec_v1(obj=item, JobType=JobType)
         # run the calculations in background
-        Exec_thread = threading.Thread(target=jobmanger.JobExec, kwargs={"obj": item, 'JobType': JobType})
-        Exec_thread.start()
-
+        #Exec_thread = threading.Thread(target=jobmanger.JobExec, kwargs={"obj": item, 'JobType': JobType})
+        #Exec_thread.start()
 
 
         # change the status in the database
@@ -195,14 +199,30 @@ def results_doc(request):
     return render(request, 'csearch/results_doc.html', {'form': form})
 
 def reclustering(request, JobID):
+    '''
+    TODO: This function did not start the job, need to be fixed.
+
+    '''
     clientStatistics(request)
     # if the job hasn't been started, start the job.
     # if the job is running, check every 5 seconds.
     # if the job has finished, display the results.
     item = get_object_or_404(CSearchJob, JobID=JobID)
 
+    JobType = 'csearch'
+    # check the job status
+    jobmanger = JobManagement()
+    jobmanger.CheckJob(obj=item, JobType=JobType)
+
+
     if item.CurrentStatus == '0':
         # the job is 'to be start', submit the job and jump to '1'
+
+        # generate command line file
+        if item.RandomReclustering:
+            jobmanger.CSearchJobReclustering(obj=item)
+        # submit the job
+        jobmanger.JobExec_v1(obj=item, JobType=JobType)
 
         # change the status in the database
         item.CurrentStatus = '1'

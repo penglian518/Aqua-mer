@@ -99,11 +99,28 @@ def trans(request, JobType, JobID):
     # copy the job infor to the module
     if JobType in ['csearch']:
         CSearchJob.objects.update_or_create(**item_dict)
+        # report to all job id DB
+        # same job from AllJobIDs
+        obj = get_object_or_404(AllJobIDs, JobID=JobID)
+        obj.SubJobType = JobType
+        obj.save()
         return redirect('/%s/parameters/%s/' % (JobType, JobID))
     elif JobType in ['gsolv']:
         GSolvJob.objects.update_or_create(**item_dict)
+        # report to all job id DB
+        # same job from AllJobIDs
+        obj = get_object_or_404(AllJobIDs, JobID=JobID)
+        obj.SubJobType = JobType
+        obj.CurrentStatus = 2
+        obj.save()
         return redirect('/%s/parameters/%s/' % (JobType, JobID))
     elif JobType in ['pka', 'logk']:
+        # report to all job id DB
+        # same job from AllJobIDs
+        obj = get_object_or_404(AllJobIDs, JobID=JobID)
+        obj.SubJobType = JobType
+        obj.CurrentStatus = 2
+        obj.save()
         return redirect('/%s/trans2a/%s/' % (JobType, JobID))
 
 
