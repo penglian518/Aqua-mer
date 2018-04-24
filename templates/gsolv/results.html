@@ -12,16 +12,16 @@
 <div id=main>
 
     {% if Item.QMSoftware == 'Gaussian' %}
-        <p>Due to the license issue, only the input file for {{ Item.QMSoftware }} is provide. The user can do the calculation locally
-        and upload the output file to do the analysis online.</p>
+        <p>Only the input file for {{ Item.QMSoftware }} is provided. Please perform the calculation locally
+        and upload the output file to continue the analysis online.</p>
         <p>
             <b>{{ Item.Name }}_{{ Item.JobID }}.com</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
             <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/inputfile/{{ Item.JobID }}" ></iframe>
         </p>
     {% elif Item.QMSoftware == 'NWChem' %}
-        <p>The bellow is your input file for {{ Item.QMSoftware }}. The user can do the calculation locally
-        and upload the output file to do the analysis online.</p>
+        <p>Below is your input file for {{ Item.QMSoftware }}. The user can do the calculation locally
+        and upload the output file to continue the analysis online.</p>
         <p>
             <b>{{ Item.Name }}_{{ Item.JobID }}.nw</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>

@@ -84,7 +84,7 @@ class ParameterForm(ModelForm):
                   'SPpe', 'SPRedox', 'SPDensity', 'SPUnit']
         labels = {
             'SPTitle': _('Title'),
-            'SPUnit': _('Concentration Unit'),
+            'SPUnit': _('Concentration Units'),
             'SPTemperature': _('Temperature (C)'),
             'SPpHMin': _('pH (min)'),
             'SPpHMax': _('pH (max)'),
