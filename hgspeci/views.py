@@ -20,6 +20,8 @@ import pandas as pd
 import numpy as np
 from decimal import Decimal
 
+from colour import Color
+
 # Create your views here.
 
 
@@ -273,6 +275,23 @@ def results(request, JobID, JobType='hgspeci'):
         # get species and pH values
         species = [str(i) for i in df.Species.values]
         pHs = [float(i) for i in df.columns.values[1:]]
+
+        # generate color does
+        red = Color("red")
+        blue = Color("blue")
+        try:
+            # generate color gradient
+            colors = [blue.get_hex_l(), red.get_hex_l()] + [i.get_hex_l() for i in list(blue.range_to(red, len(species)-2))]
+            #colors = [i.get_hex_l() for i in list(blue.range_to(red, len(species)))]
+
+            ## sort the color according to charges
+            charges = [getCharge(m) for m in species]
+            sp_ch = sorted(zip(species, charges), key=lambda x: x[1])
+            sp_color = dict(zip([i[0] for i in sp_ch], colors))
+            colors = [sp_color[i] for i in species]
+        except:
+            # generate a random color code
+            colors = ['#'+''.join(np.random.permutation([i for i in '0123456789ABCDEF'])[:6]) for i in range(len(df))]
         # generate a random color code
         colors = ['#'+''.join(np.random.permutation([i for i in '0123456789ABCDEF'])[:6]) for i in range(len(df))]
 
@@ -504,3 +523,20 @@ def generate_JobID(module=AllJobIDs):
     newjob.save()
 
     return JobID
+
+
+def getCharge(mol):
+    charge = 0
+    if mol.find('+') > 0:
+        idx = mol.find('+')
+        if idx + 1 == len(mol):
+            charge = 1
+        else:
+            charge = int(mol[idx:])
+    elif mol.find('-') > 0:
+        idx = mol.find('-')
+        if idx + 1 == len(mol):
+            charge = -1
+        else:
+            charge = int(mol[idx:])
+    return charge

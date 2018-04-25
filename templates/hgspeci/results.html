@@ -22,14 +22,13 @@
     </style>
 
     <p>Job {{ Item.JobID }} is finished, click <a href="/hgspeci/download/{{ Item.JobID }}">HERE</a> to download the results.</p>
-    <br>
     <p><center><h2>Speciation plot of {{ Item.SPTitle }}</h2></center></p>
     <p><center>
         <button id="bn_molality">Molality</button>
         <button id="bn_activity">Activity</button>
         <button id="bn_logmolality">Log Molality</button>
         <button id="bn_logactivity">Log Activity</button>
-        <button id="bn_gamma">Log Gamma</button>
+        <button id="bn_gamma">Log Activity Coefficient</button>
     </center></p>
 
     <div style="width:100%;">
@@ -76,7 +75,7 @@
                             }],
                     yAxes: [{
                             display: true,
-                            scaleLabel: { display: true, labelString: 'Molality', fontSize: 28, },
+                            scaleLabel: { display: true, labelString: 'Molality (mol/Kgw)', fontSize: 28, },
                             ticks: {fontSize: 25},
                             }]
                     }
@@ -122,7 +121,7 @@
                             }],
                     yAxes: [{
                             display: true,
-                            scaleLabel: { display: true, labelString: 'Activity', fontSize: 28, },
+                            scaleLabel: { display: true, labelString: 'Activity (mol/Kgw)', fontSize: 28, },
                             ticks: {fontSize: 25},
                             }]
                     }
@@ -261,7 +260,7 @@
                             }],
                     yAxes: [{
                             display: true,
-                            scaleLabel: { display: true, labelString: 'Log Gamma', fontSize: 28, },
+                            scaleLabel: { display: true, labelString: 'Log Activity Coefficient', fontSize: 28, },
                             ticks: {fontSize: 25},
                             }]
                     }
