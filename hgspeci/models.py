@@ -129,8 +129,8 @@ class SPElementsForm(ModelForm):
             'Others': forms.TextInput(attrs={'placeholder': 'optional keywords.', 'size': 25, 'title': 'additional'}),
         }
         labels = {
-            'Element': _('Element/Species'),
-            'Unit': _('Concentration unit'),
+            'Element': _('Elements/Species'),
+            'Unit': _('Concentration units'),
             'ASFormula': _('AS Formula'),
             'GFWFormula': _('GFW Formula'),
             'Redox': _('Redox couple'),
