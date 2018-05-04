@@ -29,15 +29,15 @@ class HgSpeciJobAdmin(admin.ModelAdmin):
 
 class SPElementsAdmin(admin.ModelAdmin):
     model = SPElements
-    list_display = ('JobID', 'Element', 'Concentration', 'Unit', 'AS', 'ASFormula', 'GFW', 'GFWFormula', 'Redox',)
+    list_display = ('SPJobID', 'JobID', 'Element', 'Concentration', 'Unit', 'AS', 'ASFormula', 'GFW', 'GFWFormula', 'Redox',)
 
 class SPMasterSpeciesAdmin(admin.ModelAdmin):
     model = SPMasterSpecies
-    list_display = ('JobID', 'Element', 'Species', 'Alkalinity', 'GFWorFormula', 'GFWforElement', 'Note',)
+    list_display = ('SPJobID', 'JobID', 'Element', 'Species', 'Alkalinity', 'GFWorFormula', 'GFWforElement', 'Note',)
 
 class SPSolutionSpeciesAdmin(admin.ModelAdmin):
     model = SPSolutionSpecies
-    list_display = ('JobID', 'Reaction', 'LogK', 'DeltaH', 'DeltaHUnits', 'AEA1', 'AEA2', 'AEA3', 'AEA4', 'AEA5',
+    list_display = ('SPJobID', 'JobID', 'Reaction', 'LogK', 'DeltaH', 'DeltaHUnits', 'AEA1', 'AEA2', 'AEA3', 'AEA4', 'AEA5',
                   'GammaA', 'GammaB', 'NoCheck', 'MoleBalance', 'Note',)
 
 

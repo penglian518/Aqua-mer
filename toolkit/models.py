@@ -17,8 +17,8 @@ class ToolkitJob(models.Model):
     CalculationTypes = (
         ('csearch', 'Conformational search'),
         ('gsolv', 'Solvation free energy calculation'),
-        ('pka', 'pKa claculation'),
-        ('logk', 'log K claculation'),
+        ('pka', 'pKa calculation'),
+        ('logk', 'log K calculation'),
     )
 
     FileTypes = (

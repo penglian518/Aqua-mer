@@ -61,7 +61,7 @@ def parameters_input(request, JobID):
         SPJob = HgSpeciJob(JobID=JobID)
 
     # determine how many input areas should provide
-    if len(SPElements.objects.filter(SPJobID=JobID)) > 0:
+    if len(SPElements.objects.filter(JobID=JobID)) > 0:
         SPElementsInlineFormSet = inlineformset_factory(HgSpeciJob, SPElements, form=SPElementsForm, extra=0,
                                                         can_delete=False)
     else:
@@ -103,7 +103,7 @@ def input_masterspecies(request, JobID):
         SPJob = HgSpeciJob(JobID=JobID)
 
     # determine how many input areas should provide
-    if len(SPMasterSpecies.objects.filter(SPJobID=JobID)) > 0:
+    if len(SPMasterSpecies.objects.filter(JobID=JobID)) > 0:
         SPMasterSpeciesInlineFormSet = inlineformset_factory(HgSpeciJob, SPMasterSpecies, form=SPMasterSpeciesForm,
                                                              extra=0, can_delete=False)
     else:
@@ -148,7 +148,7 @@ def input_solutionspecies(request, JobID):
         SPJob = HgSpeciJob(JobID=JobID)
 
     # determine how many input areas should provide
-    if len(SPSolutionSpecies.objects.filter(SPJobID=JobID)) > 0:
+    if len(SPSolutionSpecies.objects.filter(JobID=JobID)) > 0:
         SPSolutionSpeciesInlineFormSet = inlineformset_factory(HgSpeciJob, SPSolutionSpecies, form=SPSolutionSpeciesForm,
                                                              extra=0, can_delete=False)
     else:
