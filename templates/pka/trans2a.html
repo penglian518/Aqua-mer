@@ -14,7 +14,7 @@
         <p>
             The p<i>K</i><sub>a</sub> calculation uses the following equation,
             <p><b>HA ----> A<sup>-</sup> + H<sup>+</sup>&nbsp;&nbsp;&nbsp;&nbsp;<i>K</i><sub>a</sub> = [A<sup>-</sup>][H<sup>+</sup>]/[HA]&nbsp;&nbsp;&nbsp;&nbsp;p<i>K</i><sub>a</sub> = -log <i>K</i><sub>a</sub></b></p>
-            therefore, it requires the user to provide both the <b>deprotonated (A<sup>-</sup>)</b> and
+            therefore, it requires the user to provide the <b>deprotonated (A<sup>-</sup>)</b> and
             the <b>protonated (HA)</b> forms of the compound.
         </p>
     </div>
@@ -22,7 +22,7 @@
     <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST'>
         {% csrf_token %}
 
-        <h3>Please specify which form does the current molecule belongs to?</h3>
+        <h3>Please specify which form the current molecule corresponds to?</h3>
         {{ form }}
         <br>
         <div style="padding-left:300px">
