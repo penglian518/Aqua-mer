@@ -45,6 +45,32 @@
             </tbody>
         </table>
 
+
+        <!-- notations -->
+        <div>
+            <br>
+            <p>***********************************</p>
+            <table>
+                <tr><td><b>Software</b></td><td>The software for QM calculations. Currently, only Gaussian and NWChem are available.
+                    Please note that the QM calculations may take hours or days to be done, therefore, we only provide the input files.
+                    The users have to download the input files and perform the calculations locally.
+                </td></tr>
+                <tr><td><b>Surface type for the cavity</b></td><td>We suggest to use the scaled Solvent Accessible Surface (sSAS) approach
+                    developed in our group to perform the calculations.
+                    (Ref. <a target="_blank" href="https://pubs.acs.org/doi/abs/10.1021/acs.jpca.8b01751">DOI: 10.1021/acs.jpca.8b01751</a> )
+                    But the users can always use the default implementation in the QM software they used
+                    by selecting "Software Default" from the drop down.
+                    <b>Please note that the sSAS approach is not available in NWChem due to the different implementations of SMD.</b>
+                </td></tr>
+                <tr><td><b>Scaling factor for the cavity</b></td><td>In the sSAS approach, different scaling factors were used
+                    to scale the solvent cavity (SAS surface in this case). For the Ligand (L<sup>-</sup>), the optimized scaling factor
+                    is 0.485. For the Metal (M<sup>+</sup>), the optimized value is 0.977. For the Complex (ML), the value 1.08 can be
+                    used for complexes with 2 ligands besides -SH and RCOO-. For all the others, 1.00 is a good choice.
+                    (Ref. Deepa's paper.).
+                </td></tr>
+
+            </table>
+        </div>
         <br>
         <br>
         <button type="submit" class="btn btn-default" style="height:25px;width:90px">Next</button>

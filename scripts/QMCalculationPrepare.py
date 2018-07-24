@@ -282,8 +282,8 @@ class QMCalculationPrepare:
             step1_qm_conf['SCRF_parameters_nw'] = ''
         else:
             step1_qm_conf['SCRF_Read'] = True
-            step1_qm_conf['SCRF_ReadConf'] = 'Surface=%s\nAlpha=%s' % (
-                obj.QMCavitySurfaceP1, str(obj.QMScalingFactorP1))
+            step1_qm_conf['SCRF_ReadConf'] = 'Surface=%s\nAlpha=%s\nModifySph\n\nHg 1.55 %s' % \
+                (obj.QMCavitySurfaceP1, str(obj.QMScalingFactor), str(obj.QMScalingFactorP1))
 
         resource_conf = {
             # number of processors to be used
