@@ -51,6 +51,18 @@
         <tr><td>Minimum number of samples allowed for a cluster</td><td>{{ Item.RandomNMinSamples }}</td></tr>
     {% endif %}
 
+    {% if Item.CSearchType == 'Replica' %}
+        <tr><td>Method</td><td>Replica Exchange Sampling</td></tr>
+        <tr><td>Solvation Moldel</td><td>{{ Item.ReplicaSolvationType }}</td></tr>
+        <tr><td>Number of processors to use</td><td>{{ Item.ReplicaProcessors }}</td></tr>
+        <tr><td>Number of replicas</td><td>{{ Item.ReplicaNReplicas }}</td></tr>
+        <tr><td>Number of clusters to generate</td><td>{{ Item.ReplicaNClusters }}</td></tr>
+        <tr><td>Threshold for clustering analysis</td><td>{{ Item.ReplicaClusterCutoff }}</td></tr>
+    {% endif %}
+
+
+
+
     </tbody>
 </table>
     <br>

@@ -6,6 +6,7 @@ from django.forms import ModelForm
 from datetime import datetime
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 def user_directory_path(instance, filename):
@@ -16,9 +17,15 @@ def user_directory_path(instance, filename):
 class CSearchJob(models.Model):
 
     CSearchTypes = (
-        ('Random', 'Random'),
-        ('Replica', 'Replica'),
-        ('DFT', 'DFT'),
+        ('Random', 'Random sampling'),
+        ('Replica', 'Replica exchange sampling'),
+        ('DFT', 'DFT sampling'),
+    )
+
+    SolvationTypes = (
+        ('gas', 'Gas phase'),
+        ('wat', 'Explicit water'),
+        ('gbis', 'Implicit water (GBIS)'),
     )
 
     FileTypes = (
@@ -65,6 +72,13 @@ class CSearchJob(models.Model):
     RandomEPS = models.FloatField(blank=True, default=0.01)
     RandomNMinSamples = models.PositiveIntegerField(blank=True, default=2)
     RandomReclustering = models.BooleanField(default=False)
+
+    ReplicaSolvationType = models.CharField(max_length=30, choices=SolvationTypes, default='wat')
+    ReplicaProcessors = models.PositiveIntegerField(blank=True, default=10, validators=[MaxValueValidator(28), MinValueValidator(1)])
+    ReplicaNReplicas = models.PositiveIntegerField(blank=True, default=5, validators=[MaxValueValidator(28), MinValueValidator(1)])
+    ReplicaNClusters = models.PositiveIntegerField(blank=True, default=5, validators=[MaxValueValidator(28), MinValueValidator(1)])
+    ReplicaClusterCutoff = models.FloatField(blank=True, default=1.00)
+
 
     Note = models.CharField(max_length=100, blank=True, default='')
 
@@ -160,3 +174,21 @@ class QueryForm(ModelForm):
 
         }
 
+
+class ReplicaSearchForm(ModelForm):
+    class Meta:
+        model = CSearchJob
+        fields = ['JobID', 'CurrentStep', 'Successful',
+                  'ReplicaSolvationType', 'ReplicaProcessors', 'ReplicaNReplicas', 'ReplicaNClusters', 'ReplicaClusterCutoff']
+        labels = {
+            'ReplicaSolvationType': _('Solvation environment to use (default: water)'),
+            'ReplicaProcessors': _('Number of processors to use (Integer times of replicas)'),
+            'ReplicaNReplicas': _('Number of replicas'),
+            'ReplicaNClusters': _('Number of clusters to generate'),
+            'ReplicaClusterCutoff': _('Threshold for clustering analysis (default 1.0 Angstrom)'),
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+        }

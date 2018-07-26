@@ -25,38 +25,76 @@
             <th> 4 </th>
             <th> 5 </th>
         </tr>
-    <tr>
-        <td>
-            <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
-             data-href='/csearch/results/{{ Item.JobID }}/xyz/0'
-             data-backgroundcolor='0xffffff' data-type="xyz"
-             data-select1="all" data-style1='stick'></div>
-        </td>
-        <td>
-            <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
-             data-href='/csearch/results/{{ Item.JobID }}/xyz/1'
-             data-backgroundcolor='0xffffff' data-type="xyz"
-             data-select1="all" data-style1='stick'></div>
-        </td>
-        <td>
-            <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
-             data-href='/csearch/results/{{ Item.JobID }}/xyz/2'
-             data-backgroundcolor='0xffffff' data-type="xyz"
-             data-select1="all" data-style1='stick'></div>
-        </td>
-        <td>
-            <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
-             data-href='/csearch/results/{{ Item.JobID }}/xyz/3'
-             data-backgroundcolor='0xffffff' data-type="xyz"
-             data-select1="all" data-style1='stick'></div>
-        </td>
-        <td>
-            <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
-             data-href='/csearch/results/{{ Item.JobID }}/xyz/4'
-             data-backgroundcolor='0xffffff' data-type="xyz"
-             data-select1="all" data-style1='stick'></div>
-        </td>
-    </tr>
+    {% if Item.CSearchType == 'Random' %}
+        <tr>
+            <td>
+                <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+                 data-href='/csearch/results/{{ Item.JobID }}/xyz/0'
+                 data-backgroundcolor='0xffffff' data-type="xyz"
+                 data-select1="all" data-style1='stick'></div>
+            </td>
+            <td>
+                <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+                 data-href='/csearch/results/{{ Item.JobID }}/xyz/1'
+                 data-backgroundcolor='0xffffff' data-type="xyz"
+                 data-select1="all" data-style1='stick'></div>
+            </td>
+            <td>
+                <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+                 data-href='/csearch/results/{{ Item.JobID }}/xyz/2'
+                 data-backgroundcolor='0xffffff' data-type="xyz"
+                 data-select1="all" data-style1='stick'></div>
+            </td>
+            <td>
+                <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+                 data-href='/csearch/results/{{ Item.JobID }}/xyz/3'
+                 data-backgroundcolor='0xffffff' data-type="xyz"
+                 data-select1="all" data-style1='stick'></div>
+            </td>
+            <td>
+                <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+                 data-href='/csearch/results/{{ Item.JobID }}/xyz/4'
+                 data-backgroundcolor='0xffffff' data-type="xyz"
+                 data-select1="all" data-style1='stick'></div>
+            </td>
+        </tr>
+    {% endif %}
+
+    {% if Item.CSearchType == 'Replica' %}
+        <tr>
+            <td>
+                <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+                 data-href='/csearch/results/{{ Item.JobID }}/pdb/0'
+                 data-backgroundcolor='0xffffff' data-type="pdb"
+                 data-select1="all" data-style1='stick'></div>
+            </td>
+            <td>
+                <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+                 data-href='/csearch/results/{{ Item.JobID }}/pdb/1'
+                 data-backgroundcolor='0xffffff' data-type="pdb"
+                 data-select1="all" data-style1='stick'></div>
+            </td>
+            <td>
+                <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+                 data-href='/csearch/results/{{ Item.JobID }}/pdb/2'
+                 data-backgroundcolor='0xffffff' data-type="pdb"
+                 data-select1="all" data-style1='stick'></div>
+            </td>
+            <td>
+                <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+                 data-href='/csearch/results/{{ Item.JobID }}/pdb/3'
+                 data-backgroundcolor='0xffffff' data-type="pdb"
+                 data-select1="all" data-style1='stick'></div>
+            </td>
+            <td>
+                <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
+                 data-href='/csearch/results/{{ Item.JobID }}/pdb/4'
+                 data-backgroundcolor='0xffffff' data-type="pdb"
+                 data-select1="all" data-style1='stick'></div>
+            </td>
+        </tr>
+    {% endif %}
+
 
     </table>
     <br>

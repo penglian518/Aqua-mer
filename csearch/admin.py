@@ -9,7 +9,13 @@ class CSearchJobAdmin(admin.ModelAdmin):
 
     list_display = ('JobID', 'Name', 'CurrentStep', 'CurrentStatus', 'Successful', 'FailedReason', 'CreatedDate',
                     'SmilesStr', 'UploadedFile', 'UploadedFileType', 'CSearchType',
-                    'RandomForcefield', 'RandomNRotamers', 'RandomNSteps', 'RandomEPS', 'RandomNMinSamples', 'Note')
+
+                    'RandomForcefield', 'RandomNRotamers', 'RandomNSteps', 'RandomEPS', 'RandomNMinSamples',
+
+                    'ReplicaSolvationType', 'ReplicaProcessors', 'ReplicaNReplicas', 'ReplicaNClusters',
+                    'ReplicaClusterCutoff',
+
+                    'Note')
 
 
 

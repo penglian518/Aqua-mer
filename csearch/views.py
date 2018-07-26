@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
-from .models import CSearchJob, SmilesForm, UploadForm, SearchTypeForm, RandomSearchForm, QueryForm, ReclusteringForm
+from .models import CSearchJob, SmilesForm, UploadForm, SearchTypeForm, RandomSearchForm, QueryForm, ReclusteringForm, ReplicaSearchForm
 from cyshg.models import AllJobIDs
 
 from scripts.JobManagement import JobManagement
@@ -94,7 +94,20 @@ def parameters_random(request, JobID):
 
 def parameters_replica(request, JobID):
     clientStatistics(request)
-    return render(request, 'csearch/parameters_replica.html', {'JobID': JobID})
+    item = get_object_or_404(CSearchJob, JobID=JobID)
+    if request.method == 'POST':
+        form = ReplicaSearchForm(request.POST, instance=item)
+        if form.is_valid():
+            model_instance = form.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "2.1"
+            model_instance.Successful = True
+            model_instance.save()
+            return redirect('/csearch/review/%d' % int(model_instance.JobID))
+
+    else:
+        form = ReplicaSearchForm()
+    return render(request, 'csearch/parameters_replica.html', {'form': form, 'JobID': JobID})
 
 def parameters_dft(request, JobID):
     clientStatistics(request)
@@ -133,6 +146,7 @@ def results(request, JobID, JobType='csearch'):
         # a. generate input file
         # b. submit the job
 
+        # Prepare inputfiles according to search types
         # generate command line file
         if item.RandomReclustering:
             jobmanger.CSearchJobReclustering(obj=item)
@@ -337,6 +351,24 @@ def results_xyz(request, JobID, Ith, JobType='csearch'):
     fcon = ''.join(open(xyzfile).readlines())
 
     return HttpResponse(fcon, content_type='text/plain')
+
+def results_pdb(request, JobID, Ith, JobType='csearch'):
+    """
+
+    :param request:
+    :param JobID:
+    :param Ith: the ith molecule from top
+    :return:
+    """
+    clientStatistics(request)
+    job_dir = get_job_dir(JobID)
+    xyzfile = '%s/%s-%s_results/configurations_wat/cluster0.%s.pdb' % (job_dir, JobType, JobID, Ith)
+
+    fcon = ''.join(open(xyzfile).readlines())
+
+    return HttpResponse(fcon, content_type='text/plain')
+
+
 
 def inputcoor(request, JobID, JobType='csearch'):
     """

@@ -19,6 +19,24 @@
         {{ form.as_p }}
         </table>
 
+        <!-- notations -->
+        <div>
+            <br>
+            <p>***********************************</p>
+            <table>
+                <tr><td><b>Random sampling</b></td><td>This method will first generate the configurations by randomly
+                    assigning the dihedral angles in the molecules, then optimize with generalized forcefields,
+                    such as UFF, GAFF, MMFF etc.
+                </td></tr>
+                <tr><td><b>Replica exchange sampling</b></td><td>This module allows the use to perform conformation search
+                    of small compounds in explicit water, implicit water and gas phase with replica exchange algorithm implemented
+                    in NAMD2. Antechamber is used to parametrize molecules.
+                </td></tr>
+                <tr><td><b>DFT sampling</b></td><td>Similar to the Random sampling method, but will optimize with DFT methods.</td></tr>
+
+            </table>
+        </div>
+
         <br>
         <br>
         <button type="submit" class="btn btn-default" style="height:25px;width:90px">Next</button>

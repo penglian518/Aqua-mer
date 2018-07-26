@@ -199,7 +199,7 @@ class JobManagement:
 
     def CheckJob(self, obj, JobType='csearch'):
         '''
-        Check the status fo the jobs.
+        Check the status of the job.
         '''
         # get basic info
         job_id = obj.JobID
@@ -317,11 +317,50 @@ class JobManagement:
                 obj.Successful = False
                 obj.save()
 
+            # parameters for job script
+            Nnodes = 1
+            Nprocessors = 1
+
+        elif obj.CSearchType in ['Replica']:
+            if obj.ReplicaSolvationType in ['gas']:
+                gas = 'True'
+                explicit = 'False'
+                implicit = 'False'
+            elif obj.ReplicaSolvationType in ['wat', 'water']:
+                gas = 'False'
+                explicit = 'True'
+                implicit = 'False'
+            elif obj.ReplicaSolvationType in ['gbis']:
+                gas = 'False'
+                explicit = 'False'
+                implicit = 'True'
+
+            cmd_line = '%s/scripts/CSearchReplica.py -np %d -nr %d -nc %d --cutoff %s ' \
+                       '--gas=%s --explicit=%s --implicit=%s -t xyz %s-%d.xyz -o %s-%d >> CSearch.log 2>&1\n' \
+                       'chmod -R g+rw %s-%d*\n' \
+                       'find . -type d -exec chmod 770 {} +' \
+                       % (self.DjangoHome, obj.ReplicaProcessors, obj.ReplicaNReplicas, obj.ReplicaNClusters, str(obj.ReplicaClusterCutoff),
+                          gas, explicit, implicit, JobType, job_id, JobType, job_id, JobType, job_id)
+            # write the command line to exe_file
+            try:
+                exe_filehandle = open(exe_file, 'w')
+                exe_filehandle.write(cmd_line + '\n')
+                exe_filehandle.close()
+            except:
+                obj.FailedReason += 'Could not generate commandline file (CSearch.run)'
+                obj.CurrentStatus = '3'
+                obj.Successful = False
+                obj.save()
+
+            # parameters for job script
+            Nnodes = 1
+            Nprocessors = int(obj.ReplicaProcessors)
+
         # generate the submit file
         # the job name should be in the format of "JobID-JobType"!
         sub_str = '''#!/bin/bash
 #PBS -N %d-%s
-#PBS -l nodes=1:ppn=1
+#PBS -l nodes=%d:ppn=%d
 #PBS -j oe
 #PBS -l walltime=24:00:00
 #PBS -W umask=0007
@@ -334,7 +373,7 @@ cd $PBS_O_WORKDIR
 
 # signal
 echo "Job is Done!"
-        ''' % (job_id, JobType)
+        ''' % (job_id, JobType, Nnodes, Nprocessors)
 
         # write the sub_file
         try:

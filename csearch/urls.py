@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^review/$', views.review_doc, name='review_doc'),
     url(r'^results/(?P<JobID>[0-9]+)$', views.results, name='results'),
     url(r'^results/(?P<JobID>[0-9]+)/xyz/(?P<Ith>[0-9]+)$', views.results_xyz, name='results_xyz'),
+    url(r'^results/(?P<JobID>[0-9]+)/pdb/(?P<Ith>[0-9]+)$', views.results_pdb, name='results_pdb'),
     url(r'^results/$', views.results_doc, name='results_doc'),
     url(r'^reclustering/(?P<JobID>[0-9]+)$', views.reclustering, name='reclustering'),
     url(r'^reclustering/$', views.reclustering_doc, name='reclustering_doc'),
