@@ -12,9 +12,11 @@
 <!-- content on the right -->
 <div id="content">
 <div id="title">Step 4. Results</div>
-<div id=main>
+<p id=main>
 
     <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/csearch/download/{{ Item.JobID }}">HERE</a> to download the structure files.</p>
+
+    {% if Item.CSearchType == 'Random' %}
     <p>You can also redo clustering, click <a href="/csearch/reclustering/{{ Item.JobID }}">HERE</a>.</p>
     <p><center><b>The most stable structures</b></center></p>
     <table style="width:100%">
@@ -25,7 +27,6 @@
             <th> 4 </th>
             <th> 5 </th>
         </tr>
-    {% if Item.CSearchType == 'Random' %}
         <tr>
             <td>
                 <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
@@ -58,9 +59,23 @@
                  data-select1="all" data-style1='stick'></div>
             </td>
         </tr>
+    </table>
+    <br>
+    <center><img src="{{ chart }}" /></center>
+    <br>
+
     {% endif %}
 
     {% if Item.CSearchType == 'Replica' %}
+    <p><center><b>The most stable structures</b></center></p>
+    <table style="width:100%">
+        <tr>
+            <th> 1 </th>
+            <th> 2 </th>
+            <th> 3 </th>
+            <th> 4 </th>
+            <th> 5 </th>
+        </tr>
         <tr>
             <td>
                 <div style="height: 200px; width: 220px; position: relative;" class='viewer_3Dmoljs'
@@ -93,13 +108,14 @@
                  data-select1="all" data-style1='stick'></div>
             </td>
         </tr>
-    {% endif %}
-
-
     </table>
     <br>
+    <p><center><b>RMSD Trajectories of the lowest temperature replicas</b></center></p>
     <center><img src="{{ chart }}" /></center>
     <br>
+
+    {% endif %}
+
 
 
 </div></div>

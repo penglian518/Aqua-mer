@@ -253,12 +253,19 @@ class JobManagement:
         job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
         os.chdir(job_dir)
 
+        # determine the results directory
+        if JobType in ['csearch'] and obj.CSearchType in ['Random']:
+            results_dir = '%s-%d' % (JobType, job_id)
+        elif JobType in ['csearch'] and obj.CSearchType in ['Replica']:
+            results_dir = '%s-%d_results' % (JobType, job_id)
+        elif JobType in ['csearch'] and obj.CSearchType in ['DFT']:
+            results_dir = '%s-%d' % (JobType, job_id)
+
         # make archive file for download
-        dir_download = '%s-%d' % (JobType, job_id)
         try:
-            shutil.make_archive('%s-%d' % (JobType, job_id), 'zip', dir_download)
+            shutil.make_archive('%s-%d' % (JobType, job_id), 'zip', results_dir)
         except:
-            obj.FailedReason += 'Could not create zip file (%s-%d.zip).' % (JobType, job_id)
+            obj.FailedReason += 'Could not create zip file (%s.zip).' % results_dir
             # change the job status in DB to '3' error
             obj.CurrentStatus = '3'
             obj.Successful = False
@@ -337,10 +344,13 @@ class JobManagement:
 
             cmd_line = '%s/scripts/CSearchReplica.py -np %d -nr %d -nc %d --cutoff %s ' \
                        '--gas=%s --explicit=%s --implicit=%s -t xyz %s-%d.xyz -o %s-%d >> CSearch.log 2>&1\n' \
-                       'chmod -R g+rw %s-%d*\n' \
+                       'chmod -R g+rw %s-%d\n' \
+                       'chmod -R g+rw %s-%d_results\n' \
                        'find . -type d -exec chmod 770 {} +' \
                        % (self.DjangoHome, obj.ReplicaProcessors, obj.ReplicaNReplicas, obj.ReplicaNClusters, str(obj.ReplicaClusterCutoff),
-                          gas, explicit, implicit, JobType, job_id, JobType, job_id, JobType, job_id)
+                          gas, explicit, implicit, JobType, job_id, JobType, job_id,
+                          JobType, job_id,
+                          JobType, job_id)
             # write the command line to exe_file
             try:
                 exe_filehandle = open(exe_file, 'w')

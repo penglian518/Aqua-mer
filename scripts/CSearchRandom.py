@@ -457,13 +457,31 @@ class CSearchRand:
         uniquePDB = '%s/%s.unique.pdb' % (mol, mol)
 
         # perform calculations
-        #self.genRotamers(inMol2, rotamers, debug)
-        self.genRotamers_rdkit(inMol2, rotamers, debug)
-        self.optmizeRotamers(rotamers, opted, optedEN, debug)
-        self.calcRMS(opted, optedRMS, debug)
-        self.plotCluster(optedEN, optedRMS, clusterFig, clusterCsv, eps=self.eps, minSamples=self.minSamples, debug=debug)
-        self.uniqueClusters(clusterCsv, opted, uniqueCsv, uniquePDB, debug)
-        self.splitePDBtoXYZ(uniquePDB, '%s/xyz/' % mol, self.outPrefix, mol, debug)
+        try:
+            #self.genRotamers(inMol2, rotamers, debug)
+            self.genRotamers_rdkit(inMol2, rotamers, debug)
+        except Exception as e:
+            logging.warn('Failed to generate rotamers!\nThe error is:\n%s' % e)
+        try:
+            self.optmizeRotamers(rotamers, opted, optedEN, debug)
+        except Exception as e:
+            logging.warn('Failed to optimize rotamers!\nThe error is:\n%s' % e)
+        try:
+            self.calcRMS(opted, optedRMS, debug)
+        except Exception as e:
+            logging.warn('Failed to calculate RMS!\nThe error is:\n%s' % e)
+        try:
+            self.plotCluster(optedEN, optedRMS, clusterFig, clusterCsv, eps=self.eps, minSamples=self.minSamples, debug=debug)
+        except Exception as e:
+            logging.warn('Failed to make the plot for clusters!\nThe error is:\n%s' % e)
+        try:
+            self.uniqueClusters(clusterCsv, opted, uniqueCsv, uniquePDB, debug)
+        except Exception as e:
+            logging.warn('Failed to remove redundant conformations from clusters!\nThe error is:\n%s' % e)
+        try:
+            self.splitePDBtoXYZ(uniquePDB, '%s/xyz/' % mol, self.outPrefix, mol, debug)
+        except Exception as e:
+            logging.warn('Failed to split PDB file to XYZ!\nThe error is:\n%s' % e)
 
 
 

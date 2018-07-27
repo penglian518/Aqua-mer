@@ -174,11 +174,14 @@ def results(request, JobID, JobType='csearch'):
     if item.CurrentStatus == '2':
         # the job is finished, display the results.
         job_dir = get_job_dir(JobID)
-        output_cluster_png = '%s/%s-%s/%s-%s.cluster.png' % (job_dir, JobType, JobID, JobType, JobID)
+        if item.CSearchType in ['Random']:
+            output_png = '%s/%s-%s/%s-%s.cluster.png' % (job_dir, JobType, JobID, JobType, JobID)
+        elif item.CSearchType in ['Replica']:
+            output_png = '%s/%s-%s_results/%s/mol_rmsdtt.png' % (job_dir, JobType, JobID, item.ReplicaSolvationType)
 
         # read the figure file
         try:
-            fig_in_base64 = "data:image/png;base64,%s" % base64.encodestring(open(output_cluster_png).read())
+            fig_in_base64 = "data:image/png;base64,%s" % base64.encodestring(open(output_png).read())
         except:
             fig_in_base64 = base64.encodestring('Figure is not available.')
             pass
@@ -354,15 +357,21 @@ def results_xyz(request, JobID, Ith, JobType='csearch'):
 
 def results_pdb(request, JobID, Ith, JobType='csearch'):
     """
-
+    This one is used to handle results from replica exchange calculations
     :param request:
     :param JobID:
     :param Ith: the ith molecule from top
     :return:
     """
     clientStatistics(request)
+    item = get_object_or_404(CSearchJob, JobID=JobID)
     job_dir = get_job_dir(JobID)
-    xyzfile = '%s/%s-%s_results/configurations_wat/cluster0.%s.pdb' % (job_dir, JobType, JobID, Ith)
+    if Ith in ['00']:
+        xyzfile = '%s/%s-%s_results/%s/mol.pdb' % (job_dir, JobType, JobID, item.ReplicaSolvationType)
+    elif Ith in ['000']:
+        xyzfile = '%s/%s-%s_results/%s/mol_wb.pdb' % (job_dir, JobType, JobID, item.ReplicaSolvationType)
+    else:
+        xyzfile = '%s/%s-%s_results/%s/configurations/cluster0.%s.pdb' % (job_dir, JobType, JobID, item.ReplicaSolvationType, Ith)
 
     fcon = ''.join(open(xyzfile).readlines())
 
