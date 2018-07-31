@@ -154,13 +154,13 @@ def results(request, JobID, JobType='csearch'):
             jobmanger.CSearchJobPrepare(obj=item)
 
         # submit the job
-        jobmanger.JobExec_v1(obj=item, JobType=JobType)
+        #jobmanger.JobExec_v1(obj=item, JobType=JobType)
         # run the calculations in background
         #Exec_thread = threading.Thread(target=jobmanger.JobExec, kwargs={"obj": item, 'JobType': JobType})
         #Exec_thread.start()
 
 
-        # change the status in the database
+        # change the status in the database. 4 --- to be submitted
         item.CurrentStatus = '1'
         item.Successful = True
         item.FailedReason = ''
@@ -168,7 +168,7 @@ def results(request, JobID, JobType='csearch'):
         # redirect to the result page
         return redirect('/csearch/results/%d' % int(item.JobID))
 
-    if item.CurrentStatus == '1':
+    if item.CurrentStatus in ['1']:
         # the job is 'running', keep checking the status
         return render(request, 'csearch/results_jobrunning.html', {'JobID': JobID, 'Item': item})
     if item.CurrentStatus == '2':
