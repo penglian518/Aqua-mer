@@ -237,8 +237,6 @@ class JobManagement:
                     obj.CurrentStatus = '2'
                     obj.save()
 
-
-
         return
 
 
@@ -327,6 +325,29 @@ class JobManagement:
             # parameters for job script
             Nnodes = 1
             Nprocessors = 1
+        elif obj.CSearchType in ['DFT']:
+            cmd_line = '%s/scripts/CSearchRandom.py --NRotamers %d -np %d -xc %s -cutoff %s -vacuum %s -charge %s ' \
+                       '-openshell %s -steps %d -fmax %s -cp2k True --eps %s --minSamples %d %s-%d.%s >> CSearch.log 2>&1\n' \
+                       'chmod -R g+rw %s-%d\n' \
+                       'find . -type d -exec chmod 770 {} +' \
+                       % (self.DjangoHome, obj.RandomNRotamers, obj.DFTProcessors, obj.DFTXC, str(obj.DFTCutoff), str(obj.DFTVacuum),
+                          str(obj.DFTCharge), str(obj.DFTOpenshell), obj.DFTSteps, str(obj.DFTFmax), str(obj.RandomEPS),
+                          obj.RandomNMinSamples, JobType, job_id, file_type,
+                          JobType, job_id)
+            # write the command line to exe_file
+            try:
+                exe_filehandle = open(exe_file, 'w')
+                exe_filehandle.write(cmd_line + '\n')
+                exe_filehandle.close()
+            except:
+                obj.FailedReason += 'Could not generate commandline file (CSearch.run)'
+                obj.CurrentStatus = '3'
+                obj.Successful = False
+                obj.save()
+
+            # parameters for job script
+            Nnodes = 1
+            Nprocessors = obj.DFTProcessors
 
         elif obj.CSearchType in ['Replica']:
             if obj.ReplicaSolvationType in ['gas']:

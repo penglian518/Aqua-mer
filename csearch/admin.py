@@ -12,6 +12,9 @@ class CSearchJobAdmin(admin.ModelAdmin):
 
                     'RandomForcefield', 'RandomNRotamers', 'RandomNSteps', 'RandomEPS', 'RandomNMinSamples',
 
+                    'DFTProcessors', 'DFTXC', 'DFTCutoff', 'DFTVacuum', 'DFTCharge',
+                    'DFTOpenshell', 'DFTSteps', 'DFTFmax',
+
                     'ReplicaSolvationType', 'ReplicaProcessors', 'ReplicaNReplicas', 'ReplicaNClusters',
                     'ReplicaClusterCutoff',
 

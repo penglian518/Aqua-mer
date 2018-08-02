@@ -16,7 +16,7 @@
 
     <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/csearch/download/{{ Item.JobID }}">HERE</a> to download the structure files.</p>
 
-    {% if Item.CSearchType == 'Random' %}
+    {% if Item.CSearchType == 'Random' or Item.CSearchType == 'DFT' %}
     <p>You can also redo clustering, click <a href="/csearch/reclustering/{{ Item.JobID }}">HERE</a>.</p>
     <p><center><b>The most stable structures</b></center></p>
     <table style="width:100%">

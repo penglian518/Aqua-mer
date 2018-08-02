@@ -22,7 +22,7 @@ import matplotlib.pylab as plt
 
 class CSearchRand:
     def __init__(self):
-
+        logging.basicConfig(level=logging.INFO)
         self.debug = True
 
         self.NRotamers = 1000
@@ -38,6 +38,16 @@ class CSearchRand:
         self.obminimize = '/home/p6n/anaconda2/bin/obminimize'
         self.rdkitrotamer = '/home/p6n/tools/myPythonLib/PLg09/rdkitrotamer.py'
         self.vmd = '/home/p6n/tools/vmd-1.9.2/bin/vmd'
+
+        self.cp2koptmizer = '/home/p6n/tools/myPythonLib/PLg09/CP2Koptimizer.py'
+        self.np = 4
+        self.steps = 200
+        self.xc = 'PBE'
+        self.cutoff = 300
+        self.vacuum = 2.0
+        self.charge = 0
+        self.openshell = False  # unrestricted Kohn-Sham, required if there is an odd number of electrons
+        self.fmax = 0.05
 
 
     def genRotamers(self, inMol2, outMol2, debug=True):
@@ -112,7 +122,7 @@ class CSearchRand:
         logging.info(list(set(Info))[0])
 
 
-    def optmizeRotamers(self, inMol2, outPDB, outEn, debug=True):
+    def optmizeRotamers(self, inMol2, outPDB, outEn, cp2k=False, debug=True):
         '''
 
         :param inMol2:
@@ -121,7 +131,7 @@ class CSearchRand:
         '''
         if debug:
             logging.info('-' * 50)
-            logging.info('Run: optmizeRotamers(inMol2=%s, outPDB=%s, outEn=%s, debug=%s)\n' % (inMol2, outPDB, outEn, debug))
+            logging.info('Run: optmizeRotamers(inMol2=%s, outPDB=%s, outEn=%s, cp2k=%s, debug=%s)\n' % (inMol2, outPDB, outEn, cp2k, debug))
 
         # delete the exist pdb
         try:
@@ -129,37 +139,57 @@ class CSearchRand:
         except:
             pass
 
-        # command
-        cmd = '%s -ff %s -n %d -%s %s > %s' % (self.obminimize, self.Forcefield, self.NStep, self.Opt, inMol2, outPDB)
-        if debug:
-            logging.info('Running: %s\n' % cmd)
+        if cp2k:
+            # command. the outPDB, outEN will be generated automatically
+            cmd = '%s -np %d -step %d -xc %s -cutoff %s -vacuum %s -charge %s -openshell %s -fmax %s  batch %s' % \
+                  (self.cp2koptmizer, self.np, self.steps, self.xc, str(self.cutoff), str(self.vacuum), str(self.charge),
+                   str(self.openshell), str(self.fmax), inMol2)
+            if debug:
+                logging.info('Running: %s\n' % cmd)
 
-        # optimize
-        optcmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            # optimize
+            optcmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
-        # grab output and error
-        optout, opterr = optcmd.communicate()
+            # grab output and error
+            optout, opterr = optcmd.communicate()
 
-        # extract the energy
-        optOutput = opterr.split('\n')
+            logging.info('Output: %s\n Error: %s' % (optout, opterr))
 
-        index_list = []
-        counter = 0
-        for i in optOutput:
-            if i.startswith('Time:'):
-                index_list.append(counter-1)
-            counter += 1
-        En_list = [optOutput[i].split()[1] for i in index_list]
+            # form energy list
+            En_list = [i.strip() for i in open(outEn).readlines()]
 
-        # save the energy list
-        #with open(outEn, 'w') as fout:
-        #    fout.writelines('\n'.join(En_list))
-        fout = open(outEn, 'w')
-        i = 0
-        for e in En_list:
-            fout.write('%s, %d\n' % (str(e), i))
-            i += 1
-        fout.close()
+        else:
+            # command
+            cmd = '%s -ff %s -n %d -%s %s > %s' % (self.obminimize, self.Forcefield, self.NStep, self.Opt, inMol2, outPDB)
+            if debug:
+                logging.info('Running: %s\n' % cmd)
+
+            # optimize
+            optcmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+
+            # grab output and error
+            optout, opterr = optcmd.communicate()
+
+            # extract the energy
+            optOutput = opterr.split('\n')
+
+            index_list = []
+            counter = 0
+            for i in optOutput:
+                if i.startswith('Time:'):
+                    index_list.append(counter-1)
+                counter += 1
+            En_list = [optOutput[i].split()[1] for i in index_list]
+
+            # save the energy list
+            #with open(outEn, 'w') as fout:
+            #    fout.writelines('\n'.join(En_list))
+            fout = open(outEn, 'w')
+            i = 0
+            for e in En_list:
+                fout.write('%s, %d\n' % (str(e), i))
+                i += 1
+            fout.close()
 
         return En_list
 
@@ -213,7 +243,10 @@ class CSearchRand:
 
         # read the results
         Ens = np.array([float(i.strip().split(',')[0]) for i in open(enFile).readlines()])
-        Frame = np.array([int(i.strip().split(',')[1]) for i in open(enFile).readlines()])
+        try:
+            Frame = np.array([int(i.strip().split(',')[1]) for i in open(enFile).readlines()])
+        except:
+            Frame = range(len(Ens))
 
         Rms = np.array([float(i.strip().split()[1]) for i in open(rmsFile).readlines()[:-1]])
         #Frame = np.array([int(i.strip().split()[0]) for i in open(rmsFile).readlines()[:-1]])
@@ -394,11 +427,11 @@ class CSearchRand:
 
 
 
-    def samplingAll(self, molXYZ, debug=True):
+    def samplingAll(self, molXYZ, cp2k=False, debug=True):
         if debug:
             logging.info('-' * 50)
-            logging.info('Run: samplingAll(molXYZ=%s, debug=%s)\n'
-                         % (molXYZ, debug))
+            logging.info('Run: samplingAll(molXYZ=%s, cp2k=%s, debug=%s)\n'
+                         % (molXYZ, cp2k, debug))
 
         # get mol name
         mol = molXYZ.split('.xyz')[0]
@@ -413,24 +446,44 @@ class CSearchRand:
         logFile = '%s/csearch.log' % mol
         logging.basicConfig(filename=logFile, filemode='w', level=logging.INFO)
 
-        info_text = '''%s
-        mol = %s
+        if not cp2k:
+            info_text = '''%s
+            mol = %s
+    
+            NRotamers = %d
+            ForceField = %s
+            NStep = %d
+            Opt = %s
+            eps = %s
+            minSamples = %d
+            outPrefix = %s
+    
+            obabel = %s
+            obrotamer = %s
+            obminimize = %s
+            ''' % ("-"*50, molXYZ, self.NRotamers, self.Forcefield, self.NStep, self.Opt, str(self.eps), self.minSamples,
+                   self.outPrefix, self.obabel, self.rdkitrotamer, self.obminimize)
+        else:
+            info_text = '''%s
+            mol = %s
+    
+            NRotamers = %d
+            np = %d
+            xc = %s
+            steps = %d
+            cutoff = %s
+            vacuum = %s
+            charge = %s
+            fmax = %s
+    
+            obabel = %s
+            obrotamer = %s
+            minimizer = %s
+            ''' % ("-"*50, molXYZ, self.NRotamers, self.np, self.xc, self.steps, str(self.cutoff), str(self.vacuum),
+                   str(self.charge), str(self.fmax), self.obabel, self.rdkitrotamer, self.cp2koptmizer)
 
-        NRotamers = %d
-        ForceField = %s
-        NStep = %d
-        Opt = %s
-        eps = %s
-        minSamples = %d
-        outPrefix = %s
-
-        obabel = %s
-        obrotamer = %s
-        obminimize = %s
-        ''' % ("-"*50, molXYZ, self.NRotamers, self.Forcefield, self.NStep, self.Opt, str(self.eps), self.minSamples,
-               self.outPrefix, self.obabel, self.rdkitrotamer, self.obminimize)
         logging.info(info_text)
-        print info_text
+        #print info_text
 
         # convert xyz to mol2
         cmd = '%s -ixyz %s.xyz -O %s/%s.mol2' % (self.obabel, molXYZ, mol, mol)
@@ -463,7 +516,7 @@ class CSearchRand:
         except Exception as e:
             logging.warn('Failed to generate rotamers!\nThe error is:\n%s' % e)
         try:
-            self.optmizeRotamers(rotamers, opted, optedEN, debug)
+            self.optmizeRotamers(rotamers, opted, optedEN, cp2k=cp2k, debug=debug)
         except Exception as e:
             logging.warn('Failed to optimize rotamers!\nThe error is:\n%s' % e)
         try:
@@ -495,7 +548,18 @@ if __name__ == '__main__':
     parser.add_argument("--eps", nargs='?', type=float, default=0.01, help="eps value used by DBScan")
     parser.add_argument("--minSamples", nargs='?', type=int, default=1, help="Minimum samples allow for a cluster")
     parser.add_argument("--outPrefix", nargs='?', type=str, default="CSearch_", help="Prefix used for output xyz")
-    parser.add_argument("--debug", nargs='?', type=str, default="False", help="Debug. Default: False")
+    parser.add_argument("--debug", nargs='?', type=str, default="False", help="Default: False")
+
+    parser.add_argument("-np", nargs='?', type=int, default=8, help="Number of processors to use")
+    parser.add_argument("-xc", nargs='?', type=str, default="PBE", help="Functional to use")
+    parser.add_argument("-steps", nargs='?', type=int, default=100, help="Max minimization steps for each rotamer")
+    parser.add_argument("-cutoff", nargs='?', type=float, default=300, help="Cutoff of the potential")
+    parser.add_argument("-vacuum", nargs='?', type=float, default=2.0, help="Vacuum of the system")
+    parser.add_argument("-charge", nargs='?', type=int, default=0, help="Charge of the molecule")
+    parser.add_argument("-openshell", nargs='?', type=str, default='False', help="Open shell or not?")
+    parser.add_argument("-fmax", nargs='?', type=float, default=0.1, help="Max force for convergence")
+
+    parser.add_argument("-cp2k", nargs='?', type=str, default='False', help="Optimized with CP2K or not")
 
     parser.add_argument("reclustering", nargs='?', help="Perform reclustering or not")
     parser.add_argument("mol", type=str, default="", help="Input the molecule file (with file type e.g. 'mol.xyz')")
@@ -525,7 +589,10 @@ if __name__ == '__main__':
         startTime = time.time()
 
         CS = CSearchRand()
-        CS.debug = args.debug  # False
+        if args.debug in ['False', 'false', 'F', 'f', '0', 0]:
+            debug = False
+        elif args.debug in ['True', 'true', 'T', 't', '1', 1]:
+            debug = True
 
         # for minimization
         CS.NRotamers = args.NRotamers  # Default 1000    # Number of rotamers to generate
@@ -538,7 +605,25 @@ if __name__ == '__main__':
 
         CS.outPrefix = args.outPrefix  # Default '_l_Xe_r_'
 
-        CS.samplingAll(mol, debug=CS.debug)
+        # for potential cp2k runs
+        CS.np = args.np
+        CS.xc = args.xc
+        CS.fmax = args.fmax
+        CS.steps = args.steps
+        CS.cutoff = args.cutoff
+        CS.charge = args.charge
+        CS.vacuum = args.vacuum
+        if args.openshell in ['False', 'false', 'F', 'f', '0', 0]:
+            CS.openshell = False
+        elif args.openshell in ['True', 'true', 'T', 't', '1', 1]:
+            CS.openshell = True
+        if args.cp2k in ['False', 'false', 'F', 'f', '0', 0]:
+            cp2kornot = False
+        elif args.cp2k in ['True', 'true', 'T', 't', '1', 1]:
+            cp2kornot = True
+
+        # run the sampling
+        CS.samplingAll(mol, cp2k=cp2kornot, debug=debug)
 
         endTime = time.time()
         logging.info('Time: %s min' % ((endTime - startTime) / 60))

@@ -18,8 +18,8 @@ class CSearchJob(models.Model):
 
     CSearchTypes = (
         ('Random', 'Random sampling'),
+        ('DFT', 'Random sampling with DFT optimizer'),
         ('Replica', 'Replica exchange sampling'),
-        ('DFT', 'DFT sampling'),
     )
 
     SolvationTypes = (
@@ -41,6 +41,11 @@ class CSearchJob(models.Model):
         ('Ghemical', 'Ghemical'),
         ('MMFF94', 'MMFF94'),
         ('MMFF94s', 'MMFF94s'),
+    )
+
+    XCs = (
+        ('PBE', 'PBE'),
+        ('LDA', 'LDA'),
     )
 
 
@@ -72,6 +77,15 @@ class CSearchJob(models.Model):
     RandomEPS = models.FloatField(blank=True, default=0.01)
     RandomNMinSamples = models.PositiveIntegerField(blank=True, default=2)
     RandomReclustering = models.BooleanField(default=False)
+
+    DFTProcessors = models.PositiveIntegerField(blank=True, default=16, validators=[MaxValueValidator(28), MinValueValidator(1)])
+    DFTXC = models.CharField(max_length=30, choices=XCs, default='PBE')
+    DFTSteps = models.PositiveIntegerField(blank=True, default=100)
+    DFTVacuum = models.FloatField(blank=True, default=2.0)
+    DFTCharge = models.IntegerField(blank=True, default=0)
+    DFTOpenshell = models.BooleanField(default=False)
+    DFTCutoff = models.FloatField(blank=True, default=300)
+    DFTFmax = models.FloatField(blank=True, default=0.1)
 
     ReplicaSolvationType = models.CharField(max_length=30, choices=SolvationTypes, default='wat')
     ReplicaProcessors = models.PositiveIntegerField(blank=True, default=10, validators=[MaxValueValidator(28), MinValueValidator(1)])
@@ -174,6 +188,33 @@ class QueryForm(ModelForm):
 
         }
 
+class DFTSearchForm(ModelForm):
+    class Meta:
+        model = CSearchJob
+        fields = ['JobID', 'CurrentStep', 'Successful',
+                  'RandomNRotamers', 'DFTProcessors', 'DFTXC', 'DFTCutoff', 'DFTVacuum', 'DFTCharge',
+                  'DFTOpenshell', 'DFTSteps', 'DFTFmax', 'RandomEPS', 'RandomNMinSamples']
+        labels = {
+            'RandomNRotamers': _('Total number of rotamers to generate'),
+
+            'DFTProcessors': _('Number of processors to use. Max 28'),
+            'DFTXC': _('Exchange-correlation functional for DFT calculation.'),
+            'DFTCutoff': _('Cutoff value of the potential for DFT calculation (Unit Ryd)'),
+            'DFTVacuum': _('Vacuum space of the simulation box.'),
+            'DFTCharge': _('Charge of the system.'),
+            'DFTOpenshell': _('The system has odd number of electron or not.'),
+            'DFTSteps': _('Maximum number of optimization steps for each structure.'),
+            'DFTFmax': _('Maximum force of the optimized structure.'),
+
+            'RandomEPS': _('eps value used by DBScan clustering'),
+            'RandomNMinSamples': _('Minimum number of samples allowed for a cluster'),
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+        }
+
 
 class ReplicaSearchForm(ModelForm):
     class Meta:
@@ -182,9 +223,9 @@ class ReplicaSearchForm(ModelForm):
                   'ReplicaSolvationType', 'ReplicaProcessors', 'ReplicaNReplicas', 'ReplicaNClusters', 'ReplicaClusterCutoff']
         labels = {
             'ReplicaSolvationType': _('Solvation environment to use (default: water)'),
-            'ReplicaProcessors': _('Number of processors to use (Integer times of replicas)'),
-            'ReplicaNReplicas': _('Number of replicas'),
-            'ReplicaNClusters': _('Number of clusters to generate'),
+            'ReplicaProcessors': _('Number of processors to use (Integer times of replicas. Max 28)'),
+            'ReplicaNReplicas': _('Number of replicas.'),
+            'ReplicaNClusters': _('Number of clusters to generate.'),
             'ReplicaClusterCutoff': _('Threshold for clustering analysis (default 1.0 Angstrom)'),
         }
         widgets = {

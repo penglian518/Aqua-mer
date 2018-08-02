@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
-from .models import CSearchJob, SmilesForm, UploadForm, SearchTypeForm, RandomSearchForm, QueryForm, ReclusteringForm, ReplicaSearchForm
+from .models import CSearchJob, SmilesForm, UploadForm, SearchTypeForm, RandomSearchForm, QueryForm, ReclusteringForm, \
+    DFTSearchForm, ReplicaSearchForm
 from cyshg.models import AllJobIDs
 
 from scripts.JobManagement import JobManagement
@@ -92,6 +93,23 @@ def parameters_random(request, JobID):
         form = RandomSearchForm()
     return render(request, 'csearch/parameters_random.html', {'form': form, 'JobID': JobID})
 
+def parameters_dft(request, JobID):
+    clientStatistics(request)
+    item = get_object_or_404(CSearchJob, JobID=JobID)
+    if request.method == 'POST':
+        form = DFTSearchForm(request.POST, instance=item)
+        if form.is_valid():
+            model_instance = form.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "2.3"
+            model_instance.Successful = True
+            model_instance.save()
+            return redirect('/csearch/review/%d' % int(model_instance.JobID))
+
+    else:
+        form = DFTSearchForm()
+    return render(request, 'csearch/parameters_dft.html', {'form': form, 'JobID': JobID})
+
 def parameters_replica(request, JobID):
     clientStatistics(request)
     item = get_object_or_404(CSearchJob, JobID=JobID)
@@ -100,7 +118,7 @@ def parameters_replica(request, JobID):
         if form.is_valid():
             model_instance = form.save(commit=False)
             model_instance.JobID = JobID
-            model_instance.CurrentStep = "2.1"
+            model_instance.CurrentStep = "2.2"
             model_instance.Successful = True
             model_instance.save()
             return redirect('/csearch/review/%d' % int(model_instance.JobID))
@@ -108,10 +126,6 @@ def parameters_replica(request, JobID):
     else:
         form = ReplicaSearchForm()
     return render(request, 'csearch/parameters_replica.html', {'form': form, 'JobID': JobID})
-
-def parameters_dft(request, JobID):
-    clientStatistics(request)
-    return render(request, 'csearch/parameters_dft.html', {'JobID': JobID})
 
 def parameters(request):
     clientStatistics(request)
@@ -174,7 +188,7 @@ def results(request, JobID, JobType='csearch'):
     if item.CurrentStatus == '2':
         # the job is finished, display the results.
         job_dir = get_job_dir(JobID)
-        if item.CSearchType in ['Random']:
+        if item.CSearchType in ['Random', 'DFT']:
             output_png = '%s/%s-%s/%s-%s.cluster.png' % (job_dir, JobType, JobID, JobType, JobID)
         elif item.CSearchType in ['Replica']:
             output_png = '%s/%s-%s_results/%s/mol_rmsdtt.png' % (job_dir, JobType, JobID, item.ReplicaSolvationType)
