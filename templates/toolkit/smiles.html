@@ -16,6 +16,8 @@
 
     <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST'>
         {% csrf_token %}
+        {% include 'doc/structure_input.html' %}
+
         <table>
         {{ form }}
 

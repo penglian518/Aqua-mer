@@ -22,6 +22,7 @@
         </p>
     </div>
 
+    {% include 'doc/structure_input.html' %}
 
     <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST' onsubmit="return validateForm()">
         {% csrf_token %}

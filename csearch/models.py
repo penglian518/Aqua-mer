@@ -72,7 +72,7 @@ class CSearchJob(models.Model):
     CSearchType = models.CharField(max_length=30, choices=CSearchTypes, default='Random')
 
     RandomForcefield = models.CharField(max_length=30, choices=ForcefieldTypes, default='UFF')
-    RandomNRotamers = models.PositiveIntegerField(blank=True, default=100)
+    RandomNRotamers = models.PositiveIntegerField(blank=True, default=1000)
     RandomNSteps = models.PositiveIntegerField(blank=True, default=2500)
     RandomEPS = models.FloatField(blank=True, default=0.01)
     RandomNMinSamples = models.PositiveIntegerField(blank=True, default=2)
@@ -80,11 +80,11 @@ class CSearchJob(models.Model):
 
     DFTProcessors = models.PositiveIntegerField(blank=True, default=16, validators=[MaxValueValidator(28), MinValueValidator(1)])
     DFTXC = models.CharField(max_length=30, choices=XCs, default='PBE')
-    DFTSteps = models.PositiveIntegerField(blank=True, default=100)
+    DFTSteps = models.PositiveIntegerField(blank=True, default=200)
     DFTVacuum = models.FloatField(blank=True, default=2.0)
     DFTCharge = models.IntegerField(blank=True, default=0)
     DFTOpenshell = models.BooleanField(default=False)
-    DFTCutoff = models.FloatField(blank=True, default=300)
+    DFTCutoff = models.FloatField(blank=True, default=350)
     DFTFmax = models.FloatField(blank=True, default=0.1)
 
     ReplicaSolvationType = models.CharField(max_length=30, choices=SolvationTypes, default='wat')

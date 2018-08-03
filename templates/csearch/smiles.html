@@ -7,8 +7,6 @@
 {% include 'csearch/memu.html' %}
 
 
-
-
 <!-- content on the right -->
 <div id="content">
 <div id="title">Step 1. Input a compound</div>
@@ -16,6 +14,8 @@
 
     <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST'>
         {% csrf_token %}
+        {% include 'doc/structure_input.html' %}
+
         <table>
         {{ form }}
 

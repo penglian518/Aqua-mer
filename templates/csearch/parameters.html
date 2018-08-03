@@ -21,18 +21,19 @@
 
         <!-- notations -->
         <div>
-            <br>
             <p>***********************************</p>
             <table>
-                <tr><td><b>Random sampling</b></td><td>This method will first generate the configurations by randomly
+                <tr><td><b>a) Random sampling</b></td><td>This method will first generate the configurations by randomly
                     assigning the dihedral angles in the molecules, then optimize with generalized forcefields,
                     such as UFF, GAFF, MMFF etc.
                 </td></tr>
-                <tr><td><b>Replica exchange sampling</b></td><td>This module allows the use to perform conformation search
+                <tr><td><b>b) Random sampling with DFT optimizer</b></td><td>Similar to the Random sampling method,
+                    but will optimize with DFT methods. This method provides better evaluation of molecules with heavy metals,
+                    but it's very time consuming. We suggest to use the Random sampling method first.</td></tr>
+                <tr><td><b>c) Replica exchange sampling</b></td><td>This module allows the use to perform conformation search
                     of small compounds in explicit water, implicit water and gas phase with replica exchange algorithm implemented
                     in NAMD2. Antechamber is used to parametrize molecules.
                 </td></tr>
-                <tr><td><b>DFT sampling</b></td><td>Similar to the Random sampling method, but will optimize with DFT methods.</td></tr>
 
             </table>
         </div>
