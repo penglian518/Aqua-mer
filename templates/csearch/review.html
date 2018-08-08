@@ -55,14 +55,12 @@
         <tr><td>Method</td><td>Random Search with DFT optimizer</td></tr>
         <tr><td>Total number of rotamers to generate</td><td>{{ Item.RandomNRotamers }}</td></tr>
 
-        <tr><td>Number of processors to use. Max 28</td><td>{{ Item.DFTProcessors }}</td></tr>
-        <tr><td>Exchange-correlation functional for DFT calculation</td><td>{{ Item.DFTXC }}</td></tr>
-        <tr><td>Cutoff value of the potential for DFT calculation (Unit Ryd)</td><td>{{ Item.DFTCutoff }}</td></tr>
-        <tr><td>Vacuum space of the simulation box</td><td>{{ Item.DFTVacuum }}</td></tr>
-        <tr><td>Charge of the system</td><td>{{ Item.DFTCharge }}</td></tr>
-        <tr><td>The system has odd number of electron or not</td><td>{{ Item.DFTOpenshell }}</td></tr>
-        <tr><td>Maximum number of optimization steps for each structure</td><td>{{ Item.DFTSteps }}</td></tr>
-        <tr><td>Maximum force of the optimized structure</td><td>{{ Item.DFTFmax }}</td></tr>
+        <tr><td>Number of processors to use. Max 28</td><td>{{ Item.MPProcessors }}</td></tr>
+        <tr><td>Semi-empirical method for the calculation</td><td>{{ Item.MPMethod }}</td></tr>
+        <tr><td>Charge of the system</td><td>{{ Item.MPCharge }}</td></tr>
+        <tr><td>The system has odd number of electron or not</td><td>{{ Item.MPOpenshell }}</td></tr>
+        <tr><td>Maximum number of optimization steps for each structure</td><td>{{ Item.MPSteps }}</td></tr>
+        <tr><td>Maximum force of the optimized structure</td><td>{{ Item.MPFmax }}</td></tr>
 
         <tr><td>eps value used by DBScan clustering</td><td>{{ Item.RandomEPS }}</td></tr>
         <tr><td>Minimum number of samples allowed for a cluster</td><td>{{ Item.RandomNMinSamples }}</td></tr>
