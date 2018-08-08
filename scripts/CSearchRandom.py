@@ -40,9 +40,11 @@ class CSearchRand:
         self.vmd = '/home/p6n/tools/vmd-1.9.2/bin/vmd'
 
         self.cp2koptmizer = '/home/p6n/tools/myPythonLib/PLg09/CP2Koptimizer.py'
+        self.mopacoptmizer = '/home/p6n/tools/myPythonLib/PLg09/MOPACoptimizer.py'
         self.np = 4
         self.steps = 200
         self.xc = 'PBE'
+        self.method = 'PM7'
         self.cutoff = 300
         self.vacuum = 2.0
         self.charge = 0
@@ -122,7 +124,7 @@ class CSearchRand:
         logging.info(list(set(Info))[0])
 
 
-    def optmizeRotamers(self, inMol2, outPDB, outEn, cp2k=False, debug=True):
+    def optmizeRotamers(self, inMol2, outPDB, outEn, cp2k=False, mopac=False, debug=True):
         '''
 
         :param inMol2:
@@ -131,7 +133,7 @@ class CSearchRand:
         '''
         if debug:
             logging.info('-' * 50)
-            logging.info('Run: optmizeRotamers(inMol2=%s, outPDB=%s, outEn=%s, cp2k=%s, debug=%s)\n' % (inMol2, outPDB, outEn, cp2k, debug))
+            logging.info('Run: optmizeRotamers(inMol2=%s, outPDB=%s, outEn=%s, cp2k=%s, mopac=%s, debug=%s)\n' % (inMol2, outPDB, outEn, cp2k, mopac, debug))
 
         # delete the exist pdb
         try:
@@ -143,6 +145,25 @@ class CSearchRand:
             # command. the outPDB, outEN will be generated automatically
             cmd = '%s -np %d -step %d -xc %s -cutoff %s -vacuum %s -charge %s -openshell %s -fmax %s  batch %s' % \
                   (self.cp2koptmizer, self.np, self.steps, self.xc, str(self.cutoff), str(self.vacuum), str(self.charge),
+                   str(self.openshell), str(self.fmax), inMol2)
+            if debug:
+                logging.info('Running: %s\n' % cmd)
+
+            # optimize
+            optcmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+
+            # grab output and error
+            optout, opterr = optcmd.communicate()
+
+            logging.info('Output: %s\n Error: %s' % (optout, opterr))
+
+            # form energy list
+            En_list = [i.strip() for i in open(outEn).readlines()]
+
+        elif mopac:
+            # command. the outPDB, outEN will be generated automatically
+            cmd = '%s -np %d -steps %d -method %s -charge %s -openshell %s -fmax %s  batch %s' % \
+                  (self.mopacoptmizer, self.np, self.steps, self.method, str(self.charge),
                    str(self.openshell), str(self.fmax), inMol2)
             if debug:
                 logging.info('Running: %s\n' % cmd)
@@ -427,11 +448,11 @@ class CSearchRand:
 
 
 
-    def samplingAll(self, molXYZ, cp2k=False, debug=True):
+    def samplingAll(self, molXYZ, cp2k=False, mopac=False, debug=True):
         if debug:
             logging.info('-' * 50)
-            logging.info('Run: samplingAll(molXYZ=%s, cp2k=%s, debug=%s)\n'
-                         % (molXYZ, cp2k, debug))
+            logging.info('Run: samplingAll(molXYZ=%s, cp2k=%s, mopac=%s, debug=%s)\n'
+                         % (molXYZ, cp2k, mopac, debug))
 
         # get mol name
         mol = molXYZ.split('.xyz')[0]
@@ -446,24 +467,8 @@ class CSearchRand:
         logFile = '%s/csearch.log' % mol
         logging.basicConfig(filename=logFile, filemode='w', level=logging.INFO)
 
-        if not cp2k:
-            info_text = '''%s
-            mol = %s
-    
-            NRotamers = %d
-            ForceField = %s
-            NStep = %d
-            Opt = %s
-            eps = %s
-            minSamples = %d
-            outPrefix = %s
-    
-            obabel = %s
-            obrotamer = %s
-            obminimize = %s
-            ''' % ("-"*50, molXYZ, self.NRotamers, self.Forcefield, self.NStep, self.Opt, str(self.eps), self.minSamples,
-                   self.outPrefix, self.obabel, self.rdkitrotamer, self.obminimize)
-        else:
+
+        if cp2k:
             info_text = '''%s
             mol = %s
     
@@ -481,6 +486,41 @@ class CSearchRand:
             minimizer = %s
             ''' % ("-"*50, molXYZ, self.NRotamers, self.np, self.xc, self.steps, str(self.cutoff), str(self.vacuum),
                    str(self.charge), str(self.fmax), self.obabel, self.rdkitrotamer, self.cp2koptmizer)
+        elif mopac:
+            info_text = '''%s
+            mol = %s
+    
+            NRotamers = %d
+            np = %d
+            method = %s
+            steps = %d
+            charge = %s
+            fmax = %s
+    
+            obabel = %s
+            obrotamer = %s
+            minimizer = %s
+            ''' % ("-"*50, molXYZ, self.NRotamers, self.np, self.method, self.steps,
+                   str(self.charge), str(self.fmax), self.obabel, self.rdkitrotamer, self.mopacoptmizer)
+        else:
+            info_text = '''%s
+            mol = %s
+
+            NRotamers = %d
+            ForceField = %s
+            NStep = %d
+            Opt = %s
+            eps = %s
+            minSamples = %d
+            outPrefix = %s
+
+            obabel = %s
+            obrotamer = %s
+            obminimize = %s
+            ''' % (
+            "-" * 50, molXYZ, self.NRotamers, self.Forcefield, self.NStep, self.Opt, str(self.eps), self.minSamples,
+            self.outPrefix, self.obabel, self.rdkitrotamer, self.obminimize)
+
 
         logging.info(info_text)
         #print info_text
@@ -516,7 +556,7 @@ class CSearchRand:
         except Exception as e:
             logging.warn('Failed to generate rotamers!\nThe error is:\n%s' % e)
         try:
-            self.optmizeRotamers(rotamers, opted, optedEN, cp2k=cp2k, debug=debug)
+            self.optmizeRotamers(rotamers, opted, optedEN, cp2k=cp2k, mopac=mopac, debug=debug)
         except Exception as e:
             logging.warn('Failed to optimize rotamers!\nThe error is:\n%s' % e)
         try:
@@ -537,6 +577,18 @@ class CSearchRand:
             logging.warn('Failed to split PDB file to XYZ!\nThe error is:\n%s' % e)
 
 
+        # collect the output files
+        if mopac:
+            try:
+                os.makedirs('%s/out' % mol)
+            except:
+                pass
+
+            try:
+                os.system("mv %s/*.out %s/out" % (mol, mol))
+            except:
+                pass
+
 
 if __name__ == '__main__':
     # parse the arguments
@@ -550,16 +602,24 @@ if __name__ == '__main__':
     parser.add_argument("--outPrefix", nargs='?', type=str, default="CSearch_", help="Prefix used for output xyz")
     parser.add_argument("--debug", nargs='?', type=str, default="False", help="Default: False")
 
+    # QM parameters
     parser.add_argument("-np", nargs='?', type=int, default=8, help="Number of processors to use")
-    parser.add_argument("-xc", nargs='?', type=str, default="PBE", help="Functional to use")
     parser.add_argument("-steps", nargs='?', type=int, default=100, help="Max minimization steps for each rotamer")
-    parser.add_argument("-cutoff", nargs='?', type=float, default=300, help="Cutoff of the potential")
-    parser.add_argument("-vacuum", nargs='?', type=float, default=2.0, help="Vacuum of the system")
     parser.add_argument("-charge", nargs='?', type=int, default=0, help="Charge of the molecule")
     parser.add_argument("-openshell", nargs='?', type=str, default='False', help="Open shell or not?")
     parser.add_argument("-fmax", nargs='?', type=float, default=0.1, help="Max force for convergence")
 
+    # cp2k
+    parser.add_argument("-xc", nargs='?', type=str, default="PBE", help="Functional to use")
+    parser.add_argument("-cutoff", nargs='?', type=float, default=300, help="Cutoff of the potential")
+    parser.add_argument("-vacuum", nargs='?', type=float, default=2.0, help="Vacuum of the system")
+
+    # mopac
+    parser.add_argument("-method", nargs='?', type=str, default="PM7", help="Semi-empirical method to use")
+
+
     parser.add_argument("-cp2k", nargs='?', type=str, default='False', help="Optimized with CP2K or not")
+    parser.add_argument("-mopac", nargs='?', type=str, default='False', help="Optimized with MOPAC or not")
 
     parser.add_argument("reclustering", nargs='?', help="Perform reclustering or not")
     parser.add_argument("mol", type=str, default="", help="Input the molecule file (with file type e.g. 'mol.xyz')")
@@ -605,14 +665,12 @@ if __name__ == '__main__':
 
         CS.outPrefix = args.outPrefix  # Default '_l_Xe_r_'
 
-        # for potential cp2k runs
+        # for potential QM runs
         CS.np = args.np
-        CS.xc = args.xc
         CS.fmax = args.fmax
         CS.steps = args.steps
-        CS.cutoff = args.cutoff
         CS.charge = args.charge
-        CS.vacuum = args.vacuum
+
         if args.openshell in ['False', 'false', 'F', 'f', '0', 0]:
             CS.openshell = False
         elif args.openshell in ['True', 'true', 'T', 't', '1', 1]:
@@ -621,9 +679,19 @@ if __name__ == '__main__':
             cp2kornot = False
         elif args.cp2k in ['True', 'true', 'T', 't', '1', 1]:
             cp2kornot = True
+            CS.xc = args.xc
+            CS.cutoff = args.cutoff
+            CS.vacuum = args.vacuum
+
+        if args.mopac in ['False', 'false', 'F', 'f', '0', 0]:
+            mopacornot = False
+        elif args.mopac in ['True', 'true', 'T', 't', '1', 1]:
+            mopacornot = True
+            CS.method = args.method
+
 
         # run the sampling
-        CS.samplingAll(mol, cp2k=cp2kornot, debug=debug)
+        CS.samplingAll(mol, cp2k=cp2kornot, mopac=mopacornot, debug=debug)
 
         endTime = time.time()
         logging.info('Time: %s min' % ((endTime - startTime) / 60))

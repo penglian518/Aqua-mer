@@ -48,6 +48,15 @@ class CSearchJob(models.Model):
         ('LDA', 'LDA'),
     )
 
+    MPMethods = (
+        ('PM7', 'PM7'),
+        ('PM6', 'PM6'),
+        ('RM1', 'RM1'),
+        ('PM3', 'PM3'),
+        ('AM1', 'AM1'),
+        ('MNDO', 'MNDO'),
+    )
+
 
     JobStatus = (
         ('0', 'to be start'),
@@ -78,6 +87,7 @@ class CSearchJob(models.Model):
     RandomNMinSamples = models.PositiveIntegerField(blank=True, default=2)
     RandomReclustering = models.BooleanField(default=False)
 
+    # used by cp2k
     DFTProcessors = models.PositiveIntegerField(blank=True, default=16, validators=[MaxValueValidator(28), MinValueValidator(1)])
     DFTXC = models.CharField(max_length=30, choices=XCs, default='PBE')
     DFTSteps = models.PositiveIntegerField(blank=True, default=200)
@@ -86,6 +96,14 @@ class CSearchJob(models.Model):
     DFTOpenshell = models.BooleanField(default=False)
     DFTCutoff = models.FloatField(blank=True, default=350)
     DFTFmax = models.FloatField(blank=True, default=0.1)
+
+    # used by MOPAC2016
+    MPProcessors = models.PositiveIntegerField(blank=True, default=4, validators=[MaxValueValidator(28), MinValueValidator(1)])
+    MPMethod = models.CharField(max_length=10, choices=MPMethods, default='PM7')
+    MPSteps = models.PositiveIntegerField(blank=True, default=300)
+    MPCharge = models.IntegerField(blank=True, default=0)
+    MPOpenshell = models.BooleanField(default=False)
+    MPFmax = models.FloatField(blank=True, default=0.01)
 
     ReplicaSolvationType = models.CharField(max_length=30, choices=SolvationTypes, default='wat')
     ReplicaProcessors = models.PositiveIntegerField(blank=True, default=10, validators=[MaxValueValidator(28), MinValueValidator(1)])
@@ -214,6 +232,34 @@ class DFTSearchForm(ModelForm):
             'CurrentStep': forms.HiddenInput(),
             'Successful': forms.HiddenInput(),
         }
+
+
+class MPSearchForm(ModelForm):
+    class Meta:
+        model = CSearchJob
+        fields = ['JobID', 'CurrentStep', 'Successful',
+                  'RandomNRotamers', 'MPProcessors', 'MPMethod', 'MPSteps', 'MPCharge',
+                  'MPOpenshell', 'MPFmax', 'RandomEPS', 'RandomNMinSamples']
+        labels = {
+            'RandomNRotamers': _('Total number of rotamers to generate'),
+
+            'MPProcessors': _('Number of processors to use. Max 28'),
+            'MPMethod': _('Semi-empirical quantum chemistry method for the calculation.'),
+            'MPCharge': _('Charge of the system.'),
+            'MPOpenshell': _('The system has odd number of electron or not.'),
+            'MPSteps': _('Maximum number of optimization steps for each structure.'),
+            'MPFmax': _('Maximum force of the optimized structure.'),
+
+            'RandomEPS': _('eps value used by DBScan clustering'),
+            'RandomNMinSamples': _('Minimum number of samples allowed for a cluster'),
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+        }
+
+
 
 
 class ReplicaSearchForm(ModelForm):

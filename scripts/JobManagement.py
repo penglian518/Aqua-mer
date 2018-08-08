@@ -258,6 +258,8 @@ class JobManagement:
             results_dir = '%s-%d_results' % (JobType, job_id)
         elif JobType in ['csearch'] and obj.CSearchType in ['DFT']:
             results_dir = '%s-%d' % (JobType, job_id)
+        else:
+            results_dir = '%s-%d' % (JobType, job_id)
 
         # make archive file for download
         try:
@@ -326,14 +328,25 @@ class JobManagement:
             Nnodes = 1
             Nprocessors = 1
         elif obj.CSearchType in ['DFT']:
-            cmd_line = '%s/scripts/CSearchRandom.py --NRotamers %d -np %d -xc %s -cutoff %s -vacuum %s -charge %s ' \
-                       '-openshell %s -steps %d -fmax %s -cp2k True --eps %s --minSamples %d %s-%d.%s >> CSearch.log 2>&1\n' \
+            # use cp2k
+            #cmd_line = '%s/scripts/CSearchRandom.py --NRotamers %d -np %d -xc %s -cutoff %s -vacuum %s -charge %s ' \
+            #           '-openshell %s -steps %d -fmax %s -cp2k True --eps %s --minSamples %d %s-%d.%s >> CSearch.log 2>&1\n' \
+            #           'chmod -R g+rw %s-%d\n' \
+            #           'find . -type d -exec chmod 770 {} +' \
+            #           % (self.DjangoHome, obj.RandomNRotamers, obj.DFTProcessors, obj.DFTXC, str(obj.DFTCutoff), str(obj.DFTVacuum),
+            #             str(obj.DFTCharge), str(obj.DFTOpenshell), obj.DFTSteps, str(obj.DFTFmax), str(obj.RandomEPS),
+            #              obj.RandomNMinSamples, JobType, job_id, file_type,
+            #              JobType, job_id)
+
+            cmd_line = '%s/scripts/CSearchRandom.py --NRotamers %d -np %d -method %s -charge %s ' \
+                       '-openshell %s -steps %d -fmax %s -mopac True --eps %s --minSamples %d %s-%d.%s >> CSearch.log 2>&1\n' \
                        'chmod -R g+rw %s-%d\n' \
                        'find . -type d -exec chmod 770 {} +' \
-                       % (self.DjangoHome, obj.RandomNRotamers, obj.DFTProcessors, obj.DFTXC, str(obj.DFTCutoff), str(obj.DFTVacuum),
-                          str(obj.DFTCharge), str(obj.DFTOpenshell), obj.DFTSteps, str(obj.DFTFmax), str(obj.RandomEPS),
+                       % (self.DjangoHome, obj.RandomNRotamers, obj.MPProcessors, obj.MPMethod, str(obj.MPCharge),
+                          str(obj.MPOpenshell), obj.MPSteps, str(obj.MPFmax), str(obj.RandomEPS),
                           obj.RandomNMinSamples, JobType, job_id, file_type,
                           JobType, job_id)
+
             # write the command line to exe_file
             try:
                 exe_filehandle = open(exe_file, 'w')
@@ -347,7 +360,7 @@ class JobManagement:
 
             # parameters for job script
             Nnodes = 1
-            Nprocessors = obj.DFTProcessors
+            Nprocessors = obj.MPProcessors
 
         elif obj.CSearchType in ['Replica']:
             if obj.ReplicaSolvationType in ['gas']:

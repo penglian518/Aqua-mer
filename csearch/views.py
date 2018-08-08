@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
 from .models import CSearchJob, SmilesForm, UploadForm, SearchTypeForm, RandomSearchForm, QueryForm, ReclusteringForm, \
-    DFTSearchForm, ReplicaSearchForm
+    MPSearchForm, ReplicaSearchForm
 from cyshg.models import AllJobIDs
 
 from scripts.JobManagement import JobManagement
@@ -97,7 +97,7 @@ def parameters_dft(request, JobID):
     clientStatistics(request)
     item = get_object_or_404(CSearchJob, JobID=JobID)
     if request.method == 'POST':
-        form = DFTSearchForm(request.POST, instance=item)
+        form = MPSearchForm(request.POST, instance=item)
         if form.is_valid():
             model_instance = form.save(commit=False)
             model_instance.JobID = JobID
@@ -107,7 +107,7 @@ def parameters_dft(request, JobID):
             return redirect('/csearch/review/%d' % int(model_instance.JobID))
 
     else:
-        form = DFTSearchForm()
+        form = MPSearchForm()
     return render(request, 'csearch/parameters_dft.html', {'form': form, 'JobID': JobID})
 
 def parameters_replica(request, JobID):
@@ -160,7 +160,7 @@ def results(request, JobID, JobType='csearch'):
         # a. generate input file
         # b. submit the job
 
-        # Prepare inputfiles according to search types
+        # Prepare input files according to search types
         # generate command line file
         if item.RandomReclustering:
             jobmanger.CSearchJobReclustering(obj=item)
@@ -219,8 +219,41 @@ def results_doc(request):
             except:
                 return render(request, 'csearch/results_doc.html', {'form': form})
 
-            # show the result, if the JobID is available in the system
-            return redirect('/csearch/results/%d' % int(model_instance.JobID))
+            # find where does the JobID belongs to.
+            JobID_query = int(model_instance.JobID)
+            alljobs = AllJobIDs.objects.all()
+            allJobID = [i.JobID for i in alljobs]
+            allJobID_csearch = []
+            allJobID_gsolv = []
+            allJobID_pka = []
+            allJobID_logk = []
+            allJobID_hgspeci = []
+            for j in alljobs:
+                if j.JobType in ['csearch'] or j.SubJobType in ['csearch']:
+                    allJobID_csearch.append(j.JobID)
+                elif j.JobType in ['gsolv'] or j.SubJobType in ['gsolv']:
+                    allJobID_gsolv.append(j.JobID)
+                elif j.JobType in ['pka'] or j.SubJobType in ['pka']:
+                    allJobID_pka.append(j.JobID)
+                elif j.JobType in ['logk'] or j.SubJobType in ['logk']:
+                    allJobID_logk.append(j.JobID)
+                elif j.JobType in ['hgspeci'] or j.SubJobType in ['hgspeci']:
+                    allJobID_hgspeci.append(j.JobID)
+
+            if JobID_query not in allJobID:
+                return render(request, 'csearch/results_doc.html', {'form': form})
+
+            if JobID_query in allJobID_csearch:
+                return redirect('/csearch/results/%d' % int(model_instance.JobID))
+            elif JobID_query in allJobID_gsolv:
+                return redirect('/gsolv/results/%d' % int(model_instance.JobID))
+            elif JobID_query in allJobID_pka:
+                return redirect('/pka/results/%d' % int(model_instance.JobID))
+            elif JobID_query in allJobID_logk:
+                return redirect('/logk/results/%d' % int(model_instance.JobID))
+            elif JobID_query in allJobID_hgspeci:
+                return redirect('/hgspeci/results/%d' % int(model_instance.JobID))
+
 
     else:
         # the initial form
