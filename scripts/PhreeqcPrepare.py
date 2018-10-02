@@ -122,7 +122,9 @@ class PhreeqcPrepare:
             fout.write('TITLE %s\n' % obj.SPTitle)
             fout.write('SOLUTION 1\n')
             fout.write('    units %s\n' % obj.SPUnit)
-            fout.write('    pH %s\n' % str(ph))
+            #fout.write('    pH %s\n' % str(ph))
+            fout.write('    pH %s\n' % str(0.0))
+            fout.write('    pe %s\n' % str(obj.SPpe))
             fout.write('    temp %s\n' % str(obj.SPTemperature))
             # add elements
             for ele in obj.spelements.all():
@@ -145,6 +147,18 @@ class PhreeqcPrepare:
                 for ss in obj.spspecies.all():
                     ss_line = self.format_species(ss)
                     fout.write(ss_line)
+
+            # add additional phase section.
+            fout.write('\n')
+            fout.write('PHASES\n')
+            fout.write('Fix_H+\n')
+            fout.write('    H+ = H+\n')
+            fout.write('    log_k 0.0\n')
+            fout.write('\n')
+            fout.write('EQUILIBRIUM_PHASES 1\n')
+            fout.write('    Fix_H+   -%s   NaOH    10.0\n' % str(ph))
+            fout.write('\n')
+
             fout.close()
         return
 
@@ -318,10 +332,15 @@ class PhreeqcParser:
         lineindex = []
         collect_data = False
         linenumber = 0
+
+        section_order = 1
         for line in fin:
-            if line.find('----Distribution of species----') > 0:
+            if line.find('----Distribution of species----') > 0 and section_order == 1:
+                section_order += 1
+            elif line.find('----Distribution of species----') > 0 and section_order == 2:
                 collect_data = True
                 lineindex.append(linenumber)
+
             if collect_data and len(line) == 1:
                 lineindex.append(linenumber)
 
