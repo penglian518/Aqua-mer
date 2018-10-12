@@ -30,7 +30,6 @@
             <tr><td>CAS</td><td>The CAS number of this molecule. (A proprietary registry number assigned by the Chemical Abstracts Service (CAS) division of the American Chemical Society (ACS).)</td></tr>
             <tr><td>InChIKey</td><td>The InChI Key of this molecule. (A hashed version of the full International Chemical Identifier (InChI).)</td></tr>
             <tr><td>SMILES</td><td>The canonical SMILE structure of this molecule.</td></tr>
-            <tr><td>Note</td><td>A note for this molecule. (DOI of the paper where the results were published.) </td></tr>
         </tbody>
 </table>
 <br>
@@ -49,7 +48,6 @@
             <th>InChIKey</th>
             <th>SMILES</th>
             <th>IUPAC Name</th>
-            <th>Note</th>
 
         </tr>
     </thead>
@@ -70,7 +68,6 @@
             <td>{{ p.InChIKey }}</td>
             <td>{{ p.SMILES }}</td>
             <td>{{ p.IUPACName }}</td>
-            <td>{{ p.Note }}</td>
         </tr>
     {% endfor %}
     </tbody>
