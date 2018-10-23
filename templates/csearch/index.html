@@ -10,15 +10,23 @@
 <div id="content">
 <div id="title">Instructions</div>
 <div id=main>
-    Steps for  conformational search:<p>
-    <p><b>Step 1. Upload your compound.</b>
-        You can draw your compound and paste the SMILES into the input box, or you can upload the compound. <p>
-    <p><b>Step 2. Select type and related parameters for conformational search.</b>
+    <p>Conformational search aims to find energetically stable conformations of a compound form all the possible
+        conformational space, which is important for the microscope modeling. In this module, online tools with
+        multi-level of theories such as molecular mechanics (MM), quantum mechanics (QM) are provided for gas phase sampling.
+        Solvation effect of a compound can be studied using the explicit/implicit solvent molecular
+        dynamics (MD) simulation sampling algorithm in this module.
+    </p>
+
+    <br>
+    <i>Steps for  conformational search:</i><p>
+    <p><b>Step 1. Input a compound.</b>
+        The users can draw their compound and paste the SMILES into the input box, or upload their own coordinates of the compound. <p>
+    <p><b>Step 2. Select searching parameters for the conformational search.</b>
         Several different types of conformational search are available. (See bellow) The related parameters are required
         for different algorithms.<p>
     <p><b>Step 3. Review & submit.</b>
         Before submission, you can review your molecule, the searching algorithm, and the parameters.<p>
-    <p><b>Step 4. Download the results.</b>
+    <p><b>Step 4. Online analysis or download the results.</b>
         Once the job is finished, you can view your results. You can download the structures or redo a quick cluster
         analysis based on the results.<p>
     <p><b>Notice:</b> Once the compound is uploaded, a unique job ID will be assigned. With the job ID, you can check your
@@ -26,20 +34,27 @@
     <br>
     <br>
 
-    Types of conformational search are available:<p>
-    <p><b>A. Random search</b><p>
+    <i>Algorithms of conformational search that are available in this module:</i><p>
+    <p><b>A. Random sampling with MM optimization</b><p>
     <p>This algorithm searches the conformational space by rotating single bonds in the molecule randomly.
-    Geometry optimization using molecular forcefields will performed after the rotation. <p>
-    <p><b>B. Random search with DFT minimization (under construction)</b> <p>
-    <p>Similar to the Random search algorithm, except DFT  will be applied to do the geometry optimization. <p>
-    <p><b>C. Replica exchange (under construction)</b> <p>
-    <p>This algorithm will run molecular dynamics simulations to sampling the conformations.
-    Explicit solvent, implicit solvent, and in gas phase are available. <p>
+    Geometry optimization using molecular forcefields will performed after the rotation. This method is fast and
+    the accuracy is moderated. The drawbacks of this method include 1. it cannot deal with bonds breaking and forming;
+    2. the results for compounds with heavy metal atoms may not correct.<p>
+    <p><b>B. Random sampling with QM optimization </b> <p>
+    <p>Similar to the Random sampling algorithm, except that semi-empirical QM methods will be applied to
+    perform the geometry optimization. QM calculations are time consuming, therefore, this method is slow compared to
+    the first one. This method is supposed to be better than the MM method above, but it is not absolutely true.
+    However, the users are suggested to try the MM method before jump to this one.<p>
+    <p><b>C. MD simulation with replica exchange sampling</b> <p>
+    <p>Different from the random searching methods, this algorithm will run MD simulations to sampling the conformations.
+    It provides explicit solvent, generalized Born implicit solvent (GBIS), and gas phase simulations.
+    Because the simulation is based on MM level theory, it cannot deal with chemical reactions,
+    neither compounds with heavy metal atoms.<p>
 
     <br>
     <h3>Flowchart of conformational search module</h3>
     <div style="max-width:90%">
-        <div class="mxgraph" style="max-width:100%;" data-mxgraph="{&quot;highlight&quot;:&quot;#0000ff&quot;,&quot;lightbox&quot;:false,&quot;nav&quot;:true,&quot;edit&quot;:&quot;_blank&quot;,&quot;xml&quot;:&quot;&lt;mxfile userAgent=\&quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36\&quot; version=\&quot;8.5.9\&quot; editor=\&quot;www.draw.io\&quot; type=\&quot;device\&quot;&gt;&lt;diagram name=\&quot;Page-1\&quot; id=\&quot;efa7a0a1-bf9b-a30e-e6df-94a7791c09e9\&quot;&gt;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&lt;/diagram&gt;&lt;/mxfile&gt;&quot;}"></div>
+        <div class="mxgraph" style="max-width:100%;" data-mxgraph="{&quot;highlight&quot;:&quot;#0000ff&quot;,&quot;lightbox&quot;:false,&quot;nav&quot;:true,&quot;edit&quot;:&quot;_blank&quot;,&quot;xml&quot;:&quot;&lt;mxfile userAgent=\&quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:62.0) Gecko/20100101 Firefox/62.0\&quot; version=\&quot;9.3.0\&quot; editor=\&quot;www.draw.io\&quot; type=\&quot;device\&quot;&gt;&lt;diagram name=\&quot;Page-1\&quot; id=\&quot;efa7a0a1-bf9b-a30e-e6df-94a7791c09e9\&quot;&gt;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&lt;/diagram&gt;&lt;/mxfile&gt;&quot;}"></div>
     </div>
     <br>
     <h3>Start from <a href="/csearch/smiles">"Step 1. Upload a compound"</a></h3>

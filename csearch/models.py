@@ -17,9 +17,9 @@ def user_directory_path(instance, filename):
 class CSearchJob(models.Model):
 
     CSearchTypes = (
-        ('Random', 'Random sampling'),
-        ('DFT', 'Random sampling with DFT optimizer'),
-        ('Replica', 'Replica exchange sampling'),
+        ('Random', 'Random sampling with MM optimization'),
+        ('DFT', 'Random sampling with QM optimization'),
+        ('Replica', 'MD simulation with replica exchange sampling'),
     )
 
     SolvationTypes = (
@@ -38,7 +38,6 @@ class CSearchJob(models.Model):
     ForcefieldTypes = (
         ('UFF', 'UFF'),
         ('GAFF', 'GAFF'),
-        ('Ghemical', 'Ghemical'),
         ('MMFF94', 'MMFF94'),
         ('MMFF94s', 'MMFF94s'),
     )
