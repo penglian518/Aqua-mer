@@ -1,4 +1,4 @@
-# [*AQUA-MER*](https://aquamer.ornl.gov/): Mercury Aqueous Speciation Database (https://aquamer.ornl.gov)
+# [*AQUA-MER* : Mercury Aqueous Speciation Database](https://aquamer.ornl.gov/)
 
 *AQUA-MER* is the first online resource that realizes multi-scale modeling of Hg biogeochemistry in the environmental water systems. It has four modules, a speciation calculator for mesoscale modeling, a computational chemistry toolkit for atomic-scale and quantum-scale modeling, a calculated stability constants database and an experimental measured stability constants database.
 
@@ -30,10 +30,10 @@ NWChem >= 6.8.1 (optional)
 
 ### Installing
 
-For python related codes, I suggest to use Anaconda to install them. For modeling related codes, please install and add them to your environmental path.
+For python related codes, I suggest to use Anaconda to install them, but you can use the system default python and pip to install them as well. For meso-/atomic-/quantum- scale modeling related codes, please install and add them to your environmental path.
 
 ```
-cd your_dir_to_install
+cd your_installation_directory
 git clone https://github.com/penglian518/Aqua-mer.git
 ./manage.py runserver 127.0.0.1:8000
 ```
@@ -63,4 +63,5 @@ For calculation of ΔGsolv, pKa, and log K, please cite:
 
 
 ## NOTICE
+
 The database files are not allowed to be shared. You have to re-generate your own database and run the website at your own risk. Again, we suggest you to run your job at https://aquamer.ornl.gov.
