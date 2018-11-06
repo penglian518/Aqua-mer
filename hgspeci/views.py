@@ -222,13 +222,13 @@ def review_doc(request):
 
 
 def results(request, JobID, JobType='hgspeci'):
-    clientStatistics(request)
     # if the job hasn't been started, start the job.
     # if the job is running, check every 5 seconds.
     # if the job has finished, display the results.
     item = get_object_or_404(HgSpeciJob, JobID=JobID)
 
     if item.CurrentStatus == '0':
+        clientStatistics(request)
         # the job is 'to be start', submit the job and jump to '1'
 
         # change the status in the database
@@ -256,6 +256,7 @@ def results(request, JobID, JobType='hgspeci'):
         # the job is 'running', keep checking the status
         return render(request, 'hgspeci/results_jobrunning.html', {'JobID': JobID, 'Item': item})
     if item.CurrentStatus == '2':
+        clientStatistics(request)
         # the job is finished, display the results.
 
 
@@ -368,6 +369,7 @@ def results(request, JobID, JobType='hgspeci'):
                        })
 
     if item.CurrentStatus == '3':
+        clientStatistics(request)
         # there is some error in the job, display the error message.
         return render(request, 'hgspeci/results_error.html', {'JobID': JobID, 'Item': item})
 

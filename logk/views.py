@@ -240,13 +240,13 @@ def review_doc(request):
     return render(request, 'logk/review_doc.html')
 
 def results(request, JobID, JobType='logk'):
-    clientStatistics(request)
     # if the job hasn't been started, start the job.
     # if the job is running, check every 5 seconds.
     # if the job has finished, display the results.
     item = get_object_or_404(LogKJob, JobID=JobID)
 
     if item.CurrentStatus == '0':
+        clientStatistics(request)
         # the job is 'to be start', submit the job and jump to '1'
 
         # change the status in the database
@@ -273,6 +273,7 @@ def results(request, JobID, JobType='logk'):
         # the job is 'running', keep checking the status
         return render(request, 'logk/results_jobrunning.html', {'JobID': JobID, 'Item': item})
     if item.CurrentStatus == '2':
+        clientStatistics(request)
         # the job is finished, display the results.
         job_dir = get_job_dir(JobID)
         output_cluster_png = '%s/%s-%s/%s-%s.cluster.png' % (job_dir, JobType, JobID, JobType, JobID)
@@ -286,6 +287,7 @@ def results(request, JobID, JobType='logk'):
 
         return render(request, 'logk/results.html', {'JobID': JobID, 'Item': item, 'chart': fig_in_base64})
     if item.CurrentStatus == '3':
+        clientStatistics(request)
         # there is some error in the job, display the error message.
         return render(request, 'logk/results_error.html', {'JobID': JobID, 'Item': item})
 

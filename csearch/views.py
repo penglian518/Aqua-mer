@@ -142,7 +142,6 @@ def review_doc(request):
 
 
 def results(request, JobID, JobType='csearch'):
-    clientStatistics(request)
     # if the job hasn't been started, start the job.
     # if the job is running, check every 5 seconds.
     # if the job has finished, display the results.
@@ -153,6 +152,7 @@ def results(request, JobID, JobType='csearch'):
     jobmanger.CheckJob(obj=item, JobType=JobType)
 
     if item.CurrentStatus == '0':
+        clientStatistics(request)
         # the job is 'to be start', submit the job and jump to '1'
 
         # a function to start the job
@@ -186,6 +186,7 @@ def results(request, JobID, JobType='csearch'):
         # the job is 'running', keep checking the status
         return render(request, 'csearch/results_jobrunning.html', {'JobID': JobID, 'Item': item})
     if item.CurrentStatus == '2':
+        clientStatistics(request)
         # the job is finished, display the results.
         job_dir = get_job_dir(JobID)
         if item.CSearchType in ['Random', 'DFT']:
@@ -202,6 +203,7 @@ def results(request, JobID, JobType='csearch'):
 
         return render(request, 'csearch/results.html', {'JobID': JobID, 'Item': item, 'chart': fig_in_base64})
     if item.CurrentStatus == '3':
+        clientStatistics(request)
         # there is some error in the job, display the error message.
         return render(request, 'csearch/results_error.html', {'JobID': JobID, 'Item': item})
 
@@ -267,7 +269,6 @@ def reclustering(request, JobID):
     TODO: This function did not start the job, need to be fixed.
 
     '''
-    clientStatistics(request)
     # if the job hasn't been started, start the job.
     # if the job is running, check every 5 seconds.
     # if the job has finished, display the results.
@@ -280,6 +281,7 @@ def reclustering(request, JobID):
 
 
     if item.CurrentStatus == '0':
+        clientStatistics(request)
         # the job is 'to be start', submit the job and jump to '1'
 
         # generate command line file
@@ -298,6 +300,7 @@ def reclustering(request, JobID):
         # the job is 'running', keep checking the status
         return render(request, 'csearch/results_jobrunning.html', {'JobID': JobID, 'Item': item})
     if item.CurrentStatus == '2':
+        clientStatistics(request)
         # the job is finished.
         if request.method == 'POST':
             form = ReclusteringForm(request.POST, instance=item)
@@ -316,6 +319,7 @@ def reclustering(request, JobID):
             form = ReclusteringForm()
         return render(request, 'csearch/reclustering_para.html', {'form': form, 'JobID': JobID})
     if item.CurrentStatus == '3':
+        clientStatistics(request)
         # there is some error in the job, display the error message.
         return render(request, 'csearch/results_error.html', {'JobID': JobID, 'Item': item})
 
