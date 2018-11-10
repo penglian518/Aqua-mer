@@ -64,4 +64,4 @@ For calculation of ΔGsolv, pKa, and log K, please cite:
 
 ## NOTICE
 
-The database files are not allowed to be shared. You have to re-generate your own database and run the website at your own risk. Again, we suggest you to run your job at https://aquamer.ornl.gov.
+The database files are not allowed to share. You have to re-generate your own database and run the website at your own risk. Again, we suggest you to run your job at https://aquamer.ornl.gov.
