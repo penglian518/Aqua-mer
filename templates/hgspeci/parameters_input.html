@@ -13,7 +13,7 @@
     <div class="col-md-4">
         <h3>SOLUTION 1</h3>
         <h4>Environmental conditions for this solution</h4>
-        <form action="" method="post">{% csrf_token %}
+        <form id="para_input" action="" method="post">{% csrf_token %}
             <!-- {{ paraform.as_p }} -->
             {% for field in paraform.visible_fields %}
                 {# Include the hidden fields in the form #}
@@ -97,7 +97,8 @@
             <button type="submit" class="btn btn-default" style="height:25px;width:90px">Next</button>
             <br>
 
-            <div id="parameters" style="display:none" class="rcorners1">
+            <!-- Make the block display. -->
+            <div id="parameters" style="display:block" class="rcorners1">
                 <h3>Parameters in AQUA-MER:</h3>
                 <div id="id_solutionmaster" class="rcorners2">
                 <h3>SOLUTION_MASTER_SPECIES</h3>
@@ -159,6 +160,7 @@
                 <div id="id_speciesformset">
                     <br>
                     <button type="button" onclick="toggleIfrm('ifrmdiv-species')" class="btn btn-default" style="height:25px;width:200px">Add new solution specie</button>
+                    <!-- Make the block display. -->
                     <div id="ifrmdiv-species" style="display:none">
                         <iframe id="ifrm-species" width="1000px" seamless onload="resizeIframe(this)" src="/hgspeci/input_solutionspecies/{{ JobID }}"></iframe>
                     </div>
@@ -282,5 +284,17 @@ function toggleIfrm(fmID) {
     overflow: hidden;
 }
 </style>
+
+<script type="text/javascript">
+
+function stopRKey(evt) {
+  var evt = (evt) ? evt : ((event) ? event : null);
+  var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+  if ((evt.keyCode == 13) && (node.type=="text"))  {return false;}
+}
+
+document.onkeypress = stopRKey;
+
+</script>
 
 {% endblock %}
