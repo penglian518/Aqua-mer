@@ -312,12 +312,26 @@ class PhreeqcPrepare:
         outfile = '%s/speciation-%s.csv' % (outdir, datatype.lower())
         df_out.to_csv(outfile)
 
+        # collect data for downloading
         dir_download = '%s-%d' % ('hgspeci', obj.JobID)
         try:
             os.makedirs(dir_download)
         except:
             pass
+
+        # csv files
         shutil.copy(outfile, '%s/%s/' % (outdir, dir_download))
+
+        # input & output files
+        for ph in pHrange:
+            f_input = '%s/pH-%s.phrq' % (outdir, str(ph))
+            f_output = '%s/pH-%s.out' % (outdir, str(ph))
+
+            try:
+                shutil.copy(f_input, '%s/%s/' % (outdir, dir_download))
+                shutil.copy(f_output, '%s/%s/' % (outdir, dir_download))
+            except:
+                pass
 
         return
 
