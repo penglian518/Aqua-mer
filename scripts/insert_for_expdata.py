@@ -5,6 +5,7 @@ django.setup()
 
 import pandas as pd
 from expdata.models import Compound, PKA, StabilityConstants, dGsolv, Refs
+from calcdata.models import CalcSolutionMasterSpecies
 
 
 def insert_basicinfo(csvfile):
@@ -73,7 +74,6 @@ def insert_basicinfo(csvfile):
 
     return
 
-
 def insert_refs(csvfile):
     # read the csv file
     df = pd.DataFrame.from_csv(csvfile)
@@ -123,7 +123,6 @@ def insert_refs(csvfile):
             db_ref.save()
 
     return
-
 
 def insert_dgsolvs(csvfile):
     # read the csv file
@@ -194,8 +193,6 @@ def insert_dgsolvs(csvfile):
                 db_dgsolv.save()
 
     return
-
-
 
 def insert_pKas(csvfile):
     # read the csv file
@@ -274,6 +271,29 @@ def insert_pKas(csvfile):
     return
 
 
+def update_phrname_from_caldata():
+    '''
+    Will try to update phrname according to PubChem ID of molecules in caldata.
+    '''
+
+    exp_cpds = Compound.objects.all()
+    calc_cpds = CalcSolutionMasterSpecies.objects.all()
+
+    for i_cpd in exp_cpds:
+        try:
+            i_cpd_calc = CalcSolutionMasterSpecies.objects.get(PubChemID=i_cpd.PubChemID)
+        except:
+            i_cpd_calc= ''
+
+        if type(i_cpd_calc) in [CalcSolutionMasterSpecies]:
+            i_cpd.PhrName = i_cpd_calc.Element
+            i_cpd.save()
+        elif type(i_cpd_calc) in [django.db.models.query.QuerySet]:
+            print('%d compounds found in Calcdata have the PubChemID %d! Compund name in Expdata is %s' % (len(i_cpd_calc), i_cpd.PubChemID, i_cpd.Name))
+
+    return
+
+
 def main():
     pka_csv = '/home/p6n/workplace/doc/combined/common_pKa.csv'
     dgsolv_csv = '/home/p6n/workplace/doc/combined/common_dGsolv.csv'
@@ -312,4 +332,5 @@ def main_repeat():
 
 if __name__ == '__main__':
     #main()
-    main_repeat()
+    #main_repeat()
+    update_phrname_from_caldata()

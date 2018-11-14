@@ -19,6 +19,7 @@
             <th>MolID</th>
             <th>PubChemID</th>
             <th>Name</th>
+            <th>PhrName</th>
             <th>Formula</th>
             <th>Mol Weight (g/mol)</th>
             <th>Charge</th>
@@ -39,6 +40,7 @@
             <td><a href="/expdata/cpd/id/{{ p.pk }}">{{ p.pk }}</a></td>
             <td><a href="https://pubchem.ncbi.nlm.nih.gov/compound/{{ p.PubChemID }}"  target="_blank">{{ p.PubChemID }}</a></td>
             <td>{{ p.Name }}</td>
+            <td>{{ p.PhrName }}</td>
             <td>{{ p.Formula }}</td>
             <td>{{ p.MolecularWeight }}</td>
             <td>{{ p.Charge }}</td>

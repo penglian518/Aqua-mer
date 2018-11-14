@@ -9,6 +9,7 @@ from django.utils.encoding import python_2_unicode_compatible
 class Compound(models.Model):
     PubChemID = models.PositiveIntegerField(blank=True, default=0)
     Name = models.CharField(max_length=200, blank=True, default='')
+    PhrName = models.CharField(max_length=200, blank=True, default='')
     Formula = models.CharField(max_length=30, blank=True, default='')
     InChIKey = models.CharField(max_length=50, blank=True, default='')
     SMILES = models.CharField(max_length=100, blank=True, default='')

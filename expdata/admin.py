@@ -31,7 +31,7 @@ class CompoundAdmin(admin.ModelAdmin):
     get_pKa.short_description = 'pKa'
     get_pKa.admin_order_field = 'PKA__pKa'
 
-    list_display = ('id', 'PubChemID', 'Name', 'Formula', 'MolecularWeight', 'Charge', 'InChIKey',)
+    list_display = ('id', 'PubChemID', 'Name', 'PhrName', 'Formula', 'MolecularWeight', 'Charge', 'InChIKey',)
 
 class PKAAdmin(admin.ModelAdmin):
     model = PKA

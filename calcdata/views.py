@@ -58,3 +58,10 @@ def viewxyz(request, ID):
 
     return render(request, 'calcdata/viewxyz.html',
                   {'Item': item})
+
+def viewele(request, element):
+    clientStatistics(request)
+    item = get_object_or_404(CalcSolutionMasterSpecies, Element=element)
+
+    return render(request, 'calcdata/viewxyz.html',
+                  {'Item': item})

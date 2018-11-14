@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^species/$', views.species, name='species'),
     url(r'^xyz/(?P<ID>[0-9]+)$', views.xyz, name='xyz'),
     url(r'^viewxyz/(?P<ID>[0-9]+)$', views.viewxyz, name='viewxyz'),
+    url(r'^viewele/(?P<element>.*)/$', views.viewele, name='viewele'),
 ]

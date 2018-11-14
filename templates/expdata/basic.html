@@ -27,6 +27,7 @@
         <tbody>
             <tr><td>Mol ID</td><td>Molecular ID in this database. A click on this ID will lead to the sumary page of this molecule.</td></tr>
             <tr><td>PubChem ID</td><td>The PubChem CID of this molecule. A click on this ID will lead to the PubChem page of this molecule.</td></tr>
+            <tr><td>PhrName</td><td>Phreeqc element style name of the molecule in our Calculated Constants database. The user has to use this name while inputting Element/Species in the Speciation module.</td></tr>
             <tr><td>CAS</td><td>The CAS number of this molecule. (A proprietary registry number assigned by the Chemical Abstracts Service (CAS) division of the American Chemical Society (ACS).)</td></tr>
             <tr><td>InChIKey</td><td>The InChI Key of this molecule. (A hashed version of the full International Chemical Identifier (InChI).)</td></tr>
             <tr><td>SMILES</td><td>The canonical SMILE structure of this molecule.</td></tr>
@@ -41,6 +42,7 @@
             <th>MolID</th>
             <th>PubChemID</th>
             <th>Name</th>
+            <th>PhrName</th>
             <th>Formula</th>
             <th>Mol Weight (g/mol)</th>
             <th>Charge</th>
@@ -61,6 +63,7 @@
             <td><a href="/expdata/cpd/id/{{ p.pk }}">{{ p.pk }}</a></td>
             <td><a href="https://pubchem.ncbi.nlm.nih.gov/compound/{{ p.PubChemID }}"  target="_blank">{{ p.PubChemID }}</a></td>
             <td>{{ p.Name }}</td>
+            <td><a href="/calcdata/viewele/{{ p.PhrName }}/">{{ p.PhrName }}</a></td>
             <td>{{ p.Formula }}</td>
             <td>{{ p.MolecularWeight }}</td>
             <td>{{ p.Charge }}</td>
