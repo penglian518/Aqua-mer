@@ -400,12 +400,28 @@ def results_xyz(request, JobID, Ith, JobType='csearch'):
     """
     clientStatistics(request)
     job_dir = get_job_dir(JobID)
-    xyzfile = '%s/%s-%s/xyz/CSearch_%s_%s-%s.xyz' % (job_dir, JobType, JobID, Ith, JobType, JobID)
+
+    item = get_object_or_404(CSearchJob, JobID=JobID)
+    if item.CSearchType in ['Replica']:
+        if Ith in ['00']:
+            xyzfile = '%s/%s-%s_results/%s/mol.pdb' % (job_dir, JobType, JobID, item.ReplicaSolvationType)
+        elif Ith in ['000']:
+            xyzfile = '%s/%s-%s_results/%s/mol_wb.pdb' % (job_dir, JobType, JobID, item.ReplicaSolvationType)
+        else:
+            xyzfile = '%s/%s-%s_results/%s/configurations/cluster0.%s.xyz' % (
+            job_dir, JobType, JobID, item.ReplicaSolvationType, Ith)
+            if not os.path.isfile(xyzfile):
+                xyzfile = '%s/%s-%s_results/%s/configurations/cluster0.%s.pdb' % (
+                    job_dir, JobType, JobID, item.ReplicaSolvationType, Ith)
+    else:
+        xyzfile = '%s/%s-%s/xyz/CSearch_%s_%s-%s.xyz' % (job_dir, JobType, JobID, Ith, JobType, JobID)
 
     fcon = ''.join(open(xyzfile).readlines())
 
     return HttpResponse(fcon, content_type='text/plain')
 
+# This function has been included into results_xyz!
+'''
 def results_pdb(request, JobID, Ith, JobType='csearch'):
     """
     This one is used to handle results from replica exchange calculations
@@ -422,12 +438,15 @@ def results_pdb(request, JobID, Ith, JobType='csearch'):
     elif Ith in ['000']:
         xyzfile = '%s/%s-%s_results/%s/mol_wb.pdb' % (job_dir, JobType, JobID, item.ReplicaSolvationType)
     else:
-        xyzfile = '%s/%s-%s_results/%s/configurations/cluster0.%s.pdb' % (job_dir, JobType, JobID, item.ReplicaSolvationType, Ith)
+        xyzfile = '%s/%s-%s_results/%s/configurations/cluster0.%s.xyz' % (job_dir, JobType, JobID, item.ReplicaSolvationType, Ith)
+        if not os.path.isfile(xyzfile):
+            xyzfile = '%s/%s-%s_results/%s/configurations/cluster0.%s.pdb' % (
+            job_dir, JobType, JobID, item.ReplicaSolvationType, Ith)
 
     fcon = ''.join(open(xyzfile).readlines())
 
     return HttpResponse(fcon, content_type='text/plain')
-
+'''
 
 
 def inputcoor(request, JobID, JobType='csearch'):

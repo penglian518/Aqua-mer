@@ -470,6 +470,16 @@ class ReplicaFlow:
         conf = subprocess.Popen(conf_cmds, shell=True).wait()
 
 
+        # convert pdb into xyz for displaying
+        for pdb in os.listdir(conf_out):
+            fname = pdb[:-4]
+            command_line = '%s -ipdb %s/%s.pdb -O %s/%s.xyz' % (self.obabel, conf_out, fname, conf_out, fname)
+            try:
+                subprocess.Popen(command_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).wait()
+            except:
+                logging.WARN('Faild to convert pdb file %s to xyz format.' % fname)
+
+
         # plot the rmsd of the three trajectories with lowest temperature
         rmsd_dat = 'mol_rmsdtt%s.dat' % option
         outFig_rmsd = 'mol_rmsdtt%s.png' % option
@@ -490,7 +500,7 @@ class ReplicaFlow:
             ax.set_ylabel('RMSD (Angstrom)')
             fig.savefig(outFig_rmsd)
         except:
-            logging.WARN('Failed to plot the rmsd of the trajectories. File: %s' % outFig_rmsd)
+            logging.WARN('Failed to plot the rmsd of the trajectories. File: %s' % str(outFig_rmsd))
 
     #determines RMSD of explict versus gas and gbis
     def calc_rmsd(self, outFile='mol_rmsd_all.tcl', outData='mol_rmsd_all.dat', debug=True):
