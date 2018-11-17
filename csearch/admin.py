@@ -18,7 +18,7 @@ class CSearchJobAdmin(admin.ModelAdmin):
                     'ReplicaSolvationType', 'ReplicaProcessors', 'ReplicaNReplicas', 'ReplicaNClusters',
                     'ReplicaClusterCutoff',
 
-                    'Note')
+                    'PBSID', 'Note')
 
 
 

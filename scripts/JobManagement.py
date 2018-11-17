@@ -179,23 +179,15 @@ class JobManagement:
         job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
         os.chdir(job_dir)
 
-        # open a sub process for submitting
-        runJob = subprocess.Popen('qsub submit.sh', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        PBSoutput = '0'
 
         # submit the script
         try:
-            # run the calculation
-            err, out = runJob.communicate()
-
+            PBSoutput = subprocess.check_output(['qsub', 'submit.sh'])
         except:
-            obj.FailedReason += 'Could not submit the script file submit.sh'
-            # change the job status in DB to '3' error
-            obj.CurrentStatus = '3'
-            obj.Successful = False
-            obj.save()
-            logging.warn(err)
+            PBSoutput = '-1'
 
-        return
+        return PBSoutput
 
     def CheckJob(self, obj, JobType='csearch'):
         '''
@@ -309,6 +301,7 @@ class JobManagement:
         if obj.CSearchType in ['Random']:
             cmd_line = '%s/scripts/CSearchRandom.py --NRotamers %d --Forcefield %s --NStep %d --eps %s ' \
                        '--minSamples %d %s-%d.%s >> CSearch.log 2>&1\n' \
+                       'chmod -R g+rw *\n' \
                        'chmod -R g+rw %s-%d\n' \
                        'find . -type d -exec chmod 770 {} +' \
                        % (self.DjangoHome, obj.RandomNRotamers, obj.RandomForcefield, obj.RandomNSteps, str(obj.RandomEPS),
@@ -340,6 +333,7 @@ class JobManagement:
 
             cmd_line = '%s/scripts/CSearchRandom.py --NRotamers %d -np %d -method %s -charge %s ' \
                        '-openshell %s -steps %d -fmax %s -mopac True --eps %s --minSamples %d %s-%d.%s >> CSearch.log 2>&1\n' \
+                       'chmod -R g+rw *\n' \
                        'chmod -R g+rw %s-%d\n' \
                        'find . -type d -exec chmod 770 {} +' \
                        % (self.DjangoHome, obj.RandomNRotamers, obj.MPProcessors, obj.MPMethod, str(obj.MPCharge),
@@ -378,6 +372,7 @@ class JobManagement:
 
             cmd_line = '%s/scripts/CSearchReplica.py -np %d -nr %d -nc %d --cutoff %s ' \
                        '--gas=%s --explicit=%s --implicit=%s -t xyz %s-%d.xyz -o %s-%d >> CSearch.log 2>&1\n' \
+                       'chmod -R g+rw *\n' \
                        'chmod -R g+rw %s-%d\n' \
                        'chmod -R g+rw %s-%d_results\n' \
                        'find . -type d -exec chmod 770 {} +' \

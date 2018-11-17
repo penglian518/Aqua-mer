@@ -111,6 +111,7 @@ class CSearchJob(models.Model):
     ReplicaClusterCutoff = models.FloatField(blank=True, default=1.00)
 
 
+    PBSID = models.CharField(max_length=100, blank=True, default='')
     Note = models.CharField(max_length=100, blank=True, default='')
 
 

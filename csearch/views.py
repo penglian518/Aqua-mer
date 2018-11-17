@@ -168,6 +168,7 @@ def results(request, JobID, JobType='csearch'):
             jobmanger.CSearchJobPrepare(obj=item)
 
         # submit the job
+        # The job is started by JobManagementDaemon.py instead of by JobManagement.py!!!
         #jobmanger.JobExec_v1(obj=item, JobType=JobType)
         # run the calculations in background
         #Exec_thread = threading.Thread(target=jobmanger.JobExec, kwargs={"obj": item, 'JobType': JobType})
@@ -190,9 +191,25 @@ def results(request, JobID, JobType='csearch'):
         # the job is finished, display the results.
         job_dir = get_job_dir(JobID)
         if item.CSearchType in ['Random', 'DFT']:
+            # do something to check if the output is complete
             output_png = '%s/%s-%s/%s-%s.cluster.png' % (job_dir, JobType, JobID, JobType, JobID)
+            try:
+                XYZs = os.listdir('%s/%s-%s/xyz/' % (job_dir, JobType, JobID))
+            except:
+                XYZs = []
         elif item.CSearchType in ['Replica']:
+            # do something to check if the output is complete
             output_png = '%s/%s-%s_results/%s/mol_rmsdtt.png' % (job_dir, JobType, JobID, item.ReplicaSolvationType)
+            try:
+                XYZs = '%s/%s-%s_results/%s/configurations/' % (job_dir, JobType, JobID, item.ReplicaSolvationType)
+            except:
+                XYZs = []
+
+        # check if jobs complete or not
+        if (not os.path.exists(output_png)) or (len(XYZs) == 0):
+            JobFailed = True
+        else:
+            JobFailed = False
 
         # read the figure file
         try:
@@ -201,7 +218,7 @@ def results(request, JobID, JobType='csearch'):
             fig_in_base64 = base64.encodestring('Figure is not available.')
             pass
 
-        return render(request, 'csearch/results.html', {'JobID': JobID, 'Item': item, 'chart': fig_in_base64})
+        return render(request, 'csearch/results.html', {'JobID': JobID, 'Item': item, 'chart': fig_in_base64, 'JobFailed': JobFailed})
     if item.CurrentStatus == '3':
         clientStatistics(request)
         # there is some error in the job, display the error message.
@@ -288,10 +305,11 @@ def reclustering(request, JobID):
         if item.RandomReclustering:
             jobmanger.CSearchJobReclustering(obj=item)
         # submit the job
-        jobmanger.JobExec_v1(obj=item, JobType=JobType)
+        PBSoutput = jobmanger.JobExec_v1(obj=item, JobType=JobType)
 
         # change the status in the database
         item.CurrentStatus = '1'
+        item.PBSID = PBSoutput
         item.save()
         # redirect to the result page
         return redirect('/csearch/reclustering/%d' % int(item.JobID))
@@ -419,6 +437,48 @@ def results_xyz(request, JobID, Ith, JobType='csearch'):
     fcon = ''.join(open(xyzfile).readlines())
 
     return HttpResponse(fcon, content_type='text/plain')
+
+def results_log(request, JobID, JobType='csearch'):
+    """
+
+    :param request:
+    :param JobID:
+    :param Ith: the ith molecule from top
+    :return:
+    """
+    clientStatistics(request)
+    job_dir = get_job_dir(JobID)
+    item = get_object_or_404(CSearchJob, JobID=JobID)
+
+    logfile = '%s/CSearch.log' % job_dir
+    logfile_PBSs = [i for i in os.listdir(job_dir) if i.startswith('%s-%s.o' % (JobID, JobType))]
+
+    fcon = ['CSearch.log:\n', '#'*50, '\n']
+    if item.CurrentStatus in ['0', '1'] and item.PBSID in ['', '0']:
+        fcon_logfile = ['Your job is waiting to be submitted!\n', '\n']
+    elif item.CurrentStatus in ['0', '1'] and not item.PBSID in ['', '0']:
+        fcon_logfile = ['Your job is in the queue! (%s)\n' % item.PBSID, '\n']
+    else:
+        try:
+            fcon_logfile = open(logfile).readlines()
+        except Exception as e:
+            fcon_logfile = ['Cannot find CSearch.log!\n', '\n', e]
+    fcon += fcon_logfile
+    fcon.append('\n'*4)
+
+    fcon += ['PBS log:\n', '#'*50, '\n']
+    fcon_logfile_PBS = []
+    try:
+        for log in logfile_PBSs:
+            fcon_logfile_PBS.append('%s:\n' % log)
+            fcon_logfile_PBS += open('%s/%s' % (job_dir, log)).readlines()
+    except:
+        fcon_logfile_PBS.append('Cannot find CSearch.log!\n')
+    fcon += fcon_logfile_PBS
+
+    return HttpResponse(fcon, content_type='text/plain')
+
+
 
 # This function has been included into results_xyz!
 '''

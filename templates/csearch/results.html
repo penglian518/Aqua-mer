@@ -116,7 +116,37 @@
 
     {% endif %}
 
+    {% if JobFailed %}
+    <div id="ifrmdiv-master" style="display:block">
+        <p><center><b>Incomplete job is found! Please find the log files bellow:</b></center></p>
+        <iframe id="ifrm-master" width="1000px" seamless onload="resizeIframe(this)" src="/csearch/results/{{ JobID }}/log"></iframe>
+    </div>
 
+    {% endif %}
 
 </div></div>
+
+
+<style type="text/css">
+    iframe[seamless]{
+    background-color: transparent;
+    border: 0px none transparent;
+    padding: 0px;
+    overflow: hidden;
+}
+</style>
+<script type="text/javascript">
+  function resizeIframe(iframe) {
+    iframe.height = getDocHeight(iframe) + 50 + "px";
+  }
+
+  function getDocHeight(iframe) {
+    var D = iframe.contentWindow.document;
+    return Math.max(
+        Math.max(D.body.scrollHeight, D.documentElement.scrollHeight),
+        Math.max(D.body.offsetHeight, D.documentElement.offsetHeight),
+        Math.max(D.body.clientHeight, D.documentElement.clientHeight)
+    );
+}
+</script>
 {% endblock %}
