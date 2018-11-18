@@ -725,6 +725,7 @@ if __name__ == '__main__':
     parser.add_argument("--gas", type=str, default='False', help="Perform the claculation in gas phase")
     parser.add_argument("--explicit", type=str, default='False', help="Perform the claculation in explicit water environment")
     parser.add_argument("--implicit", type=str, default='False', help="Perform the claculation in implicit water environment")
+    parser.add_argument("--netcharge", type=int, default=0, help="net charge of the molecule. Default 0")
     parser.add_argument("-o", type=str, default="csearch", help="Output directory")
     parser.add_argument("input", type=str, default="", help="Input SMILES string or path to the pdb file")
 
@@ -776,7 +777,11 @@ if __name__ == '__main__':
         logging.info("Made directory! %s" % outdir)
 
         rf.call_babel(in_type, instring, debug)
-        netcharge = rf.fix_pdb()
+        #netcharge = rf.fix_pdb()
+        if int(rf.fix_pdb()) != 0:
+            netcharge = rf.fix_pdb()
+        else:
+            netcharge = args.netcharge
         rf.call_antechamber(netcharge)
         rf.fix_prm()
         rf.call_psfgen()

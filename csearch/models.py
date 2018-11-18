@@ -109,6 +109,7 @@ class CSearchJob(models.Model):
     ReplicaNReplicas = models.PositiveIntegerField(blank=True, default=5, validators=[MaxValueValidator(28), MinValueValidator(1)])
     ReplicaNClusters = models.PositiveIntegerField(blank=True, default=5, validators=[MaxValueValidator(28), MinValueValidator(1)])
     ReplicaClusterCutoff = models.FloatField(blank=True, default=1.00)
+    ReplicaNetCharge = models.IntegerField(blank=True, default=0)
 
 
     PBSID = models.CharField(max_length=100, blank=True, default='')
@@ -266,13 +267,15 @@ class ReplicaSearchForm(ModelForm):
     class Meta:
         model = CSearchJob
         fields = ['JobID', 'CurrentStep', 'Successful',
-                  'ReplicaSolvationType', 'ReplicaProcessors', 'ReplicaNReplicas', 'ReplicaNClusters', 'ReplicaClusterCutoff']
+                  'ReplicaSolvationType', 'ReplicaProcessors', 'ReplicaNReplicas', 'ReplicaNClusters',
+                  'ReplicaClusterCutoff', 'ReplicaNetCharge']
         labels = {
             'ReplicaSolvationType': _('Solvation environment to use (default: water)'),
             'ReplicaProcessors': _('Number of processors to use (Integer times of replicas. Max 28)'),
             'ReplicaNReplicas': _('Number of replicas.'),
             'ReplicaNClusters': _('Number of clusters to generate.'),
             'ReplicaClusterCutoff': _('Threshold for clustering analysis (default 1.0 Angstrom)'),
+            'ReplicaNetCharge': _('Net charge of the system (default 0)'),
         }
         widgets = {
             'JobID': forms.HiddenInput(),

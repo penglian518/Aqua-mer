@@ -453,28 +453,34 @@ def results_log(request, JobID, JobType='csearch'):
     logfile = '%s/CSearch.log' % job_dir
     logfile_PBSs = [i for i in os.listdir(job_dir) if i.startswith('%s-%s.o' % (JobID, JobType))]
 
-    fcon = ['CSearch.log:\n', '#'*50, '\n']
+    Donot_check_PBS = False
+
     if item.CurrentStatus in ['0', '1'] and item.PBSID in ['', '0']:
-        fcon_logfile = ['Your job is waiting to be submitted!\n', '\n']
+        fcon = ['Your job is waiting to be submitted!\n', '\n']
+        Donot_check_PBS = True
     elif item.CurrentStatus in ['0', '1'] and not item.PBSID in ['', '0']:
-        fcon_logfile = ['Your job is in the queue! (%s)\n' % item.PBSID, '\n']
+        fcon = ['Your job is in the queue! (%s)\n' % item.PBSID, '\n']
+        Donot_check_PBS = True
     else:
         try:
             fcon_logfile = open(logfile).readlines()
         except Exception as e:
             fcon_logfile = ['Cannot find CSearch.log!\n', '\n', e]
-    fcon += fcon_logfile
-    fcon.append('\n'*4)
 
-    fcon += ['PBS log:\n', '#'*50, '\n']
-    fcon_logfile_PBS = []
-    try:
-        for log in logfile_PBSs:
-            fcon_logfile_PBS.append('%s:\n' % log)
-            fcon_logfile_PBS += open('%s/%s' % (job_dir, log)).readlines()
-    except:
-        fcon_logfile_PBS.append('Cannot find CSearch.log!\n')
-    fcon += fcon_logfile_PBS
+        fcon = ['CSearch.log:\n', '#'*50, '\n']
+        fcon += fcon_logfile
+        fcon.append('\n'*4)
+
+    if not Donot_check_PBS:
+        fcon += ['PBS log:\n', '#'*50, '\n']
+        fcon_logfile_PBS = []
+        try:
+            for log in logfile_PBSs:
+                fcon_logfile_PBS.append('%s:\n' % log)
+                fcon_logfile_PBS += open('%s/%s' % (job_dir, log)).readlines()
+        except:
+            fcon_logfile_PBS.append('Cannot find CSearch.log!\n')
+        fcon += fcon_logfile_PBS
 
     return HttpResponse(fcon, content_type='text/plain')
 

@@ -371,13 +371,13 @@ class JobManagement:
                 implicit = 'True'
 
             cmd_line = '%s/scripts/CSearchReplica.py -np %d -nr %d -nc %d --cutoff %s ' \
-                       '--gas=%s --explicit=%s --implicit=%s -t xyz %s-%d.xyz -o %s-%d >> CSearch.log 2>&1\n' \
+                       '--gas=%s --explicit=%s --implicit=%s -t xyz %s-%d.xyz --netcharge %s -o %s-%d >> CSearch.log 2>&1\n' \
                        'chmod -R g+rw *\n' \
                        'chmod -R g+rw %s-%d\n' \
                        'chmod -R g+rw %s-%d_results\n' \
                        'find . -type d -exec chmod 770 {} +' \
                        % (self.DjangoHome, obj.ReplicaProcessors, obj.ReplicaNReplicas, obj.ReplicaNClusters, str(obj.ReplicaClusterCutoff),
-                          gas, explicit, implicit, JobType, job_id, JobType, job_id,
+                          gas, explicit, implicit, JobType, job_id, obj.ReplicaNetCharge, JobType, job_id,
                           JobType, job_id,
                           JobType, job_id)
             # write the command line to exe_file

@@ -16,7 +16,7 @@ class CSearchJobAdmin(admin.ModelAdmin):
                     'DFTOpenshell', 'DFTSteps', 'DFTFmax',
 
                     'ReplicaSolvationType', 'ReplicaProcessors', 'ReplicaNReplicas', 'ReplicaNClusters',
-                    'ReplicaClusterCutoff',
+                    'ReplicaClusterCutoff', 'ReplicaNetCharge',
 
                     'PBSID', 'Note')
 
