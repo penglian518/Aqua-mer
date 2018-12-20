@@ -15,6 +15,10 @@ def user_directory_path(instance, filename):
     # upload to MEDIA_ROOT/csearch/jobs/JOB_ID/
     return 'gsolv/jobs/{0}/{1}'.format(instance.JobID, filename)
 
+def user_directory_pathP1(instance, filename):
+    # upload to MEDIA_ROOT/csearch/jobs/JOB_ID/
+    return 'gsolv/jobs/{0}/gas_{1}'.format(instance.JobID, filename)
+
 @python_2_unicode_compatible  # only if you need to support Python 2
 class GSolvJob(models.Model):
     QMSoftwares = (
@@ -82,7 +86,7 @@ class GSolvJob(models.Model):
     CurrentStatus = models.CharField(max_length=10, choices=JobStatus, default='0')
     Successful = models.BooleanField(default=False)
     FailedReason = models.CharField(max_length=100, blank=True, default='')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
 
     SmilesStr = models.CharField(max_length=200, blank=True, default='')
     UploadedFile = models.FileField(upload_to=user_directory_path, blank=True)
@@ -107,6 +111,15 @@ class GSolvJob(models.Model):
 
     Note = models.CharField(max_length=100, blank=True, default='')
 
+    # these columns are for output files
+    UploadedOutputFile = models.FileField(upload_to=user_directory_path, blank=True)
+    QMSoftwareOutput = models.CharField(max_length=30, default='')
+    UploadedOutputFileP1 = models.FileField(upload_to=user_directory_pathP1, blank=True)
+    QMSoftwareOutputP1 = models.CharField(max_length=30, default='')
+
+    EnergyfromOutputFiles = models.CharField(max_length=30, default='')
+    EnergyfromOutputFilesP1 = models.CharField(max_length=30, default='')
+    GsolvCorrected = models.DecimalField(max_digits=15, decimal_places=3, default=0.0)
 
     def __str__(self):
         return str(self.pk)
@@ -177,4 +190,32 @@ class GsolvInputForm(ModelForm):
             'JobID': forms.HiddenInput(),
             'CurrentStep': forms.HiddenInput(),
             'Successful': forms.HiddenInput(),
+        }
+
+class UploadOutputForm(ModelForm):
+    class Meta:
+        model = GSolvJob
+        fields = ['JobID', 'CurrentStep', 'Successful', 'UploadedOutputFile']
+        labels = {
+            'UploadedOutputFile': _('Upload output file for AQUEOUS phase calculation'),
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+            'UploadedOutputFile': forms.FileInput(attrs={'required': True}),
+        }
+
+class UploadOutputFormP1(ModelForm):
+    class Meta:
+        model = GSolvJob
+        fields = ['JobID', 'CurrentStep', 'Successful', 'UploadedOutputFileP1']
+        labels = {
+            'UploadedOutputFileP1': _('Upload output file for GAS phase calculation'),
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+            'UploadedOutputFileP1': forms.FileInput(attrs={'required': True}),
         }

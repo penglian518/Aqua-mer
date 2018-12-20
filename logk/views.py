@@ -3,9 +3,11 @@ from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import model_to_dict
 
-from .models import LogKJob, UploadForm, QueryForm, SmilesForm, paraInputForm, UploadFormP1, SmilesFormP1, TransToAForm, MetalForm
+from .models import LogKJob, UploadForm, QueryForm, SmilesForm, paraInputForm, UploadFormP1, SmilesFormP1, TransToAForm, MetalForm, UploadOutputForm, UploadOutputFormP1, UploadOutputFormM
 from toolkit.models import ToolkitJob
 from cyshg.models import AllJobIDs
+from pka.models import pKaJob
+from gsolv.models import GSolvJob
 
 
 from scripts.JobManagement import JobManagement
@@ -20,7 +22,7 @@ def index(request):
     clientStatistics(request)
     return render(request, 'logk/index.html')
 
-def start(request):
+def start(request, type='new'):
     clientStatistics(request)
     # delete empty jobs that longer then 2 hours
     for j in LogKJob.objects.filter(CurrentStep=0):
@@ -33,7 +35,10 @@ def start(request):
     SPJob = LogKJob(JobID=JobID)
     SPJob.save()
 
-    return redirect('/logk/smiles/%d/' % JobID)
+    if type in ['new']:
+        return redirect('/logk/smiles/%d/' % JobID)
+    elif type in ['output']:
+        return redirect('/logk/calculate/%d/' % JobID)
 
 def smiles(request, JobID):
     clientStatistics(request)
@@ -260,14 +265,17 @@ def results(request, JobID, JobType='logk'):
         # generate input file
 
         jobmanger = JobManagement()
-        jobmanger.LogKJobPrepare(obj=item, JobType='logk')
+        if JobType in ['logk']:
+            jobmanger.LogKJobPrepare(obj=item, JobType=JobType)
+        elif JobType in ['logk_output']:
+            jobmanger.LogKCollectResults(obj=item, JobType=JobType)
 
         # run the calculations in background
         #Exec_thread = threading.Thread(target=jobmanger.LogKJobExec, kwargs={"obj": item})
         #Exec_thread.start()
 
         # redirect to the result page
-        return redirect('/logk/results/%d' % int(item.JobID))
+        return redirect('/logk/results/%d/%s/' % (int(item.JobID), JobType))
 
     if item.CurrentStatus == '1':
         # the job is 'running', keep checking the status
@@ -285,7 +293,11 @@ def results(request, JobID, JobType='logk'):
             fig_in_base64 = base64.encodestring('Figure is not available.')
             pass
 
-        return render(request, 'logk/results.html', {'JobID': JobID, 'Item': item, 'chart': fig_in_base64})
+        if JobType in ['logk']:
+            return render(request, 'logk/results.html', {'JobID': JobID, 'Item': item, 'chart': fig_in_base64})
+        elif JobType in ['logk_output']:
+            return render(request, 'logk/results_output.html', {'JobID': JobID, 'Item': item, 'chart': fig_in_base64})
+
     if item.CurrentStatus == '3':
         clientStatistics(request)
         # there is some error in the job, display the error message.
@@ -333,11 +345,23 @@ def results_doc(request):
             if JobID_query in allJobID_csearch:
                 return redirect('/csearch/results/%d' % int(model_instance.JobID))
             elif JobID_query in allJobID_gsolv:
-                return redirect('/gsolv/results/%d' % int(model_instance.JobID))
+                item = get_object_or_404(GSolvJob, JobID=JobID_query)
+                if float(item.CurrentStep) > 3:
+                    return redirect('/gsolv/results/%d/gsolv_output/' % int(model_instance.JobID))
+                else:
+                    return redirect('/gsolv/results/%d/gsolv/' % int(model_instance.JobID))
             elif JobID_query in allJobID_pka:
-                return redirect('/pka/results/%d' % int(model_instance.JobID))
+                item = get_object_or_404(pKaJob, JobID=JobID_query)
+                if float(item.CurrentStep) > 3:
+                    return redirect('/pka/results/%d/pka_output/' % int(model_instance.JobID))
+                else:
+                    return redirect('/pka/results/%d/pka/' % int(model_instance.JobID))
             elif JobID_query in allJobID_logk:
-                return redirect('/logk/results/%d' % int(model_instance.JobID))
+                item = get_object_or_404(LogKJob, JobID=JobID_query)
+                if float(item.CurrentStep) > 3:
+                    return redirect('/logk/results/%d/logk_output/' % int(model_instance.JobID))
+                else:
+                    return redirect('/logk/results/%d/logk/' % int(model_instance.JobID))
             elif JobID_query in allJobID_hgspeci:
                 return redirect('/hgspeci/results/%d' % int(model_instance.JobID))
 
@@ -348,6 +372,44 @@ def results_doc(request):
 
     return render(request, 'logk/results_doc.html', {'form': form})
 
+def calculate(request, JobID):
+    clientStatistics(request)
+
+    # get job handle
+    try:
+        SPJob = LogKJob.objects.get(JobID=JobID)
+    except:
+        SPJob = LogKJob(JobID=JobID)
+
+    if request.method == 'POST':
+        form = UploadOutputForm(request.POST, request.FILES, instance=SPJob)
+        formP1 = UploadOutputFormP1(request.POST, request.FILES, instance=SPJob)
+        formM = UploadOutputFormM(request.POST, request.FILES, instance=SPJob)
+        if form.is_valid():
+            model_instance = form.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "5"
+            model_instance.Successful = True
+            model_instance.save()
+        if formP1.is_valid():
+            model_instance = formP1.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "5"
+            model_instance.Successful = True
+            model_instance.save()
+        if formM.is_valid():
+            model_instance = formM.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "5"
+            model_instance.Successful = True
+            model_instance.save()
+        return redirect('/logk/results/%d/%s/' % (int(JobID), 'logk_output'))
+    else:
+        form = UploadOutputForm(instance=SPJob)
+        formP1 = UploadOutputFormP1(instance=SPJob)
+        formM = UploadOutputFormM(instance=SPJob)
+
+    return render(request, 'logk/calculate.html', {'form': form, 'formP1': formP1, 'formM': formM, 'JobID': JobID})
 
 
 
@@ -465,5 +527,25 @@ def inputfile(request, JobID, JobType='logk', Mol='A'):
             inputfile = '%s/M_%s-%s.nw' % (job_dir, JobType, JobID)
 
     fcon = ''.join(open(inputfile).readlines())
+
+    return HttpResponse(fcon, content_type='text/plain')
+
+def outputfile(request, JobID, JobType='logk', Mol='A'):
+    """
+    display the input files
+    """
+    clientStatistics(request)
+    item = get_object_or_404(LogKJob, JobID=JobID)
+    # read xyz file
+    job_dir = get_job_dir(JobID)
+
+    if Mol in ['L']:
+        outputfile = item.UploadedOutputFile.file.name
+    elif Mol in ['ML']:
+        outputfile = item.UploadedOutputFileP1.file.name
+    elif Mol in ['M']:
+        outputfile = item.UploadedOutputFileM.file.name
+
+    fcon = ''.join(open(outputfile).readlines())
 
     return HttpResponse(fcon, content_type='text/plain')

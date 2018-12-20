@@ -1,0 +1,74 @@
+{% extends 'base_index.html' %}
+{% load static %}
+{% load myfilter %}
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'gsolv/memu.html' %}
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 4. Results</div>
+<div id=main>
+    <h3>The &Delta;G<sub>solv</sub> calculated from the uploaded output files is: </h3>
+    &Delta;G<sub>solv</sub> = ((G<sub>aq</sub> - G<sub>gas</sub>) = ({{ Item.EnergyfromOutputFiles }} - {{ Item.EnergyfromOutputFilesP1 }}) * 627.5095 =  {{ Item.GsolvCorrected }}</p>
+
+    <br>
+    <h3>The output file for the uploaded molecule in Gas phase:</h3>
+    <b>{{ Item.UploadedOutputFileP1 | basename }}</b><br>
+
+    {% if Item.QMSoftwareOutputP1 == 'Gaussian' %}
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/outputfile/{{ Item.JobID }}/gas/" ></iframe>
+        </p>
+
+    {% elif Item.QMSoftwareOutputP1 == 'NWChem' %}
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/outputfile/{{ Item.JobID }}/gas/" ></iframe>
+        </p>
+    {% elif Item.QMSoftwareOutputP1 == 'Unknown' %}
+        <p>Cannot identify the property of the uploaded file. Make sure the QM calculation was finished successfully. </p>
+    {% endif %}
+
+    <h3>The output file for the uploaded molecule in Aqueous Phase:</h3>
+    <b>{{ Item.UploadedOutputFile | basename }}</b><br>
+
+    {% if Item.QMSoftwareOutput == 'Gaussian' %}
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/outputfile/{{ Item.JobID }}/aq/" ></iframe>
+        </p>
+
+    {% elif Item.QMSoftwareOutput == 'NWChem' %}
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/outputfile/{{ Item.JobID }}/aq/" ></iframe>
+        </p>
+    {% elif Item.QMSoftwareOutput == 'Unknown' %}
+        <p>Cannot identify the property of the uploaded file. Make sure the QM calculation was finished successfully. </p>
+    {% endif %}
+
+
+    {% if Item.QMSoftwareOutput == 'NWChem' %}
+    <br>
+    <p><b>Note:</b> We find you used NWChem to perform these calculations.
+        Although NWChem is supported by our server, we do not know the accuracy of NWChem in these calculations.
+        This is due to the different solvation models used in NWChem compared to Gaussian. Therefore, we suggest to use Gaussian instead.
+        For more details, please see the reference papers in <a href="/faq/" target="_blank">FAQ</a>.
+    </p>
+    <br>
+    {% endif %}
+
+
+</div></div>
+
+<script type="text/javascript">
+  function resizeIframe(iframe) {
+    iframe.height = 300 + "px";
+  }
+
+}
+</script>
+{% endblock %}

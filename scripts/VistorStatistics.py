@@ -4,15 +4,20 @@ from cyshg.models import StatisticsData
 
 
 def clientStatistics(request):
+    white_list_IPs = [
+        '128.219.164.9',  # netscaler load balancer
+    ]
     IP = clientIP(request)
-    url = vistingPage(request)
 
-    u = StatisticsData.objects.create()
-    u.IP = IP[0]
-    u.IPType = IP[1]
-    u.PagesVisted = url
-    u.Date = datetime.now()
-    u.save()
+    if IP not in white_list_IPs:
+        url = vistingPage(request)
+
+        u = StatisticsData.objects.create()
+        u.IP = IP[0]
+        u.IPType = IP[1]
+        u.PagesVisted = url
+        u.Date = datetime.now()
+        u.save()
 
     return
 

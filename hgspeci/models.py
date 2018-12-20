@@ -37,7 +37,7 @@ class HgSpeciJob(models.Model):
     CurrentStatus = models.CharField(max_length=10, choices=JobStatus, default='0')
     Successful = models.BooleanField(default=False)
     FailedReason = models.CharField(max_length=100, blank=True, default='')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
 
     # input file
     SPTitle = models.CharField(max_length=100, default='AQUA-MER SOLUTION')

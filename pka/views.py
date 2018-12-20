@@ -3,10 +3,11 @@ from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import model_to_dict
 
-from .models import pKaJob, UploadForm, QueryForm, SmilesForm, pKaInputForm, UploadFormP1, SmilesFormP1, TransToAForm
+from .models import pKaJob, UploadForm, QueryForm, SmilesForm, pKaInputForm, UploadFormP1, SmilesFormP1, TransToAForm, UploadOutputForm, UploadOutputFormP1
 from toolkit.models import ToolkitJob
 from cyshg.models import AllJobIDs
-
+from logk.models import LogKJob
+from gsolv.models import GSolvJob
 
 from scripts.JobManagement import JobManagement
 from scripts.VistorStatistics import clientStatistics
@@ -20,7 +21,7 @@ def index(request):
     clientStatistics(request)
     return render(request, 'pka/index.html')
 
-def start(request):
+def start(request, type='new'):
     clientStatistics(request)
     # delete empty jobs that longer then 2 hours
     for j in pKaJob.objects.filter(CurrentStep=0):
@@ -33,7 +34,10 @@ def start(request):
     SPJob = pKaJob(JobID=JobID)
     SPJob.save()
 
-    return redirect('/pka/smiles/%d/' % JobID)
+    if type in ['new']:
+        return redirect('/pka/smiles/%d/' % JobID)
+    elif type in ['output']:
+        return redirect('/pka/calculate/%d/' % JobID)
 
 def smiles(request, JobID):
     clientStatistics(request)
@@ -180,7 +184,7 @@ def trans2a(request, JobID):
                 #return HttpResponse('upload A-')
                 return redirect('/pka/smiles_single/%s/%s/' % (JobID, 'A'))
             elif model_instance.TransToA in ['None']:
-                return redirect('/pka/start/')
+                return redirect('/pka/start/new/')
     else:
         form = TransToAForm(instance=SPJob)
 
@@ -243,14 +247,17 @@ def results(request, JobID, JobType='pka'):
         # generate input file
 
         jobmanger = JobManagement()
-        jobmanger.pKaJobPrepare(obj=item, JobType='pka')
+        if JobType in ['pka']:
+            jobmanger.pKaJobPrepare(obj=item, JobType=JobType)
+        elif JobType in ['pka_output']:
+            jobmanger.pKaCollectResults(obj=item, JobType=JobType)
 
         # run the calculations in background
         #Exec_thread = threading.Thread(target=jobmanger.pKaJobExec, kwargs={"obj": item})
         #Exec_thread.start()
 
         # redirect to the result page
-        return redirect('/pka/results/%d' % int(item.JobID))
+        return redirect('/pka/results/%d/%s/' % (int(item.JobID), JobType))
 
     if item.CurrentStatus == '1':
         # the job is 'running', keep checking the status
@@ -267,8 +274,11 @@ def results(request, JobID, JobType='pka'):
         except:
             fig_in_base64 = base64.encodestring('Figure is not available.')
             pass
+        if JobType in ['pka']:
+            return render(request, 'pka/results.html', {'JobID': JobID, 'Item': item, 'chart': fig_in_base64})
+        elif JobType in ['pka_output']:
+            return render(request, 'pka/results_output.html', {'JobID': JobID, 'Item': item, 'chart': fig_in_base64})
 
-        return render(request, 'pka/results.html', {'JobID': JobID, 'Item': item, 'chart': fig_in_base64})
     if item.CurrentStatus == '3':
         clientStatistics(request)
         # there is some error in the job, display the error message.
@@ -316,11 +326,23 @@ def results_doc(request):
             if JobID_query in allJobID_csearch:
                 return redirect('/csearch/results/%d' % int(model_instance.JobID))
             elif JobID_query in allJobID_gsolv:
-                return redirect('/gsolv/results/%d' % int(model_instance.JobID))
+                item = get_object_or_404(GSolvJob, JobID=JobID_query)
+                if float(item.CurrentStep) > 3:
+                    return redirect('/gsolv/results/%d/gsolv_output/' % int(model_instance.JobID))
+                else:
+                    return redirect('/gsolv/results/%d/gsolv/' % int(model_instance.JobID))
             elif JobID_query in allJobID_pka:
-                return redirect('/pka/results/%d' % int(model_instance.JobID))
+                item = get_object_or_404(pKaJob, JobID=JobID_query)
+                if float(item.CurrentStep) > 3:
+                    return redirect('/pka/results/%d/pka_output/' % int(model_instance.JobID))
+                else:
+                    return redirect('/pka/results/%d/pka/' % int(model_instance.JobID))
             elif JobID_query in allJobID_logk:
-                return redirect('/logk/results/%d' % int(model_instance.JobID))
+                item = get_object_or_404(LogKJob, JobID=JobID_query)
+                if float(item.CurrentStep) > 3:
+                    return redirect('/logk/results/%d/logk_output/' % int(model_instance.JobID))
+                else:
+                    return redirect('/logk/results/%d/logk/' % int(model_instance.JobID))
             elif JobID_query in allJobID_hgspeci:
                 return redirect('/hgspeci/results/%d' % int(model_instance.JobID))
 
@@ -331,6 +353,36 @@ def results_doc(request):
 
     return render(request, 'pka/results_doc.html', {'form': form})
 
+def calculate(request, JobID):
+    clientStatistics(request)
+
+    # get job handle
+    try:
+        SPJob = pKaJob.objects.get(JobID=JobID)
+    except:
+        SPJob = pKaJob(JobID=JobID)
+
+    if request.method == 'POST':
+        form = UploadOutputForm(request.POST, request.FILES, instance=SPJob)
+        formP1 = UploadOutputFormP1(request.POST, request.FILES, instance=SPJob)
+        if form.is_valid():
+            model_instance = form.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "5"
+            model_instance.Successful = True
+            model_instance.save()
+        if formP1.is_valid():
+            model_instance = formP1.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "5"
+            model_instance.Successful = True
+            model_instance.save()
+        return redirect('/pka/results/%d/%s/' % (int(JobID), 'pka_output'))
+    else:
+        form = UploadOutputForm(instance=SPJob)
+        formP1 = UploadOutputFormP1(instance=SPJob)
+
+    return render(request, 'pka/calculate.html', {'form': form, 'formP1': formP1, 'JobID': JobID})
 
 
 
@@ -441,5 +493,23 @@ def inputfile(request, JobID, JobType='pka', Mol='A'):
             inputfile = '%s/HA_%s-%s.nw' % (job_dir, JobType, JobID)
 
     fcon = ''.join(open(inputfile).readlines())
+
+    return HttpResponse(fcon, content_type='text/plain')
+
+def outputfile(request, JobID, JobType='pka', Mol='A'):
+    """
+    display the input files
+    """
+    clientStatistics(request)
+    item = get_object_or_404(pKaJob, JobID=JobID)
+    # read xyz file
+    job_dir = get_job_dir(JobID)
+
+    if Mol in ['A']:
+        outputfile = item.UploadedOutputFile.file.name
+    elif Mol in ['HA']:
+        outputfile = item.UploadedOutputFileP1.file.name
+
+    fcon = ''.join(open(outputfile).readlines())
 
     return HttpResponse(fcon, content_type='text/plain')

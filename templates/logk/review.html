@@ -90,9 +90,17 @@
     </tbody>
 </table>
     <br>
-
+    {% if Item.QMSoftware == 'NWChem' or Item.QMSoftwareP1 == 'NWChem' or Item.QMSoftwareM == 'NWChem' %}
+    <br>
+    <p><b>Note:</b> We find you selected NWChem to perform these calculations.
+        Although NWChem is supported by our server, we do not know the accuracy of NWChem in these calculations.
+        This is due to the different solvation models used in NWChem compared to Gaussian. Therefore, we suggest to use Gaussian instead.
+        For more details, please see the reference papers in <a href="/faq/" target="_blank">FAQ</a>.
+    </p>
+    <br>
+    {% endif %}
     <button type="submit" class="btn btn-default" style="height:25px;width:90px"
-            onclick="location.href='/logk/results/{{ Item.JobID }}'">Submit</button>
+            onclick="location.href='/logk/results/{{ Item.JobID }}/logk/'">Submit</button>
 
     <br>
     <br>

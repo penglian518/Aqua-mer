@@ -1,0 +1,52 @@
+{% extends 'base_index.html' %}
+{% load static %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'pka/memu.html' %}
+
+
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Calculate p<i>K</i><sub>a</sub> from the output files.</div>
+<div id=main>
+    <div>
+        <p>
+            The p<i>K</i><sub>a</sub> calculation uses the following equation,
+            <p><b>HA ----> A<sup>-</sup> + H<sup>+</sup>&nbsp;&nbsp;&nbsp;&nbsp;<i>K</i><sub>a</sub> = [A<sup>-</sup>][H<sup>+</sup>]/[HA]&nbsp;&nbsp;&nbsp;&nbsp;p<i>K</i><sub>a</sub> = -log <i>K</i><sub>a</sub></b></p>
+            therefore, it requires the user to provide output files for both the <b>deprotonated (A<sup>-</sup>)</b> and
+            the <b>protonated (HA)</b> forms of the compound.
+        </p>
+    </div>
+
+
+    <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST'>
+    {% csrf_token %}
+
+    <table>
+    {{ form }}
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    {{ formP1 }}
+    </table>
+    <br>
+    <div style="padding-left:300px">
+        <button type="submit" class="btn btn-default" style="height:25px;width:120px">Upload structures</button>
+    </div>
+
+    </form>
+
+    <br>
+    <br>
+
+
+
+</div>
+</div>
+
+{% endblock %}

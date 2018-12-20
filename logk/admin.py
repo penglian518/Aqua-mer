@@ -16,6 +16,10 @@ class LogKJobAdmin(admin.ModelAdmin):
                     'QMMetal', 'QMSoftwareM',
                     'QMTitleM', 'QMCalTypeM', 'QMProcessorsM', 'QMMemoryM', 'QMFunctionalM', 'QMBasisSetM', 'QMChargeM',
                     'QMMultiplicityM', 'QMCoordinateFormatM', 'QMSolvationModelM', 'QMSolventM', 'QMCavitySurfaceM', 'QMScalingFactorM', 'NoteM',
+                    'UploadedOutputFile', 'QMSoftwareOutput', 'EnergyfromOutputFiles',
+                    'UploadedOutputFileP1', 'QMSoftwareOutputP1', 'EnergyfromOutputFilesP1',
+                    'UploadedOutputFileM', 'QMSoftwareOutputM', 'EnergyfromOutputFilesM',
+                    'LogKfromOutputFiles',
 
                     )
 

@@ -23,7 +23,7 @@ class CalcSolutionMasterSpecies(models.Model):
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
     Source = models.CharField(max_length=200, blank=True, default='')
 
 
@@ -60,7 +60,7 @@ class CalcSolutionSpecies(models.Model):
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.Reaction)

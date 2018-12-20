@@ -13,11 +13,15 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 def user_directory_path(instance, filename):
     # upload to MEDIA_ROOT/csearch/jobs/JOB_ID/
-    return 'logk/jobs/{0}/A_{1}'.format(instance.JobID, filename)
+    return 'logk/jobs/{0}/L_{1}'.format(instance.JobID, filename)
 
 def user_directory_pathP1(instance, filename):
     # upload to MEDIA_ROOT/csearch/jobs/JOB_ID/
-    return 'logk/jobs/{0}/HA_{1}'.format(instance.JobID, filename)
+    return 'logk/jobs/{0}/ML_{1}'.format(instance.JobID, filename)
+
+def user_directory_pathM(instance, filename):
+    # upload to MEDIA_ROOT/csearch/jobs/JOB_ID/
+    return 'logk/jobs/{0}/M_{1}'.format(instance.JobID, filename)
 
 @python_2_unicode_compatible  # only if you need to support Python 2
 class LogKJob(models.Model):
@@ -42,6 +46,7 @@ class LogKJob(models.Model):
     )
 
     QMFunctionals = (
+        ('M06', 'M06'),
         ('M06-2X', 'M06-2X'),
         ('M06-L', 'M06-L'),
         ('B3LYP', 'B3LYP'),
@@ -99,7 +104,7 @@ class LogKJob(models.Model):
     CurrentStatus = models.CharField(max_length=10, choices=JobStatus, default='0')
     Successful = models.BooleanField(default=False)
     FailedReason = models.CharField(max_length=100, blank=True, default='')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
 
     TransToA = models.CharField(max_length=10, choices=TransToMolecules, default='')
 
@@ -114,7 +119,7 @@ class LogKJob(models.Model):
     QMCalType = models.CharField(max_length=30, choices=QMCalTypes, default='Opt-Freq')
     QMProcessors = models.PositiveIntegerField(blank=True, default=1, validators=[MaxValueValidator(4), MinValueValidator(1)])
     QMMemory = models.PositiveIntegerField(blank=True, default=1)
-    QMFunctional = models.CharField(max_length=30, choices=QMFunctionals, default='M06-2X')
+    QMFunctional = models.CharField(max_length=30, choices=QMFunctionals, default='M06')
     QMBasisSet = models.CharField(max_length=30, choices=QMBasisSets, default='6-31+G(d,p)')
     QMCharge = models.IntegerField(blank=True, default=0)
     QMMultiplicity = models.IntegerField(blank=True, default=1)
@@ -137,7 +142,7 @@ class LogKJob(models.Model):
     QMCalTypeP1 = models.CharField(max_length=30, choices=QMCalTypes, default='Opt-Freq')
     QMProcessorsP1 = models.PositiveIntegerField(blank=True, default=1, validators=[MaxValueValidator(4), MinValueValidator(1)])
     QMMemoryP1 = models.PositiveIntegerField(blank=True, default=1)
-    QMFunctionalP1 = models.CharField(max_length=30, choices=QMFunctionals, default='M06-2X')
+    QMFunctionalP1 = models.CharField(max_length=30, choices=QMFunctionals, default='M06')
     QMBasisSetP1 = models.CharField(max_length=30, choices=QMBasisSets, default='6-31+G(d,p)')
     QMChargeP1 = models.IntegerField(blank=True, default=0)
     QMMultiplicityP1 = models.IntegerField(blank=True, default=1)
@@ -159,7 +164,7 @@ class LogKJob(models.Model):
     QMCalTypeM = models.CharField(max_length=30, choices=QMCalTypes, default='Opt-Freq')
     QMProcessorsM = models.PositiveIntegerField(blank=True, default=1, validators=[MaxValueValidator(4), MinValueValidator(1)])
     QMMemoryM = models.PositiveIntegerField(blank=True, default=1)
-    QMFunctionalM = models.CharField(max_length=30, choices=QMFunctionals, default='M06-2X')
+    QMFunctionalM = models.CharField(max_length=30, choices=QMFunctionals, default='M06')
     QMBasisSetM = models.CharField(max_length=30, choices=QMBasisSets, default='SDD')
     QMChargeM = models.IntegerField(blank=True, default=2)
     QMMultiplicityM = models.IntegerField(blank=True, default=1)
@@ -170,6 +175,21 @@ class LogKJob(models.Model):
     QMScalingFactorM = models.DecimalField(max_digits=5, decimal_places=3, null=True)
 
     NoteM = models.CharField(max_length=100, blank=True, default='')
+
+    # these columns are for output files
+    UploadedOutputFile = models.FileField(upload_to=user_directory_path, blank=True)
+    QMSoftwareOutput = models.CharField(max_length=30, default='')
+    UploadedOutputFileP1 = models.FileField(upload_to=user_directory_pathP1, blank=True)
+    QMSoftwareOutputP1 = models.CharField(max_length=30, default='')
+    UploadedOutputFileM = models.FileField(upload_to=user_directory_pathM, blank=True)
+    QMSoftwareOutputM = models.CharField(max_length=30, default='')
+
+    EnergyfromOutputFiles = models.CharField(max_length=30, default='')
+    EnergyfromOutputFilesP1 = models.CharField(max_length=30, default='')
+    EnergyfromOutputFilesM = models.CharField(max_length=30, default='')
+    LogKfromOutputFiles = models.DecimalField(max_digits=15, decimal_places=3, default=0.0)
+
+
 
 
     def __str__(self):
@@ -347,6 +367,49 @@ class paraInputForm(ModelForm):
 
             # set the default value for the scaling factors.
             'QMScalingFactor': forms.TextInput(attrs={'value': 0.485, 'required': True}),
-            'QMScalingFactorP1': forms.TextInput(attrs={'value': 1.080, 'required': True}),
+            'QMScalingFactorP1': forms.TextInput(attrs={'value': 1.000, 'required': True}),
             'QMScalingFactorM': forms.TextInput(attrs={'value': 0.977, 'required': True})
+        }
+
+
+class UploadOutputForm(ModelForm):
+    class Meta:
+        model = LogKJob
+        fields = ['JobID', 'CurrentStep', 'Successful', 'UploadedOutputFile']
+        labels = {
+            'UploadedOutputFile': _('Upload the output file for "Ligand (L-)" molecule'),
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+            'UploadedOutputFile': forms.FileInput(attrs={'required': True}),
+        }
+
+class UploadOutputFormP1(ModelForm):
+    class Meta:
+        model = LogKJob
+        fields = ['JobID', 'CurrentStep', 'Successful', 'UploadedOutputFileP1']
+        labels = {
+            'UploadedOutputFileP1': _('Upload the output file for "Complex (ML)" molecule'),
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+            'UploadedOutputFileP1': forms.FileInput(attrs={'required': True}),
+        }
+
+class UploadOutputFormM(ModelForm):
+    class Meta:
+        model = LogKJob
+        fields = ['JobID', 'CurrentStep', 'Successful', 'UploadedOutputFileM']
+        labels = {
+            'UploadedOutputFileM': _('Upload the output file for "Metal (M+)" molecule'),
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+            'UploadedOutputFileM': forms.FileInput(attrs={'required': True}),
         }

@@ -1,0 +1,57 @@
+{% extends 'base_index.html' %}
+{% load static %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'logk/memu.html' %}
+
+
+
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Calculate log <i>K</i> from the output files.</div>
+<div id=main>
+    <div>
+        <p>
+            The log <i>K</i> calculation uses the following equation,
+            <p><b>M<sup>+</sup> + L<sup>-</sup> ----> ML&nbsp;&nbsp;&nbsp;&nbsp;<i>K</i> = [ML]/[ML<sup>+</sup>][L<sup>-</sup>]</b></p>
+            therefore, it requires the user to provide output files for the <b>Ligand (L<sup>-</sup>)</b>,
+            the <b>Complex (ML)</b>, and the <b>Metal (M<sup>+</sup>)</b>.
+        </p>
+    </div>
+
+
+    <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST'>
+    {% csrf_token %}
+
+    <table>
+    {{ formM }}
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    {{ form }}
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    {{ formP1 }}
+    </table>
+    <br>
+    <div style="padding-left:300px">
+        <button type="submit" class="btn btn-default" style="height:25px;width:120px">Upload structures</button>
+    </div>
+
+    </form>
+
+    <br>
+    <br>
+
+
+
+</div>
+</div>
+
+{% endblock %}

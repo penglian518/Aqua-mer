@@ -1,0 +1,97 @@
+{% extends 'base_index.html' %}
+{% load static %}
+{% load myfilter %}
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'logk/memu.html' %}
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 4. Results</div>
+<div id=main>
+
+    <h3>The log <i>K</i> calculated from the uploaded output files is: </h3>
+    <p>
+        log <i>K</i> = -1*(G<sub>aq</sub>_ML - G<sub>aq</sub>_L - G<sub>aq</sub>_M - &Delta;G<sup>o-></sup>*) / (2.303 * RT) = -1*(({{ Item.EnergyfromOutputFilesP1 }} - {{ Item.EnergyfromOutputFiles }} - {{ Item.EnergyfromOutputFilesM }}) * 627.5095 - 1.89) / (2.303 *
+0.5925) =  {{ Item.LogKfromOutputFiles }}</p>
+
+
+    <br>
+    <h3>The output file for the <i>Metal (M+)</i>:</h3>
+    <b>{{ Item.UploadedOutputFileM | basename }}</b><br>
+    {% if Item.QMSoftwareOutputM == 'Gaussian' %}
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/outputfile/{{ Item.JobID }}/M/" ></iframe>
+        </p>
+    {% elif Item.QMSoftwareOutputP1 == 'NWChem' %}
+
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/outputfile/{{ Item.JobID }}/M/" ></iframe>
+        </p>
+    {% elif Item.QMSoftwareOutputP1 == 'Unknown' %}
+        <p>Cannot identify the property of the uploaded file. Make sure the QM calculation was finished successfully. </p>
+    {% endif %}
+
+
+    <h3>The output file for the <i>Ligand (L<sup>-</sup>)</i>:</h3>
+    <b>{{ Item.UploadedOutputFile | basename }}</b><br>
+
+    {% if Item.QMSoftwareOutput == 'Gaussian' %}
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/outputfile/{{ Item.JobID }}/L/" ></iframe>
+        </p>
+    {% elif Item.QMSoftwareOutput == 'NWChem' %}
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/outputfile/{{ Item.JobID }}/L/" ></iframe>
+        </p>
+    {% elif Item.QMSoftwareOutput == 'Unknown' %}
+        <p>Cannot identify the property of the uploaded file. Make sure the QM calculation was finished successfully. </p>
+    {% endif %}
+
+
+
+    <h3>The output file for the <i>Complex (ML)</i>:</h3>
+    <b>{{ Item.UploadedOutputFileP1 | basename }}</b><br>
+    {% if Item.QMSoftwareOutputP1 == 'Gaussian' %}
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/outputfile/{{ Item.JobID }}/ML/" ></iframe>
+        </p>
+    {% elif Item.QMSoftwareOutputP1 == 'NWChem' %}
+
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/outputfile/{{ Item.JobID }}/ML/" ></iframe>
+        </p>
+    {% elif Item.QMSoftwareOutputP1 == 'Unknown' %}
+        <p>Cannot identify the property of the uploaded file. Make sure the QM calculation was finished successfully. </p>
+    {% endif %}
+
+
+
+    {% if Item.QMSoftwareOutput == 'NWChem' or Item.QMSoftwareOutputP1 == 'NWChem' or Item.QMSoftwareOutputM == 'NWChem' %}
+    <br>
+    <p><b>Note:</b> We find you used NWChem to perform these calculations.
+        Although NWChem is supported by our server, we do not know the accuracy of NWChem in these calculations.
+        This is due to the different solvation models used in NWChem compared to Gaussian. Therefore, we suggest to use Gaussian instead.
+        For more details, please see the reference papers in <a href="/faq/" target="_blank">FAQ</a>.
+    </p>
+    <br>
+    {% endif %}
+
+
+</div></div>
+
+<script type="text/javascript">
+  function resizeIframe(iframe) {
+    iframe.height = 300 + "px";
+  }
+
+}
+</script>
+{% endblock %}

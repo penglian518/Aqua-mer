@@ -9,6 +9,10 @@ class GSolvJobAdmin(admin.ModelAdmin):
     list_display = ('JobID', 'Name', 'CurrentStep', 'CurrentStatus', 'Successful', 'FailedReason', 'CreatedDate',
                     'SmilesStr', 'UploadedFile', 'UploadedFileType', 'QMSoftware',
                     'QMTitle', 'QMCalType', 'QMProcessors', 'QMMemory', 'QMFunctional', 'QMBasisSet', 'QMCharge',
-                    'QMMultiplicity', 'QMCoordinateFormat', 'QMSolvationModel', 'QMSolvent', 'QMCavitySurface', 'QMScalingFactor', 'Note')
+                    'QMMultiplicity', 'QMCoordinateFormat', 'QMSolvationModel', 'QMSolvent', 'QMCavitySurface', 'QMScalingFactor', 'Note',
+                    'UploadedOutputFile', 'QMSoftwareOutput', 'EnergyfromOutputFiles', 'UploadedOutputFileP1',
+                    'QMSoftwareOutputP1', 'EnergyfromOutputFilesP1', 'GsolvCorrected',
+
+                    )
 
 admin.site.register(GSolvJob, GSolvJobAdmin)

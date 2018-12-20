@@ -1,6 +1,6 @@
 import os, shutil, subprocess, logging
 from .PhreeqcPrepare import PhreeqcPrepare
-from .QMCalculationPrepare import QMCalculationPrepare
+from .QMCalculationPrepare import QMCalculationPrepare, QMResultsCalculation
 from django.core.mail import send_mail
 
 class JobManagement:
@@ -583,7 +583,7 @@ echo "Reclustering Job is Done!"
 
         # generate the conf dict
         try:
-            conf = qmclac.gen_conf_dict(obj)
+            conf, conf_gas = qmclac.gen_conf_dict(obj)
             obj.Successful = True
         except:
             obj.FailedReason += 'Could not generate configuration dict for %s.' % JobType
@@ -622,6 +622,38 @@ echo "Reclustering Job is Done!"
             obj.FailedReason += 'Could not write the input file for %s.' % JobType
             obj.CurrentStatus = '3'
             obj.Successful = False
+        # generate the input files for gas phase
+        try:
+            if obj.QMSoftware in ['Gaussian']:
+                inp_gas = qmclac.gen_g09input(conf_gas)
+            elif obj.QMSoftware in ['NWChem']:
+                inp_gas = qmclac.gen_NWinput(conf_gas)
+            elif obj.QMSoftware in ['Arrows']:
+                inp_gas = qmclac.gen_Arrowsinput(conf_gas)
+            obj.Successful = True
+        except Exception as e:
+            obj.FailedReason += 'Could not generate input file for %s in gas phase' % JobType
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+            print 'Could not generate input file in gas phase: %s' % e
+        try:
+            # write input file
+            if obj.QMSoftware in ['Gaussian']:
+                fout = open('%s/%s-%s_gas.com' % (job_dir, JobType, obj.JobID), 'w')
+            elif obj.QMSoftware in ['NWChem']:
+                fout = open('%s/%s-%s_gas.nw' % (job_dir, JobType, obj.JobID), 'w')
+            elif obj.QMSoftware in ['Arrows']:
+                fout = open('%s/%s-%s_gas.arrows' % (job_dir, JobType, obj.JobID), 'w')
+            fout.write(inp_gas)
+            fout.close()
+
+            obj.Successful = True
+            obj.CurrentStatus = '2'
+        except:
+            obj.FailedReason += 'Could not write the input file for %s in gas phase.' % JobType
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
 
         if obj.QMSoftware in ['Arrows']:
             mail_subject = '%s_%s' % (JobType, obj.JobID)
@@ -636,22 +668,62 @@ echo "Reclustering Job is Done!"
                 obj.CurrentStatus = '3'
                 obj.Successful = False
 
-
-
+            try:
+                send_mail(mail_subject, inp_gas, from_address, to_address, fail_silently=False)
+                obj.Successful = True
+                obj.CurrentStatus = '1'
+            except Exception as e:
+                obj.FailedReason += 'Could not send emails for %s_%s in gas phase. (%s)' % (JobType, obj.JobID, e)
+                obj.CurrentStatus = '3'
+                obj.Successful = False
 
         obj.save()
         return
 
     def GsolvCollectResults(self, obj, JobType='gsolv'):
         # get basic info
-        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
-        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+        JobLocation = '%s/gsolv/jobs' % (self.JobLocation)
+        job_dir = '%s/%s/%s/' % (self.DjangoHome, JobLocation, obj.JobID)
 
         try:
             os.makedirs(job_dir)
         except:
             pass
 
+        qmclac = QMResultsCalculation()
+        # path for the output files
+        aq_out = job_dir + os.path.basename(obj.UploadedOutputFile.file.name)
+        gas_out = job_dir + os.path.basename(obj.UploadedOutputFileP1.file.name)
+
+        # output file existence
+        if not os.path.exists(aq_out):
+            obj.FailedReason += ' Output file for the molecule in aqueous phase is not exist!'
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+        if not os.path.exists(gas_out):
+            obj.FailedReason += ' Output file for the molecule in gas phase is not exist!'
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
+        # The output is from Gaussian or NWChem
+        obj.QMSoftwareOutput = qmclac.QMSoftware(aq_out)
+        obj.QMSoftwareOutputP1 = qmclac.QMSoftware(gas_out)
+
+        # calculate the logK
+        try:
+            Gsolv, Gaq, Ggas = qmclac.Calc_Gsolv(obj)
+        except:
+            obj.FailedReason += ' Failed to calculate the Gsolv for job %s!' % str(obj.JobID)
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
+        obj.EnergyfromOutputFiles = str(Gaq)
+        obj.EnergyfromOutputFilesP1 = str(Ggas)
+        obj.GsolvCorrected = Gsolv
+        obj.CurrentStatus = '2'
+        obj.Successful = True
+
+        obj.save()
         return
 
     #### pKa ####
@@ -775,14 +847,48 @@ echo "Reclustering Job is Done!"
 
     def pKaCollectResults(self, obj, JobType='pka'):
         # get basic info
-        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
-        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+        JobLocation = '%s/pka/jobs' % (self.JobLocation)
+        job_dir = '%s/%s/%s/' % (self.DjangoHome, JobLocation, obj.JobID)
 
         try:
             os.makedirs(job_dir)
         except:
             pass
 
+        qmclac = QMResultsCalculation()
+        # path for the output files
+        A_out = job_dir + os.path.basename(obj.UploadedOutputFile.file.name)
+        HA_out = job_dir + os.path.basename(obj.UploadedOutputFileP1.file.name)
+
+        # output file existence
+        if not os.path.exists(A_out):
+            obj.FailedReason += ' Output file for deprotonated form (A) is not exist!'
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+        if not os.path.exists(HA_out):
+            obj.FailedReason += ' Output file for protonated form (HA) is not exist!'
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
+        # The output is from Gaussian or NWChem
+        obj.QMSoftwareOutput = qmclac.QMSoftware(A_out)
+        obj.QMSoftwareOutputP1 = qmclac.QMSoftware(HA_out)
+
+        # calculate the pKa
+        try:
+            pKa, Gaq_A, Gaq_HA = qmclac.Calc_pKa(obj)
+        except:
+            obj.FailedReason += ' Failed to calculate the pKa for job %s!' % str(obj.JobID)
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
+        obj.EnergyfromOutputFiles = str(Gaq_A)
+        obj.EnergyfromOutputFilesP1 = str(Gaq_HA)
+        obj.PKafromOutputFiles = pKa
+        obj.CurrentStatus = '2'
+        obj.Successful = True
+
+        obj.save()
         return
 
     #### logK ####
@@ -954,14 +1060,55 @@ echo "Reclustering Job is Done!"
 
     def LogKCollectResults(self, obj, JobType='logk'):
         # get basic info
-        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
-        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+        JobLocation = '%s/logk/jobs' % (self.JobLocation)
+        job_dir = '%s/%s/%s/' % (self.DjangoHome, JobLocation, obj.JobID)
 
         try:
             os.makedirs(job_dir)
         except:
             pass
 
+        qmclac = QMResultsCalculation()
+        # path for the output files
+        L_out = job_dir + os.path.basename(obj.UploadedOutputFile.file.name)
+        ML_out = job_dir + os.path.basename(obj.UploadedOutputFileP1.file.name)
+        M_out = job_dir + os.path.basename(obj.UploadedOutputFileM.file.name)
+
+        # output file existence
+        if not os.path.exists(L_out):
+            obj.FailedReason += ' Output file for the Ligand (L-) is not exist!'
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+        if not os.path.exists(ML_out):
+            obj.FailedReason += ' Output file for the Complex (ML) is not exist!'
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+        if not os.path.exists(M_out):
+            obj.FailedReason += ' Output file for the Metal (M) is not exist!'
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
+        # The output is from Gaussian or NWChem
+        obj.QMSoftwareOutput = qmclac.QMSoftware(L_out)
+        obj.QMSoftwareOutputP1 = qmclac.QMSoftware(ML_out)
+        obj.QMSoftwareOutputM = qmclac.QMSoftware(M_out)
+
+        # calculate the logK
+        try:
+            logK, Gaq_L, Gaq_ML, Gaq_M = qmclac.Calc_logK(obj)
+        except:
+            obj.FailedReason += ' Failed to calculate the log K for job %s!' % str(obj.JobID)
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
+        obj.EnergyfromOutputFiles = str(Gaq_L)
+        obj.EnergyfromOutputFilesP1 = str(Gaq_ML)
+        obj.EnergyfromOutputFilesM = str(Gaq_M)
+        obj.LogKfromOutputFiles = logK
+        obj.CurrentStatus = '2'
+        obj.Successful = True
+
+        obj.save()
         return
 
 if __name__ == '__main__':

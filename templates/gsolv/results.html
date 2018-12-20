@@ -12,24 +12,47 @@
 <div id=main>
 
     {% if Item.QMSoftware == 'Gaussian' %}
-        <p>Only the input file for {{ Item.QMSoftware }} is provided. Please perform the calculation locally
+        <p>Only the input files for {{ Item.QMSoftware }} are provided. Please perform the calculation locally
         and upload the output file to continue the analysis online.</p>
+
+        <h3>&Delta;G<sub>solv</sub> based on calculations from both gas phase and aqueous phase.</h3>
+
+        <h3>Input file for <i>gas</i> phase calculation:</b></h3>
+        <p>
+            <b>{{ Item.Name }}_{{ Item.JobID }}_gas.com</b><br>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/inputfile/{{ Item.JobID }}/gsolv_gas/" ></iframe>
+        </p>
+
+        <h3>Input file for <i>aqueous</i> phase calculation:</b></h3>
         <p>
             <b>{{ Item.Name }}_{{ Item.JobID }}.com</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/inputfile/{{ Item.JobID }}" ></iframe>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/inputfile/{{ Item.JobID }}/gsolv/" ></iframe>
         </p>
+
     {% elif Item.QMSoftware == 'NWChem' %}
         <p>Below is your input file for {{ Item.QMSoftware }}. The user can do the calculation locally
         and upload the output file to continue the analysis online.</p>
+
+        <h3>&Delta;G<sub>solv</sub> based on calculations from both gas phase and aqueous phase.</h3>
+
+        <h3>Input file for <i>gas</i> phase calculation:</b></h3>
+        <p>
+            <b>{{ Item.Name }}_{{ Item.JobID }}_gas.nw</b><br>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/inputfile/{{ Item.JobID }}/gsolv_gas/" ></iframe>
+        </p>
+
+        <h3>Input file for <i>aqueous</i> phase calculation:</b></h3>
         <p>
             <b>{{ Item.Name }}_{{ Item.JobID }}.nw</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/inputfile/{{ Item.JobID }}" ></iframe>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/inputfile/{{ Item.JobID }}/gsolv/" ></iframe>
         </p>
+
     {% elif Item.QMSoftware == 'Arrows' %}
         <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/gsolv/download/{{ Item.JobID }}">HERE</a> to download the structure files.</p>
-        <p>You can also redo clustering, click <a href="/gsolv/reclustering/{{ Item.JobID }}">HERE</a>.</p>
     {% endif %}
 
 

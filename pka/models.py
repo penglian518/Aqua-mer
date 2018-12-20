@@ -91,7 +91,7 @@ class pKaJob(models.Model):
     CurrentStatus = models.CharField(max_length=10, choices=JobStatus, default='0')
     Successful = models.BooleanField(default=False)
     FailedReason = models.CharField(max_length=100, blank=True, default='')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
 
     TransToA = models.CharField(max_length=10, choices=TransToMolecules, default='')
 
@@ -138,6 +138,17 @@ class pKaJob(models.Model):
     QMScalingFactorP1 = models.DecimalField(max_digits=5, decimal_places=3, default=0.485)
 
     NoteP1 = models.CharField(max_length=100, blank=True, default='')
+
+    # these columns are for output files
+    UploadedOutputFile = models.FileField(upload_to=user_directory_path, blank=True)
+    QMSoftwareOutput = models.CharField(max_length=30, default='')
+    UploadedOutputFileP1 = models.FileField(upload_to=user_directory_pathP1, blank=True)
+    QMSoftwareOutputP1 = models.CharField(max_length=30, default='')
+
+    EnergyfromOutputFiles = models.CharField(max_length=30, default='')
+    EnergyfromOutputFilesP1 = models.CharField(max_length=30, default='')
+    PKafromOutputFiles = models.DecimalField(max_digits=15, decimal_places=3, default=0.0)
+
 
 
     def __str__(self):
@@ -276,4 +287,35 @@ class pKaInputForm(ModelForm):
             'JobID': forms.HiddenInput(),
             'CurrentStep': forms.HiddenInput(),
             'Successful': forms.HiddenInput(),
+        }
+
+
+class UploadOutputForm(ModelForm):
+    class Meta:
+        model = pKaJob
+        fields = ['JobID', 'CurrentStep', 'Successful', 'UploadedOutputFile']
+        labels = {
+            'UploadedOutputFile': _('Upload the output file for "deprotonated (A-)" molecule'),
+            #'QMSoftwareOutput': _('QM software which used to generate this output file'),
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+            'UploadedOutputFile': forms.FileInput(attrs={'required': True}),
+        }
+
+class UploadOutputFormP1(ModelForm):
+    class Meta:
+        model = pKaJob
+        fields = ['JobID', 'CurrentStep', 'Successful', 'UploadedOutputFileP1']
+        labels = {
+            'UploadedOutputFileP1': _('Upload the output file for "protonated (HA)" molecule'),
+            #'QMSoftwareOutputP1': _('QM software which used to generate this output file'),
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+            'UploadedOutputFileP1': forms.FileInput(attrs={'required': True}),
         }

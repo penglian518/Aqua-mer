@@ -1,14 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
-from .models import GSolvJob, UploadForm, QueryForm, SmilesForm, GsolvInputForm
+from .models import GSolvJob, UploadForm, QueryForm, SmilesForm, GsolvInputForm, UploadOutputForm, UploadOutputFormP1
 from cyshg.models import AllJobIDs
+from pka.models import pKaJob
+from logk.models import LogKJob
 
 
 from scripts.JobManagement import JobManagement
 from scripts.VistorStatistics import clientStatistics
-import threading
-import base64, os
+import base64, os, datetime
 
 # Create your views here.
 
@@ -17,37 +18,70 @@ def index(request):
     clientStatistics(request)
     return render(request, 'gsolv/index.html')
 
-def upload(request):
+def upload(request, JobID):
     clientStatistics(request)
+
+    # get job handle
+    try:
+        SPJob = GSolvJob.objects.get(JobID=JobID)
+    except:
+        SPJob = GSolvJob(JobID=JobID)
+
     if request.method == 'POST':
-        form = UploadForm(request.POST, request.FILES)
+        form = UploadForm(request.POST, request.FILES, instance=SPJob)
         if form.is_valid():
             model_instance = form.save(commit=False)
-            model_instance.JobID = generate_JobID()
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "1"
+            model_instance.Successful = True
+            model_instance.save()
+            return redirect('/gsolv/parameters/%d/' % int(model_instance.JobID))
+    else:
+        form = UploadForm(instance=SPJob)
+
+    return render(request, 'gsolv/upload.html', {'form': form, 'JobID': JobID})
+
+def start(request, type='new'):
+    clientStatistics(request)
+    # delete empty jobs that longer then 2 hours
+    for j in GSolvJob.objects.filter(CurrentStep=0):
+        deltaT = int(datetime.datetime.now().strftime('%s')) - int(j.CreatedDate.strftime('%s'))
+        if deltaT > 3600 * 2:
+            j.delete()
+
+    JobID = generate_JobID()
+    # occupy this JobID for 2 hours
+    SPJob = pKaJob(JobID=JobID)
+    SPJob.save()
+
+    if type in ['new']:
+        return redirect('/gsolv/smiles/%d/' % JobID)
+    elif type in ['output']:
+        return redirect('/gsolv/calculate/%d/' % JobID)
+
+
+def smiles(request, JobID):
+    clientStatistics(request)
+
+    # get job handle
+    try:
+        SPJob = GSolvJob.objects.get(JobID=JobID)
+    except:
+        SPJob = GSolvJob(JobID=JobID)
+
+    if request.method == 'POST':
+        form = SmilesForm(request.POST, request.FILES, instance=SPJob)
+        if form.is_valid():
+            model_instance = form.save(commit=False)
+            model_instance.JobID = JobID
             model_instance.CurrentStep = "1"
             model_instance.Successful = True
             model_instance.save()
             return redirect('/gsolv/parameters/%d' % int(model_instance.JobID))
     else:
-        form = UploadForm()
+        form = SmilesForm(instance=SPJob)
 
-    return render(request, 'gsolv/upload.html', {'form': form})
-
-def smiles(request):
-    clientStatistics(request)
-    if request.method == 'POST':
-        form = SmilesForm(request.POST, request.FILES)
-        if form.is_valid():
-            model_instance = form.save(commit=False)
-            model_instance.JobID = generate_JobID()
-            model_instance.CurrentStep = "1"
-            model_instance.Successful = True
-            model_instance.save()
-            return redirect('/gsolv/parameters/%d' % int(model_instance.JobID))
-    else:
-        form = SmilesForm()
-
-    return render(request, 'gsolv/smiles.html', {'form': form})
+    return render(request, 'gsolv/smiles.html', {'form': form, 'JobID': JobID})
 
 def parameters_input(request, JobID):
     clientStatistics(request)
@@ -100,14 +134,17 @@ def results(request, JobID, JobType='gsolv'):
         # generate input file
 
         jobmanger = JobManagement()
-        jobmanger.GsolvJobPrepare(obj=item, JobType='gsolv')
+        if JobType in ['gsolv']:
+            jobmanger.GsolvJobPrepare(obj=item, JobType=JobType)
+        elif JobType in ['gsolv_output']:
+            jobmanger.GsolvCollectResults(obj=item, JobType=JobType)
 
         # run the calculations in background
         #Exec_thread = threading.Thread(target=jobmanger.GSolvJobExec, kwargs={"obj": item})
         #Exec_thread.start()
 
         # redirect to the result page
-        return redirect('/gsolv/results/%d' % int(item.JobID))
+        return redirect('/gsolv/results/%d/%s/' % (int(item.JobID), JobType))
 
     if item.CurrentStatus == '1':
         # the job is 'running', keep checking the status
@@ -125,7 +162,11 @@ def results(request, JobID, JobType='gsolv'):
             fig_in_base64 = base64.encodestring('Figure is not available.')
             pass
 
-        return render(request, 'gsolv/results.html', {'JobID': JobID, 'Item': item, 'chart': fig_in_base64})
+        if JobType in ['gsolv']:
+            return render(request, 'gsolv/results.html', {'JobID': JobID, 'Item': item, 'chart': fig_in_base64})
+        elif JobType in ['gsolv_output']:
+            return render(request, 'gsolv/results_output.html', {'JobID': JobID, 'Item': item, 'chart': fig_in_base64})
+
     if item.CurrentStatus == '3':
         clientStatistics(request)
         # there is some error in the job, display the error message.
@@ -173,11 +214,23 @@ def results_doc(request):
             if JobID_query in allJobID_csearch:
                 return redirect('/csearch/results/%d' % int(model_instance.JobID))
             elif JobID_query in allJobID_gsolv:
-                return redirect('/gsolv/results/%d' % int(model_instance.JobID))
+                item = get_object_or_404(GSolvJob, JobID=JobID_query)
+                if float(item.CurrentStep) > 3:
+                    return redirect('/gsolv/results/%d/gsolv_output/' % int(model_instance.JobID))
+                else:
+                    return redirect('/gsolv/results/%d/gsolv/' % int(model_instance.JobID))
             elif JobID_query in allJobID_pka:
-                return redirect('/pka/results/%d' % int(model_instance.JobID))
+                item = get_object_or_404(pKaJob, JobID=JobID_query)
+                if float(item.CurrentStep) > 3:
+                    return redirect('/pka/results/%d/pka_output/' % int(model_instance.JobID))
+                else:
+                    return redirect('/pka/results/%d/pka/' % int(model_instance.JobID))
             elif JobID_query in allJobID_logk:
-                return redirect('/logk/results/%d' % int(model_instance.JobID))
+                item = get_object_or_404(LogKJob, JobID=JobID_query)
+                if float(item.CurrentStep) > 3:
+                    return redirect('/logk/results/%d/logk_output/' % int(model_instance.JobID))
+                else:
+                    return redirect('/logk/results/%d/logk/' % int(model_instance.JobID))
             elif JobID_query in allJobID_hgspeci:
                 return redirect('/hgspeci/results/%d' % int(model_instance.JobID))
 
@@ -188,6 +241,36 @@ def results_doc(request):
 
     return render(request, 'gsolv/results_doc.html', {'form': form})
 
+def calculate(request, JobID):
+    clientStatistics(request)
+
+    # get job handle
+    try:
+        SPJob = GSolvJob.objects.get(JobID=JobID)
+    except:
+        SPJob = GSolvJob(JobID=JobID)
+
+    if request.method == 'POST':
+        form = UploadOutputForm(request.POST, request.FILES, instance=SPJob)
+        formP1 = UploadOutputFormP1(request.POST, request.FILES, instance=SPJob)
+        if form.is_valid():
+            model_instance = form.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "5"
+            model_instance.Successful = True
+            model_instance.save()
+        if formP1.is_valid():
+            model_instance = formP1.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "5"
+            model_instance.Successful = True
+            model_instance.save()
+        return redirect('/gsolv/results/%d/%s/' % (int(JobID), 'gsolv_output'))
+    else:
+        form = UploadOutputForm(instance=SPJob)
+        formP1 = UploadOutputFormP1(instance=SPJob)
+
+    return render(request, 'gsolv/calculate.html', {'form': form, 'formP1': formP1, 'JobID': JobID})
 
 
 
@@ -259,11 +342,35 @@ def inputfile(request, JobID, JobType='gsolv'):
     # read xyz file
     job_dir = get_job_dir(JobID)
 
-    if item.QMSoftware == 'Gaussian':
-        inputfile = '%s/%s-%s.com' % (job_dir, JobType, JobID)
-    elif item.QMSoftware == 'NWChem':
-        inputfile = '%s/%s-%s.nw' % (job_dir, JobType, JobID)
+    if JobType in ['gsolv']:
+        if item.QMSoftware == 'Gaussian':
+            inputfile = '%s/%s-%s.com' % (job_dir, JobType, JobID)
+        elif item.QMSoftware == 'NWChem':
+            inputfile = '%s/%s-%s.nw' % (job_dir, JobType, JobID)
+    elif JobType in ['gsolv_gas']:
+        if item.QMSoftware == 'Gaussian':
+            inputfile = '%s/gsolv-%s_gas.com' % (job_dir, JobID)
+        elif item.QMSoftware == 'NWChem':
+            inputfile = '%s/gsolv-%s_gas.nw' % (job_dir, JobID)
 
     fcon = ''.join(open(inputfile).readlines())
+
+    return HttpResponse(fcon, content_type='text/plain')
+
+def outputfile(request, JobID, JobType='gsolv',  Mol='aq'):
+    """
+    display the input files
+    """
+    clientStatistics(request)
+    item = get_object_or_404(GSolvJob, JobID=JobID)
+    # read xyz file
+    job_dir = get_job_dir(JobID)
+
+    if Mol in ['aq']:
+        outputfile = item.UploadedOutputFile.file.name
+    elif Mol in ['gas']:
+        outputfile = item.UploadedOutputFileP1.file.name
+
+    fcon = ''.join(open(outputfile).readlines())
 
     return HttpResponse(fcon, content_type='text/plain')

@@ -4,6 +4,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import CSearchJob, SmilesForm, UploadForm, SearchTypeForm, RandomSearchForm, QueryForm, ReclusteringForm, \
     MPSearchForm, ReplicaSearchForm
 from cyshg.models import AllJobIDs
+from pka.models import pKaJob
+from gsolv.models import GSolvJob
+from logk.models import LogKJob
 
 from scripts.JobManagement import JobManagement
 from scripts.VistorStatistics import clientStatistics
@@ -265,14 +268,25 @@ def results_doc(request):
             if JobID_query in allJobID_csearch:
                 return redirect('/csearch/results/%d' % int(model_instance.JobID))
             elif JobID_query in allJobID_gsolv:
-                return redirect('/gsolv/results/%d' % int(model_instance.JobID))
+                item = get_object_or_404(GSolvJob, JobID=JobID_query)
+                if float(item.CurrentStep) > 3:
+                    return redirect('/gsolv/results/%d/gsolv_output/' % int(model_instance.JobID))
+                else:
+                    return redirect('/gsolv/results/%d/gsolv/' % int(model_instance.JobID))
             elif JobID_query in allJobID_pka:
-                return redirect('/pka/results/%d' % int(model_instance.JobID))
+                item = get_object_or_404(pKaJob, JobID=JobID_query)
+                if float(item.CurrentStep) > 3:
+                    return redirect('/pka/results/%d/pka_output/' % int(model_instance.JobID))
+                else:
+                    return redirect('/pka/results/%d/pka/' % int(model_instance.JobID))
             elif JobID_query in allJobID_logk:
-                return redirect('/logk/results/%d' % int(model_instance.JobID))
+                item = get_object_or_404(LogKJob, JobID=JobID_query)
+                if float(item.CurrentStep) > 3:
+                    return redirect('/logk/results/%d/logk_output/' % int(model_instance.JobID))
+                else:
+                    return redirect('/logk/results/%d/logk/' % int(model_instance.JobID))
             elif JobID_query in allJobID_hgspeci:
                 return redirect('/hgspeci/results/%d' % int(model_instance.JobID))
-
 
     else:
         # the initial form

@@ -19,7 +19,7 @@ class SolutionMasterSpecies(models.Model):
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.Element)
@@ -48,7 +48,7 @@ class SolutionSpecies(models.Model):
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.Reaction)
@@ -74,7 +74,7 @@ class Phases(models.Model):
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.Reaction)
@@ -86,7 +86,7 @@ class SurfaceMasterSpecies(models.Model):
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.BindingSite)
@@ -98,7 +98,7 @@ class SurfaceSpecies(models.Model):
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.Reaction)
@@ -110,7 +110,7 @@ class ExchangeMasterSpecies(models.Model):
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.ExchangeName)
@@ -133,7 +133,7 @@ class ExchangeSpecies(models.Model):
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.Reaction)
@@ -145,7 +145,7 @@ class Rates(models.Model):
 
     Note = models.TextField(blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.Name)

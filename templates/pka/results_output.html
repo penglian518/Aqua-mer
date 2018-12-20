@@ -1,0 +1,75 @@
+{% extends 'base_index.html' %}
+{% load static %}
+{% load myfilter %}
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'pka/memu.html' %}
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 4. Results</div>
+<div id=main>
+    <h3>The p<i>K</i><sub>a</sub> calculated from the uploaded output files is: </h3>
+    <p>p<i>K</i><sub>a</sub> = ((G<sub>aq</sub>_A - G<sub>aq</sub>_AH) + G<sub>aq</sub>_H) / (2.303 * RT) = (({{ Item.EnergyfromOutputFiles }} - {{ Item.EnergyfromOutputFilesP1 }}) * 627.5095 + -270.30) / (2.303 *
+0.5925) =  {{ Item.PKafromOutputFiles }}</p>
+
+    <br>
+    <h3>The output file for <i>deprontonated (A<sup>-</sup>)</i> molecule:</h3>
+    <b>{{ Item.UploadedOutputFile | basename }}</b><br>
+
+    {% if Item.QMSoftwareOutput == 'Gaussian' %}
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/pka/outputfile/{{ Item.JobID }}/A/" ></iframe>
+        </p>
+    {% elif Item.QMSoftwareOutput == 'NWChem' %}
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/pka/outputfile/{{ Item.JobID }}/A/" ></iframe>
+        </p>
+    {% elif Item.QMSoftwareOutput == 'Unknown' %}
+        <p>Cannot identify the property of the uploaded file. Make sure the QM calculation was finished successfully. </p>
+    {% endif %}
+
+
+
+    <h3>The output file for <i>prontonated (HA)</i> molecule:</h3>
+    <b>{{ Item.UploadedOutputFileP1 | basename }}</b><br>
+    {% if Item.QMSoftwareOutputP1 == 'Gaussian' %}
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/pka/outputfile/{{ Item.JobID }}/HA/" ></iframe>
+        </p>
+    {% elif Item.QMSoftwareOutputP1 == 'NWChem' %}
+
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/pka/outputfile/{{ Item.JobID }}/HA/" ></iframe>
+        </p>
+    {% elif Item.QMSoftwareOutputP1 == 'Unknown' %}
+        <p>Cannot identify the property of the uploaded file. Make sure the QM calculation was finished successfully. </p>
+    {% endif %}
+
+
+    {% if Item.QMSoftwareOutput == 'NWChem' or Item.QMSoftwareOutputP1 == 'NWChem' %}
+    <br>
+    <p><b>Note:</b> We find you used NWChem to perform these calculations.
+        Although NWChem is supported by our server, we do not know the accuracy of NWChem in these calculations.
+        This is due to the different solvation models used in NWChem compared to Gaussian. Therefore, we suggest to use Gaussian instead.
+        For more details, please see the reference papers in <a href="/faq/" target="_blank">FAQ</a>.
+    </p>
+    <br>
+    {% endif %}
+
+
+</div></div>
+
+<script type="text/javascript">
+  function resizeIframe(iframe) {
+    iframe.height = 300 + "px";
+  }
+
+}
+</script>
+{% endblock %}

@@ -71,7 +71,7 @@ class CSearchJob(models.Model):
     CurrentStatus = models.CharField(max_length=10, choices=JobStatus, default='0')
     Successful = models.BooleanField(default=False)
     FailedReason = models.CharField(max_length=100, blank=True, default='')
-    CreatedDate = models.DateTimeField('date created', default=datetime.now())
+    CreatedDate = models.DateTimeField(auto_now_add=True)
 
     SmilesStr = models.CharField(max_length=200, blank=True, default='')
     UploadedFile = models.FileField(upload_to=user_directory_path, blank=True)
