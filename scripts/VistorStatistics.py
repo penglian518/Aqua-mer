@@ -7,9 +7,12 @@ def clientStatistics(request):
     white_list_IPs = [
         '128.219.164.9',  # netscaler load balancer
     ]
+
     IP = clientIP(request)
 
-    if IP not in white_list_IPs:
+    if IP[0] in white_list_IPs:
+        pass
+    else:
         url = vistingPage(request)
 
         u = StatisticsData.objects.create()
