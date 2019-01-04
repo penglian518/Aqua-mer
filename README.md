@@ -64,4 +64,5 @@ For calculation of ΔGsolv, pKa, and log K, please cite:
 
 ## NOTICE
 
-The configuration file for Django (cyshg/setting.py) and the database files are not allowed to share. You have to re-generate your own and run the website at your own risk. Again, we suggest you to run your job at https://aquamer.ornl.gov.
+* The configuration file for Django (cyshg/setting.py) and the database files are not allowed to share. You have to re-generate your own and run the website at your own risk. Again, we suggest you to run your job at https://aquamer.ornl.gov.
+* In order to setup a fully functioned server, Apache with WSGI (as a sample, a configuration file is provided in Apache_conf directory) and Torque (PBS) Job management system are required.
