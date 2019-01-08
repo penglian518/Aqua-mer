@@ -251,7 +251,19 @@ class JobManagement:
         elif JobType in ['csearch'] and obj.CSearchType in ['DFT']:
             results_dir = '%s-%d' % (JobType, job_id)
         else:
-            results_dir = '%s-%d' % (JobType, job_id)
+            try:
+                os.mkdir('results')
+            except:
+                pass
+
+            for f in os.listdir('.'):
+                if f.endswith('.com') or f.endswith('.nw') or f.endswith('.txt'):
+                    try:
+                        shutil.copy(f, 'results/')
+                    except:
+                        pass
+
+            results_dir = 'results'
 
         # make archive file for download
         try:
@@ -724,6 +736,30 @@ echo "Reclustering Job is Done!"
         obj.Successful = True
 
         obj.save()
+
+        # write down the calculated constants
+        result_dir = '%s/results' % job_dir
+        result_file = '%s/%s-%s_constants.txt' % (result_dir, str(JobType), str(obj.JobID))
+        try:
+            os.makedirs(result_dir)
+        except:
+            pass
+
+        out_txt = '''The absolute free energy for the molecule in GAS phase is: %s kcal/mol
+The absolute free energy for the molecule in SOLUTION is: %s kcal/mol
+The standard state correction factor at 298 K is: 1.89 kcal/mol
+The calculated solvation free energy is: %s
+\n''' % (str(Ggas), str(Gaq), str(Gsolv))
+
+        try:
+            fout = open(result_file, 'w')
+            fout.write(out_txt)
+            fout.close()
+        except Exception as e:
+            obj.FailedReason += ' Failed to write calculated constants for job %s!' % str(obj.JobID)
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
         return
 
     #### pKa ####
@@ -889,6 +925,31 @@ echo "Reclustering Job is Done!"
         obj.Successful = True
 
         obj.save()
+
+        # write down the calculated constants
+        result_dir = '%s/results' % job_dir
+        result_file = '%s/%s-%s_constants.txt' % (result_dir, str(JobType), str(obj.JobID))
+        try:
+            os.makedirs(result_dir)
+        except:
+            pass
+
+        out_txt = '''The absolute solvation free energy for molecule A- is: %s kcal/mol
+The absolute solvation free energy for molecule HA is: %s kcal/mol
+The experimentally measured absolute solvation free energy for H+ is: -270.30 kcal/mol
+The standard state correction factor at 298 K is: 1.89 kcal/mol
+The calculated pKa is: %s
+\n''' % (str(Gaq_A), str(Gaq_HA), str(pKa))
+
+        try:
+            fout = open(result_file, 'w')
+            fout.write(out_txt)
+            fout.close()
+        except Exception as e:
+            obj.FailedReason += ' Failed to write calculated constants for job %s!' % str(obj.JobID)
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
         return
 
     #### logK ####
@@ -1109,6 +1170,31 @@ echo "Reclustering Job is Done!"
         obj.Successful = True
 
         obj.save()
+
+        # write down the calculated constants
+        result_dir = '%s/results' % job_dir
+        result_file = '%s/%s-%s_constants.txt' % (result_dir, str(JobType), str(obj.JobID))
+        try:
+            os.makedirs(result_dir)
+        except:
+            pass
+
+        out_txt = '''The absolute solvation free energy for molecule L- is: %s kcal/mol
+The absolute solvation free energy for molecule ML is: %s kcal/mol
+The absolute solvation free energy for molecule M+ is: %s kcal/mol
+The standard state correction factor at 298 K is: 1.89 kcal/mol
+The calculated log K is: %s
+\n''' % (str(Gaq_L), str(Gaq_ML), str(Gaq_M), str(logK))
+
+        try:
+            fout = open(result_file, 'w')
+            fout.write(out_txt)
+            fout.close()
+        except Exception as e:
+            obj.FailedReason += ' Failed to write calculated constants for job %s!' % str(obj.JobID)
+            obj.CurrentStatus = '3'
+            obj.Successful = False
+
         return
 
 if __name__ == '__main__':

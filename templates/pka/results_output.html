@@ -10,6 +10,9 @@
 <div id="content">
 <div id="title">Step 4. Results</div>
 <div id=main>
+    <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/pka/download/{{ Item.JobID }}">HERE</a> to download the results.</p>
+
+
     <h3>The p<i>K</i><sub>a</sub> calculated from the uploaded output files is: </h3>
     <p>p<i>K</i><sub>a</sub> = ((G<sub>aq</sub>_A - G<sub>aq</sub>_AH) + G<sub>aq</sub>_H) / (2.303 * RT) = (({{ Item.EnergyfromOutputFiles }} - {{ Item.EnergyfromOutputFilesP1 }}) * 627.5095 + -270.30) / (2.303 *
 0.5925) =  {{ Item.PKafromOutputFiles }}</p>

@@ -22,4 +22,6 @@ urlpatterns = [
     url(r'^results/$', views.results_doc, name='results_doc'),
 
     url(r'^calculate/(?P<JobID>[0-9]+)/$', views.calculate, name='calculate'),
+    url(r'^download/(?P<JobID>[0-9]+)$', views.download, name='download'),
+
 ]

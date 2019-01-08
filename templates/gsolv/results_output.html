@@ -10,6 +10,8 @@
 <div id="content">
 <div id="title">Step 4. Results</div>
 <div id=main>
+    <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/gsolv/download/{{ Item.JobID }}">HERE</a> to download the results.</p>
+
     <h3>The &Delta;G<sub>solv</sub> calculated from the uploaded output files is: </h3>
     &Delta;G<sub>solv</sub> = ((G<sub>aq</sub> - G<sub>gas</sub>) = ({{ Item.EnergyfromOutputFiles }} - {{ Item.EnergyfromOutputFilesP1 }}) * 627.5095 =  {{ Item.GsolvCorrected }}</p>
 

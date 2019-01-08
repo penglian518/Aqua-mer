@@ -372,6 +372,26 @@ def results_doc(request):
 
     return render(request, 'logk/results_doc.html', {'form': form})
 
+def download(request, JobID, JobType='logk'):
+    clientStatistics(request)
+    item = get_object_or_404(LogKJob, JobID=JobID)
+
+    if item.CurrentStatus == '2':
+        # the job is finished, display the results.
+        job_dir = get_job_dir(JobID)
+        output_zip = '%s/%s-%s.zip' % (job_dir, JobType, JobID)
+        if not os.path.exists(output_zip):
+            jobmanger = JobManagement()
+            jobmanger.Zip4Downlaod(obj=item, JobType=JobType)
+
+        with open(output_zip, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/x-zip-compressed")
+            response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(output_zip)
+            return response
+
+    raise Http404
+
+
 def calculate(request, JobID):
     clientStatistics(request)
 

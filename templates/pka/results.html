@@ -11,6 +11,9 @@
 <div id="title">Step 4. Results</div>
 <div id=main>
 
+    <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/pka/download/{{ Item.JobID }}">HERE</a> to download the input files.</p>
+
+
     <h3>Input file for <i>deprontonated (A<sup>-</sup>)</i> molecule:</b></h3>
 
     {% if Item.QMSoftware == 'Gaussian' %}

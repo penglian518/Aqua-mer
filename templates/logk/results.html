@@ -10,6 +10,10 @@
 <div id="content">
 <div id="title">Step 4. Results</div>
 <div id=main>
+
+    <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/logk/download/{{ Item.JobID }}">HERE</a> to download the input files.</p>
+
+
     <h3>Input file for <i>metal ion (M+)</i> molecule:</b></h3>
 
     {% if Item.QMSoftwareM == 'Gaussian' %}

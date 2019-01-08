@@ -10,6 +10,7 @@
 <div id="content">
 <div id="title">Step 4. Results</div>
 <div id=main>
+    <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/gsolv/download/{{ Item.JobID }}">HERE</a> to download the input files.</p>
 
     {% if Item.QMSoftware == 'Gaussian' %}
         <p>Only the input files for {{ Item.QMSoftware }} are provided. Please perform the calculation locally

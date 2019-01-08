@@ -24,6 +24,8 @@ urlpatterns = [
     url(r'^results/(?P<JobID>[0-9]+)/xyz/(?P<Ith>[0-9]+)$', views.results_xyz, name='results_xyz'),
     url(r'^results/$', views.results_doc, name='results_doc'),
 
+    url(r'^download/(?P<JobID>[0-9]+)$', views.download, name='download'),
+
     url(r'^calculate/(?P<JobID>[0-9]+)/$', views.calculate, name='calculate'),
 
     url(r'^ajax/query_coor/(?P<JobID>.*)/$', views.query_coor, name='query_coor'),
