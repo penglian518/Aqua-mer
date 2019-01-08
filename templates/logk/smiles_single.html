@@ -26,11 +26,6 @@
 
     <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST' onsubmit="return validateForm()">
         {% csrf_token %}
-        <table>
-            {{ formMetal }}
-        </table>
-        <br>
-        <br>
 
         <table>
         {{ form }}
@@ -47,6 +42,23 @@
 
         <div id="uploaddiv" style="display:none">
             <iframe id="up" seamless height="120px" width="900px" src="/logk/upload/{{ Mol }}/{{ JobID }}"></iframe>
+        </div>
+
+        <table>
+        {{ formM }}
+        <td>
+            <button type="button" onclick="toggleIfrm('ifrmdiv1', 'uploaddiv1')" class="btn btn-default" style="height:25px;width:100px">Draw it now</button>
+                &nbsp; OR &nbsp;
+            <button type="button" onclick='toggleIfrm("uploaddiv1", "ifrmdiv1")' class="btn btn-default" style="height:25px;width:140px">Upload coordinates</button>
+        </td>
+        </table>
+
+        <div id="ifrmdiv1" style="display:none">
+            <iframe id="ifrm1" seamless height="450px" width="900px" src="https://pubchem.ncbi.nlm.nih.gov/edit2/index.html"></iframe>
+        </div>
+
+        <div id="uploaddiv1" style="display:none">
+            <iframe id="up1" seamless height="120px" width="900px" src="/logk/upload/M/{{ JobID }}"></iframe>
         </div>
 
 
@@ -78,6 +90,8 @@ function validateForm() {
         var HA_smi = document.forms['pdb']['SmilesStrP1'].value;
     };
 
+    var H_smi = document.forms['pdb']['SmilesStrM'].value;
+
     $.ajax({
         url: "/logk/ajax/query_coor/{{ JobID }}/",
         data: {action: 'query_coor'},
@@ -93,6 +107,10 @@ function validateForm() {
                     return false;
                 } else if (HA_smi == "" && result.HasHA == false) {
                     alert('Either SMILES or coordinates for complex molecule (ML) is required!');
+                    window.location.href = "/logk/smiles_single/{{ JobID }}/{{ Mol }}/";
+                    return false;
+                } else if (H_smi == "" && result.HasH == false) {
+                    alert('Either SMILES or coordinates for complex molecule (M+) is required!');
                     window.location.href = "/logk/smiles_single/{{ JobID }}/{{ Mol }}/";
                     return false;
                 };

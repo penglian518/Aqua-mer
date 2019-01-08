@@ -1,13 +1,14 @@
 from PLg09 import constants, g09prepare, pbsPrepare, g09checkResults, NWprepare, NWcheckResults, Arrowsprepare
 import os, logging, subprocess
 from copy import deepcopy
-
+import pybel
 
 class QMCalculationPrepare:
     def __init__(self):
         self.DjangoHome = '/home/p6n/workplace/website/cyshg'
         self.JobLocation = 'media'
-
+        # get the element table
+        self.ele_Table = pybel.ob.OBElementTable()
 
     def gen_conf_dict(self, obj):
         '''
@@ -93,6 +94,31 @@ class QMCalculationPrepare:
             'Others': ''
         }
 
+        resource_conf = {
+            # number of processors to be used
+            'NProc': str(obj.QMProcessors),
+            # memory
+            'Mem': '%sGB' % str(obj.QMMemory),
+
+            # chk file name will be the same as the input file
+
+            # path to access the coordinates in .xyz file,
+            # will be read by pybel
+            # the filename will be used as the name of .com .chk .log
+            #'path_to_input_xyz': '%s/%s/%s/jobs/%s/%s-%s.xyz' %
+            #                     (self.DjangoHome, self.JobLocation, obj.Name, obj.JobID, obj.Name, obj.JobID)
+
+            'path_to_input_xyz': '%s/%s/%s/jobs/%s/%s_%s-%s.xyz' %
+                                 (self.DjangoHome, self.JobLocation, obj.Name, obj.JobID, complex_name, obj.Name,
+                                  obj.JobID)
+        }
+
+        # read the coordinates
+        mol = pybel.readfile('xyz', resource_conf['path_to_input_xyz']).next()
+        # get all elements and all metals
+        all_elements_metal = list(set([self.ele_Table.GetSymbol(i.atomicnum) for i in mol if i.OBAtom.IsMetal()]))
+
+
         # optimzation or frequencies
         if obj.QMCalType in ['Opt-Freq']:
             step1_qm_conf['Opt'] = '(MaxCyc=100)'
@@ -117,19 +143,18 @@ class QMCalculationPrepare:
             step1_qm_conf['SCRF_Read'] = True
             step1_qm_conf['SCRF_ReadConf'] = 'Surface=%s\nAlpha=%s' % (obj.QMCavitySurface, str(obj.QMScalingFactor))
 
-        resource_conf = {
-            # number of processors to be used
-            'NProc': str(obj.QMProcessors),
-            # memory
-            'Mem': '%sGB' % str(obj.QMMemory),
+            # if there is metal in the molecule, should list them explicitly.
+            scrf_str = 'Surface=%s\nAlpha=%s\n' % (obj.QMCavitySurface, str(obj.QMScalingFactor))
+            if len(all_elements_metal) > 0:
+                scrf_str += 'ModifySph\n'
+                for ele in all_elements_metal:
+                    if ele == 'Hg':
+                        scrf_str += '\nHg 1.55 %s' % str(obj.QMScalingFactor)
+                    else:
+                        scrf_str += '\n%s %s %s' % \
+                                    (ele, self.ele_Table.GetCovalentRad(self.ele_Table.GetAtomicNum(ele)), str(obj.QMScalingFactor))
+            step1_qm_conf['SCRF_ReadConf'] = scrf_str
 
-            # chk file name will be the same as the input file
-
-            # path to access the coordinates in .xyz file,
-            # will be read by pybel
-            # the filename will be used as the name of .com .chk .log
-            'path_to_input_xyz': '%s/%s/%s/jobs/%s/%s-%s.xyz' % (self.DjangoHome, self.JobLocation, obj.Name, obj.JobID, obj.Name, obj.JobID)
-        }
 
         if obj.Name in ['pka', 'logk']:
             resource_conf['path_to_input_xyz'] = '%s/%s/%s/jobs/%s/%s_%s-%s.xyz' % (self.DjangoHome, self.JobLocation, obj.Name, obj.JobID, complex_name, obj.Name, obj.JobID)
@@ -201,6 +226,10 @@ class QMCalculationPrepare:
         else:
             conf['Pseudo'] = True
 
+        # for logk calculations, always use Gen keyword to generate basis set
+        if obj.Name in ['logk']:
+            conf['Pseudo'] = True
+
         return conf
 
     def obj_to_dict_HA(self, obj):
@@ -263,6 +292,27 @@ class QMCalculationPrepare:
             'Others': ''
         }
 
+        resource_conf = {
+            # number of processors to be used
+            'NProc': str(obj.QMProcessorsP1),
+            # memory
+            'Mem': '%sGB' % str(obj.QMMemoryP1),
+
+            # chk file name will be the same as the input file
+
+            # path to access the coordinates in .xyz file,
+            # will be read by pybel
+            # the filename will be used as the name of .com .chk .log
+            'path_to_input_xyz': '%s/%s/%s/jobs/%s/%s_%s-%s.xyz' %
+                                 (self.DjangoHome, self.JobLocation, obj.Name, obj.JobID, complex_name, obj.Name, obj.JobID)
+        }
+
+        # read the coordinates
+        mol = pybel.readfile('xyz', resource_conf['path_to_input_xyz']).next()
+        # get all elements and all metals
+        all_elements_metal = list(set([self.ele_Table.GetSymbol(i.atomicnum) for i in mol if i.OBAtom.IsMetal()]))
+
+
         # optimzation or frequencies
         if obj.QMCalTypeP1 in ['Opt-Freq']:
             step1_qm_conf['Opt'] = '(MaxCyc=100)'
@@ -285,23 +335,21 @@ class QMCalculationPrepare:
             step1_qm_conf['SCRF_parameters_nw'] = ''
         else:
             step1_qm_conf['SCRF_Read'] = True
-            step1_qm_conf['SCRF_ReadConf'] = 'Surface=%s\nAlpha=%s\nModifySph\n\nHg 1.55 %s' % \
-                (obj.QMCavitySurfaceP1, str(obj.QMScalingFactor), str(obj.QMScalingFactorP1))
+            #step1_qm_conf['SCRF_ReadConf'] = 'Surface=%s\nAlpha=%s\nModifySph\n\nHg 1.55 %s' % \
+            #    (obj.QMCavitySurfaceP1, str(obj.QMScalingFactor), str(obj.QMScalingFactorP1))
 
-        resource_conf = {
-            # number of processors to be used
-            'NProc': str(obj.QMProcessorsP1),
-            # memory
-            'Mem': '%sGB' % str(obj.QMMemoryP1),
+            # if there is metal in the molecule, should list them explicitly.
+            scrf_str = 'Surface=%s\nAlpha=%s\n' % (obj.QMCavitySurfaceP1, str(obj.QMScalingFactor))
+            if len(all_elements_metal) > 0:
+                scrf_str += 'ModifySph\n'
+                for ele in all_elements_metal:
+                    if ele == 'Hg':
+                        scrf_str += '\nHg 1.55 %s' % str(obj.QMScalingFactorP1)
+                    else:
+                        scrf_str += '\n%s %s %s' % \
+                                    (ele, self.ele_Table.GetCovalentRad(self.ele_Table.GetAtomicNum(ele)), str(obj.QMScalingFactorP1))
+            step1_qm_conf['SCRF_ReadConf'] = scrf_str
 
-            # chk file name will be the same as the input file
-
-            # path to access the coordinates in .xyz file,
-            # will be read by pybel
-            # the filename will be used as the name of .com .chk .log
-            'path_to_input_xyz': '%s/%s/%s/jobs/%s/%s_%s-%s.xyz' %
-                                 (self.DjangoHome, self.JobLocation, obj.Name, obj.JobID, complex_name, obj.Name, obj.JobID)
-        }
 
         pbs_conf = {
 
@@ -370,6 +418,10 @@ class QMCalculationPrepare:
         else:
             conf['Pseudo'] = True
 
+        # for logk calculations, always use Gen keyword to generate basis set
+        if obj.Name in ['logk']:
+            conf['Pseudo'] = True
+
         return conf
 
     def obj_to_dict_M(self, obj):
@@ -426,6 +478,26 @@ class QMCalculationPrepare:
             'Others': ''
         }
 
+        resource_conf = {
+            # number of processors to be used
+            'NProc': str(obj.QMProcessorsM),
+            # memory
+            'Mem': '%sGB' % str(obj.QMMemoryM),
+
+            # chk file name will be the same as the input file
+
+            # path to access the coordinates in .xyz file,
+            # will be read by pybel
+            # the filename will be used as the name of .com .chk .log
+            'path_to_input_xyz': '%s/%s/%s/jobs/%s/M_%s-%s.xyz' %
+                                 (self.DjangoHome, self.JobLocation, obj.Name, obj.JobID, obj.Name, obj.JobID)
+        }
+
+        # read the coordinates
+        mol = pybel.readfile('xyz', resource_conf['path_to_input_xyz']).next()
+        # get all elements and all metals
+        all_elements_metal = list(set([self.ele_Table.GetSymbol(i.atomicnum) for i in mol if i.OBAtom.IsMetal()]))
+
         # optimzation or frequencies
         if obj.QMCalTypeM in ['Opt-Freq']:
             step1_qm_conf['Opt'] = '(MaxCyc=100)'
@@ -450,23 +522,20 @@ class QMCalculationPrepare:
             step1_qm_conf['SCRF_Read'] = True
             #step1_qm_conf['SCRF_ReadConf'] = 'Surface=%s\nAlpha=%s' % (
             #    obj.QMCavitySurfaceM, str(obj.QMScalingFactorM))
-            step1_qm_conf['SCRF_ReadConf'] = 'Surface=%s\nModifySph\n\nHg 1.55 %s' % \
-                (obj.QMCavitySurfaceM, str(obj.QMScalingFactorM))
+            #step1_qm_conf['SCRF_ReadConf'] = 'Surface=%s\nAlpha=%s\nModifySph\n\nHg 1.55 %s' % \
+            #    (obj.QMCavitySurfaceM, str(obj.QMScalingFactor), str(obj.QMScalingFactorM))
 
-        resource_conf = {
-            # number of processors to be used
-            'NProc': str(obj.QMProcessorsM),
-            # memory
-            'Mem': '%sGB' % str(obj.QMMemoryM),
-
-            # chk file name will be the same as the input file
-
-            # path to access the coordinates in .xyz file,
-            # will be read by pybel
-            # the filename will be used as the name of .com .chk .log
-            'path_to_input_xyz': '%s/%s/%s/jobs/%s/M_%s-%s.xyz' %
-                                 (self.DjangoHome, self.JobLocation, obj.Name, obj.JobID, obj.Name, obj.JobID)
-        }
+            # if there is metal in the molecule, should list them explicitly.
+            scrf_str = 'Surface=%s\nAlpha=%s\n' % (obj.QMCavitySurfaceM, str(obj.QMScalingFactor))
+            if len(all_elements_metal) > 0:
+                scrf_str += 'ModifySph\n'
+                for ele in all_elements_metal:
+                    if ele == 'Hg':
+                        scrf_str += '\nHg 1.55 %s' % str(obj.QMScalingFactorM)
+                    else:
+                        scrf_str += '\n%s %s %s' % \
+                                    (ele, self.ele_Table.GetCovalentRad(self.ele_Table.GetAtomicNum(ele)), str(obj.QMScalingFactorM))
+            step1_qm_conf['SCRF_ReadConf'] = scrf_str
 
         pbs_conf = {
 
@@ -533,6 +602,10 @@ class QMCalculationPrepare:
         if len(element_common) == 0:
             conf['Pseudo'] = False
         else:
+            conf['Pseudo'] = True
+
+        # for logk calculations, always use Gen keyword to generate basis set
+        if obj.Name in ['logk']:
             conf['Pseudo'] = True
 
         return conf

@@ -26,9 +26,23 @@
 
     <form id='pdb' name='pdb' enctype="multipart/form-data" method='POST' onsubmit="return validateForm()">
         {% csrf_token %}
+
         <table>
-            {{ formMetal }}
+        {{ formMetal }}
+        <td>
+            <button type="button" onclick="toggleIfrm('ifrmdiv2', 'uploaddiv2')" class="btn btn-default" style="height:25px;width:100px">Draw it now</button>
+                &nbsp; OR &nbsp;
+            <button type="button" onclick='toggleIfrm("uploaddiv2", "ifrmdiv2")' class="btn btn-default" style="height:25px;width:140px">Upload coordinates</button>
+        </td>
         </table>
+
+        <div id="ifrmdiv2" style="display:none">
+            <iframe id="ifrm2" seamless height="450px" width="900px" src="https://pubchem.ncbi.nlm.nih.gov/edit2/index.html"></iframe>
+        </div>
+
+        <div id="uploaddiv2" style="display:none">
+            <iframe id="up2" seamless height="120px" width="900px" src="/logk/upload/H/{{ JobID }}"></iframe>
+        </div>
         <br>
         <br>
 
@@ -89,6 +103,7 @@
 function validateForm() {
     var A_smi = document.forms['pdb']['SmilesStr'].value;
     var HA_smi = document.forms['pdb']['SmilesStrP1'].value;
+    var H_smi = document.forms['pdb']['SmilesStrM'].value;
 
     $.ajax({
         url: "/logk/ajax/query_coor/{{ JobID }}/",
@@ -105,6 +120,10 @@ function validateForm() {
                     return false;
                 } else if (HA_smi == "" && result.HasHA == false) {
                     alert('Either SMILES or coordinates for complex molecule (ML) is required!');
+                    window.location.href = "/logk/smiles/{{ JobID }}";
+                    return false;
+                } else if (H_smi == "" && result.HasH == false) {
+                    alert('Either SMILES or coordinates for complex molecule (M+) is required!');
                     window.location.href = "/logk/smiles/{{ JobID }}";
                     return false;
                 };

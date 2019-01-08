@@ -91,10 +91,6 @@ class LogKJob(models.Model):
         ('None', "None of the above, I'll start over."),
     )
 
-    QMMetals = (
-        ('Hg2+', 'Hg2+'),
-        ('Hg+', 'Hg+'),
-    )
 
 
 
@@ -156,7 +152,9 @@ class LogKJob(models.Model):
     NoteP1 = models.CharField(max_length=100, blank=True, default='')
 
     # for metal ions
-    QMMetal = models.CharField(max_length=10, choices=QMMetals, default='Hg2+')
+    SmilesStrM = models.CharField(max_length=200, blank=True, default='')
+    UploadedFileM = models.FileField(upload_to=user_directory_pathM, blank=True)
+    UploadedFileTypeM = models.CharField(max_length=10, choices=FileTypes, default='')
 
     QMSoftwareM = models.CharField(max_length=30, choices=QMSoftwares, default='Gaussian')
 
@@ -166,7 +164,7 @@ class LogKJob(models.Model):
     QMMemoryM = models.PositiveIntegerField(blank=True, default=1)
     QMFunctionalM = models.CharField(max_length=30, choices=QMFunctionals, default='M06')
     QMBasisSetM = models.CharField(max_length=30, choices=QMBasisSets, default='SDD')
-    QMChargeM = models.IntegerField(blank=True, default=2)
+    QMChargeM = models.IntegerField(blank=True, default=0)
     QMMultiplicityM = models.IntegerField(blank=True, default=1)
     QMCoordinateFormatM = models.CharField(max_length=30, choices=QMCoordinateFormats, default='Cartesian')
     QMSolvationModelM = models.CharField(max_length=30, choices=QMSolvationModels, default='SMD')
@@ -194,20 +192,6 @@ class LogKJob(models.Model):
 
     def __str__(self):
         return str(self.JobID)
-
-
-class MetalForm(ModelForm):
-    class Meta:
-        model = LogKJob
-        fields = ['JobID', 'CurrentStep', 'Successful', 'QMMetal']
-        labels = {
-            'QMMetal': _('Select your "Metal ion (M+)"'),
-        }
-        widgets = {
-            'JobID': forms.HiddenInput(),
-            'CurrentStep': forms.HiddenInput(),
-            'Successful': forms.HiddenInput(),
-        }
 
 
 class SmilesForm(ModelForm):
@@ -262,6 +246,35 @@ class UploadFormP1(ModelForm):
         labels = {
             'UploadedFileP1': _('Upload your structure file for "Complex (ML)" molecule'),
             'UploadedFileTypeP1': _('Format'),
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+            'UploadedFileP1': forms.FileInput(attrs={'required': True}),
+        }
+
+class SmilesFormM(ModelForm):
+    class Meta:
+        model = LogKJob
+        fields = ['JobID', 'CurrentStep', 'Successful', 'SmilesStrM']
+        labels = {
+            'SmilesStrM': _('Provide the SMILES of your "Metal (M+)" molecule'),
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+            'SmilesStrM': forms.TextInput(attrs={'placeholder': 'Paste the SMILES here', 'size': 80, }),
+        }
+
+class UploadFormM(ModelForm):
+    class Meta:
+        model = LogKJob
+        fields = ['JobID', 'CurrentStep', 'Successful', 'UploadedFileM', 'UploadedFileTypeM']
+        labels = {
+            'UploadedFileM': _('Upload your structure file for "Metal (M+)" molecule'),
+            'UploadedFileTypeM': _('Format'),
         }
         widgets = {
             'JobID': forms.HiddenInput(),

@@ -33,34 +33,54 @@
     <tr><td>Input Molecule</td>
         <td>
             <div style="height: 150px; width: 250px; position: relative;" class='viewer_3Dmoljs'
-             data-href='/logk/inputcoor/{{ Item.JobID }}/A/'
+             data-href='/logk/inputcoor/{{ Item.JobID }}/L/'
              data-backgroundcolor='0xffffff' data-type="xyz"
              data-select1="all" data-style1='stick'></div>
         </td>
         <td>
             <div style="height: 150px; width: 250px; position: relative;" class='viewer_3Dmoljs'
-             data-href='/logk/inputcoor/{{ Item.JobID }}/HA/'
+             data-href='/logk/inputcoor/{{ Item.JobID }}/ML/'
              data-backgroundcolor='0xffffff' data-type="xyz"
              data-select1="all" data-style1='stick'></div>
         </td>
         <td>
-            {{ Item.QMMetal }}
+            <div style="height: 150px; width: 250px; position: relative;" class='viewer_3Dmoljs'
+             data-href='/logk/inputcoor/{{ Item.JobID }}/M/'
+             data-backgroundcolor='0xffffff' data-type="xyz"
+             data-select1="all" data-style1='sphere'></div>
         </td>
     </tr>
 
-    {% if Item.UploadedFile and Item.UploadedFileP1 %}
-        <tr><td>File name</td><td>{{ Item.UploadedFile | filename }}</td><td>{{ Item.UploadedFileP1 | filename }}</td><td>-</td></tr>
-        <tr><td>File type</td><td>{{ Item.UploadedFileType }}</td><td>{{ Item.UploadedFileTypeP1 }}</td><td>-</td></tr>
-    {% elif Item.UploadedFile and Item.SmilesStrP1 %}
-        <tr><td>File name</td><td>{{ Item.UploadedFile | filename }}</td><td>{{ Item.SmilesStrP1 }}</td><td>-</td></tr>
-        <tr><td>File type</td><td>{{ Item.UploadedFileType }}</td><td>smi</td><td>-</td></tr>
-    {% elif Item.SmilesStr and Item.UploadedFileP1 %}
-        <tr><td>File name</td><td>{{ Item.SmilesStr }}</td><td>{{ Item.UploadedFileP1 | filename }}</td><td>-</td></tr>
-        <tr><td>File type</td><td>smi</td><td>{{ Item.UploadedFileTypeP1 }}</td><td>-</td></tr>
-    {% elif Item.SmilesStr and Item.SmilesStrP1 %}
-        <tr><td>File name</td><td>{{ Item.SmilesStr }}</td><td>{{ Item.SmilesStrP1 }}</td><td>-</td></tr>
-        <tr><td>File type</td><td>smi</td><td>smi</td><td>-</td></tr>
+    {% if Item.UploadedFileM %}
+        {% if Item.UploadedFile and Item.UploadedFileP1 %}
+            <tr><td>File name</td><td>{{ Item.UploadedFile | filename }}</td><td>{{ Item.UploadedFileP1 | filename }}</td><td>{{ Item.UploadedFileM | filename }}</td></tr>
+            <tr><td>File type</td><td>{{ Item.UploadedFileType }}</td><td>{{ Item.UploadedFileTypeP1 }}</td><td>{{ Item.UploadedFileTypeM }}</td></tr>
+        {% elif Item.UploadedFile and Item.SmilesStrP1 %}
+            <tr><td>File name</td><td>{{ Item.UploadedFile | filename }}</td><td>{{ Item.SmilesStrP1 }}</td><td>{{ Item.UploadedFileM | filename }}</td></tr>
+            <tr><td>File type</td><td>{{ Item.UploadedFileType }}</td><td>smi</td><td>{{ Item.UploadedFileTypeM }}</td></tr>
+        {% elif Item.SmilesStr and Item.UploadedFileP1 %}
+            <tr><td>File name</td><td>{{ Item.SmilesStr }}</td><td>{{ Item.UploadedFileP1 | filename }}</td><td>{{ Item.UploadedFileM | filename }}</td></tr>
+            <tr><td>File type</td><td>smi</td><td>{{ Item.UploadedFileTypeP1 }}</td><td>{{ Item.UploadedFileTypeM }}</td></tr>
+        {% elif Item.SmilesStr and Item.SmilesStrP1 %}
+            <tr><td>File name</td><td>{{ Item.SmilesStr }}</td><td>{{ Item.SmilesStrP1 }}</td><td>{{ Item.UploadedFileM | filename }}</td></tr>
+            <tr><td>File type</td><td>smi</td><td>smi</td><td>{{ Item.UploadedFileTypeM }}</td></tr>
+        {% endif %}
+    {% elif Item.SmilesStrM %}
+        {% if Item.UploadedFile and Item.UploadedFileP1 %}
+            <tr><td>File name</td><td>{{ Item.UploadedFile | filename }}</td><td>{{ Item.UploadedFileP1 | filename }}</td><td>{{ Item.SmilesStrM }}</td></tr>
+            <tr><td>File type</td><td>{{ Item.UploadedFileType }}</td><td>{{ Item.UploadedFileTypeP1 }}</td><td>smi</td></tr>
+        {% elif Item.UploadedFile and Item.SmilesStrP1 %}
+            <tr><td>File name</td><td>{{ Item.UploadedFile | filename }}</td><td>{{ Item.SmilesStrP1 }}</td><td>{{ Item.SmilesStrM }}</td></tr>
+            <tr><td>File type</td><td>{{ Item.UploadedFileType }}</td><td>smi</td><td>smi</td></tr>
+        {% elif Item.SmilesStr and Item.UploadedFileP1 %}
+            <tr><td>File name</td><td>{{ Item.SmilesStr }}</td><td>{{ Item.UploadedFileP1 | filename }}</td><td>{{ Item.SmilesStrM }}</td></tr>
+            <tr><td>File type</td><td>smi</td><td>{{ Item.UploadedFileTypeP1 }}</td><td>smi</td></tr>
+        {% elif Item.SmilesStr and Item.SmilesStrP1 %}
+            <tr><td>File name</td><td>{{ Item.SmilesStr }}</td><td>{{ Item.SmilesStrP1 }}</td><td>{{ Item.SmilesStrM }}</td></tr>
+            <tr><td>File type</td><td>smi</td><td>smi</td><td>smi</td></tr>
+        {% endif %}
     {% endif %}
+
     <tr><td><br></td><td></td><td></td><td></td></tr>
 
     {% if Item.Name == 'logk' %}

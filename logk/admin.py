@@ -10,10 +10,12 @@ class LogKJobAdmin(admin.ModelAdmin):
                     'SmilesStr', 'UploadedFile', 'UploadedFileType', 'QMSoftware',
                     'QMTitle', 'QMCalType', 'QMProcessors', 'QMMemory', 'QMFunctional', 'QMBasisSet', 'QMCharge',
                     'QMMultiplicity', 'QMCoordinateFormat', 'QMSolvationModel', 'QMSolvent', 'QMCavitySurface', 'QMScalingFactor', 'Note',
+
                     'SmilesStrP1', 'UploadedFileP1', 'UploadedFileTypeP1', 'QMSoftwareP1',
                     'QMTitleP1', 'QMCalTypeP1', 'QMProcessorsP1', 'QMMemoryP1', 'QMFunctionalP1', 'QMBasisSetP1', 'QMChargeP1',
                     'QMMultiplicityP1', 'QMCoordinateFormatP1', 'QMSolvationModelP1', 'QMSolventP1', 'QMCavitySurfaceP1', 'QMScalingFactorP1', 'NoteP1',
-                    'QMMetal', 'QMSoftwareM',
+
+                    'SmilesStrM', 'UploadedFileM', 'UploadedFileTypeM', 'QMSoftwareM',
                     'QMTitleM', 'QMCalTypeM', 'QMProcessorsM', 'QMMemoryM', 'QMFunctionalM', 'QMBasisSetM', 'QMChargeM',
                     'QMMultiplicityM', 'QMCoordinateFormatM', 'QMSolvationModelM', 'QMSolventM', 'QMCavitySurfaceM', 'QMScalingFactorM', 'NoteM',
                     'UploadedOutputFile', 'QMSoftwareOutput', 'EnergyfromOutputFiles',

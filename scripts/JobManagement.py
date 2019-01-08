@@ -28,6 +28,7 @@ class JobManagement:
             elif JobType in ['logk']:
                 ligand_name = 'L'
                 complex_name = 'ML'
+                metal_name = 'M'
 
             if obj.UploadedFile:
                 file_name = os.path.basename(obj.UploadedFile.path)
@@ -57,6 +58,21 @@ class JobManagement:
                     cmd = '%s -i%s %s -O %s/%s_%s.xyz' % (self.obabel, file_type, input_file, job_dir, complex_name, mol_name)
                     cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                     out, err = cmd.communicate()
+            if JobType in ['logk']:
+                if obj.UploadedFileM:
+                    file_name = os.path.basename(obj.UploadedFileM.path)
+                    file_type = obj.UploadedFileTypeM
+
+                    uploaded_file = '%s/%s' % (job_dir, file_name)
+                    input_file = '%s/%s_%s.%s' % (job_dir, metal_name, mol_name, file_type)
+                    # copy input file to input.file_type
+                    shutil.copy(uploaded_file, input_file)
+
+                    # convert smi to xyz file
+                    if file_type not in ['xyz']:
+                        cmd = '%s -i%s %s -O %s/%s_%s.xyz' % (self.obabel, file_type, input_file, job_dir, metal_name, mol_name)
+                        cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                        out, err = cmd.communicate()
             if obj.SmilesStr:
                 file_type = 'smi'
 
@@ -77,14 +93,17 @@ class JobManagement:
                 cmd = '%s -i%s %s -O %s/%s_%s.xyz --gen3D' % (self.obabel, file_type, input_file, job_dir, complex_name, mol_name)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
-
             if JobType in ['logk']:
-                input_file = '%s/M_%s.xyz' % (job_dir, mol_name)
+                if obj.SmilesStrM:
+                    file_type = 'smi'
 
-                # string in xyz file
-                M_coor = "1\n\n%s 0.0 0.0 0.0\n" % obj.QMMetal[:2]
-                # write the smiles string to molecule.smi file
-                open(input_file, 'w').write(M_coor)
+                    input_file = '%s/%s_%s.%s' % (job_dir, metal_name, mol_name, file_type)
+                    # write the smiles string to molecule.smi file
+                    open(input_file, 'w').write(obj.SmilesStrM)
+                    # convert smi to xyz file
+                    cmd = '%s -i%s %s -O %s/%s_%s.xyz --gen3D' % (self.obabel, file_type, input_file, job_dir, metal_name, mol_name)
+                    cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                    out, err = cmd.communicate()
 
         else:
             if obj.UploadedFile:

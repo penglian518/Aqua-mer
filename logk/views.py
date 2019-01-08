@@ -3,7 +3,7 @@ from django.http import HttpResponse, Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import model_to_dict
 
-from .models import LogKJob, UploadForm, QueryForm, SmilesForm, paraInputForm, UploadFormP1, SmilesFormP1, TransToAForm, MetalForm, UploadOutputForm, UploadOutputFormP1, UploadOutputFormM
+from .models import LogKJob, UploadForm, QueryForm, SmilesForm, paraInputForm, UploadFormP1, SmilesFormP1, UploadFormM, SmilesFormM, TransToAForm, UploadOutputForm, UploadOutputFormP1, UploadOutputFormM
 from toolkit.models import ToolkitJob
 from cyshg.models import AllJobIDs
 from pka.models import pKaJob
@@ -52,7 +52,7 @@ def smiles(request, JobID):
     if request.method == 'POST':
         form = SmilesForm(request.POST, request.FILES, instance=SPJob)
         formP1 = SmilesFormP1(request.POST, request.FILES, instance=SPJob)
-        formMetal = MetalForm(request.POST, request.FILES, instance=SPJob)
+        formMetal = SmilesFormM(request.POST, request.FILES, instance=SPJob)
         if form.is_valid():
             model_instance = form.save(commit=False)
             model_instance.JobID = JobID
@@ -75,9 +75,9 @@ def smiles(request, JobID):
     else:
         form = SmilesForm(instance=SPJob)
         formP1 = SmilesFormP1(instance=SPJob)
-        formMetal = MetalForm(instance=SPJob)
+        formMetal = SmilesFormM(instance=SPJob)
 
-    return render(request, 'logk/smiles.html', {'form': form, 'formP1': formP1, 'formMetal': MetalForm, 'JobID': JobID})
+    return render(request, 'logk/smiles.html', {'form': form, 'formP1': formP1, 'formMetal': formMetal, 'JobID': JobID})
 
 def smiles_single(request, JobID, Mol):
     clientStatistics(request)
@@ -94,7 +94,7 @@ def smiles_single(request, JobID, Mol):
         elif Mol in ['HA', 'ML']:
             form = SmilesFormP1(request.POST, request.FILES, instance=SPJob)
 
-        formMetal = MetalForm(request.POST, request.FILES, instance=SPJob)
+        formM = SmilesFormM(request.POST, request.FILES, instance=SPJob)
 
         if form.is_valid():
             model_instance = form.save(commit=False)
@@ -102,21 +102,22 @@ def smiles_single(request, JobID, Mol):
             model_instance.CurrentStep = "1"
             model_instance.Successful = True
             model_instance.save()
-        if formMetal.is_valid():
-            model_instance = formMetal.save(commit=False)
+        if formM.is_valid():
+            model_instance = formM.save(commit=False)
             model_instance.JobID = JobID
             model_instance.CurrentStep = "1"
             model_instance.Successful = True
             model_instance.save()
         return redirect('/logk/parameters/%d' % int(JobID))
     else:
-        if Mol in ['A']:
+        if Mol in ['A', 'L']:
             form = SmilesForm(instance=SPJob)
-        elif Mol in ['HA']:
+        elif Mol in ['HA', 'ML']:
             form = SmilesFormP1(instance=SPJob)
-        formMetal = MetalForm(instance=SPJob)
 
-    return_dict = {'form': form, 'formMetal': MetalForm, 'JobID': JobID, 'Mol': Mol}
+        formM = SmilesFormM(instance=SPJob)
+
+    return_dict = {'form': form, 'formM': formM, 'JobID': JobID, 'Mol': Mol}
     return render(request, 'logk/smiles_single.html', return_dict)
 
 def upload(request, Mol, JobID):
@@ -135,6 +136,8 @@ def upload(request, Mol, JobID):
             form = UploadForm(request.POST, request.FILES, instance=SPJob)
         elif Mol in ['HA', 'ML']:
             form = UploadFormP1(request.POST, request.FILES, instance=SPJob)
+        elif Mol in ['H', 'H+', 'M', 'M+']:
+            form = UploadFormM(request.POST, request.FILES, instance=SPJob)
         if form.is_valid():
             model_instance = form.save(commit=False)
             model_instance.JobID = JobID
@@ -147,6 +150,8 @@ def upload(request, Mol, JobID):
             form = UploadForm(instance=SPJob)
         elif Mol in ['HA', 'ML']:
             form = UploadFormP1(instance=SPJob)
+        elif Mol in ['H', 'H+', 'M', 'M+']:
+            form = UploadFormM(instance=SPJob)
 
     return render(request, 'logk/upload.html', {'form': form})
 
@@ -445,6 +450,7 @@ def query_coor(request, JobID):
 
     HasA = False
     HasHA = False
+    HasH = False
 
     if obj.UploadedFile:
         HasA = True
@@ -452,10 +458,13 @@ def query_coor(request, JobID):
     if obj.UploadedFileP1:
         HasHA = True
 
+    if obj.UploadedFileM:
+        HasH = True
+
     response_dict['HasA'] = HasA
     response_dict['HasHA'] = HasHA
+    response_dict['HasH'] = HasH
 
-    #return render(request, 'hgspeci/solutionmaster.html', response_dict)
     return HttpResponse(json.dumps(response_dict))
 
 # public functions
@@ -515,7 +524,7 @@ def inputcoor(request, JobID, JobType='logk', Mol='A'):
         xyzfile = '%s/L_%s-%s.xyz' % (job_dir, JobType, JobID)
     elif Mol in ['ML', 'HA']:
         xyzfile = '%s/ML_%s-%s.xyz' % (job_dir, JobType, JobID)
-    elif Mol in ['M']:
+    elif Mol in ['M', 'H']:
         xyzfile = '%s/M_%s-%s.xyz' % (job_dir, JobType, JobID)
     fcon = ''.join(open(xyzfile).readlines())
 
