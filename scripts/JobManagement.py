@@ -251,7 +251,6 @@ class JobManagement:
         return
 
 
-
     def Zip4Downlaod(self, obj, JobType='csearch'):
         '''
         create the zip file for download
@@ -986,7 +985,7 @@ The calculated pKa is: %s
 
         # generate the conf dicts
         try:
-            conf_L, conf_ML, conf_M = qmclac.gen_conf_dict(obj)
+            conf_L, conf_ML, conf_M, conf_L_link1, conf_ML_link1, conf_M_link1 = qmclac.gen_conf_dict(obj)
             obj.Successful = True
         except:
             obj.FailedReason += 'Could not generate configuration dict for L_%s_%s.' % (JobType,obj.JobID)
@@ -998,6 +997,8 @@ The calculated pKa is: %s
         try:
             if obj.QMSoftware in ['Gaussian']:
                 inp = qmclac.gen_g09input(conf_L)
+                inp_link1 = qmclac.gen_g09input(conf_L_link1)
+                inp_link1 = '\n'.join([i.replace('step2_', 'step1_') for i in inp_link1.split('\n') if not i.startswith("%OldChk")])
             elif obj.QMSoftware in ['NWChem']:
                 inp = qmclac.gen_NWinput(conf_L)
             elif obj.QMSoftware in ['Arrows']:
@@ -1013,12 +1014,18 @@ The calculated pKa is: %s
             # write input file
             if obj.QMSoftware in ['Gaussian']:
                 fout = open('%s/L_%s-%s.com' % (job_dir, JobType, obj.JobID), 'w')
+                fout.write(inp)
+                fout.write('\n--link1--\n')
+                fout.write(inp_link1)
+                fout.close()
             elif obj.QMSoftware in ['NWChem']:
                 fout = open('%s/L_%s-%s.nw' % (job_dir, JobType, obj.JobID), 'w')
+                fout.write(inp)
+                fout.close()
             elif obj.QMSoftware in ['Arrows']:
                 fout = open('%s/L_%s-%s.arrows' % (job_dir, JobType, obj.JobID), 'w')
-            fout.write(inp)
-            fout.close()
+                fout.write(inp)
+                fout.close()
 
             obj.Successful = True
             obj.CurrentStatus = '2'
@@ -1045,6 +1052,8 @@ The calculated pKa is: %s
         try:
             if obj.QMSoftwareP1 in ['Gaussian']:
                 inp = qmclac.gen_g09input(conf_ML)
+                inp_link1 = qmclac.gen_g09input(conf_ML_link1)
+                inp_link1 = '\n'.join([i.replace('step2_', 'step1_') for i in inp_link1.split('\n') if not i.startswith("%OldChk")])
             elif obj.QMSoftwareP1 in ['NWChem']:
                 inp = qmclac.gen_NWinput(conf_ML)
             elif obj.QMSoftwareP1 in ['Arrows']:
@@ -1060,12 +1069,18 @@ The calculated pKa is: %s
             # write input file
             if obj.QMSoftwareP1 in ['Gaussian']:
                 fout = open('%s/ML_%s-%s.com' % (job_dir, JobType, obj.JobID), 'w')
+                fout.write(inp)
+                fout.write('\n--link1--\n')
+                fout.write(inp_link1)
+                fout.close()
             elif obj.QMSoftwareP1 in ['NWChem']:
                 fout = open('%s/ML_%s-%s.nw' % (job_dir, JobType, obj.JobID), 'w')
+                fout.write(inp)
+                fout.close()
             elif obj.QMSoftwareP1 in ['Arrows']:
                 fout = open('%s/ML_%s-%s.arrows' % (job_dir, JobType, obj.JobID), 'w')
-            fout.write(inp)
-            fout.close()
+                fout.write(inp)
+                fout.close()
 
             obj.Successful = True
             obj.CurrentStatus = '2'
@@ -1091,6 +1106,8 @@ The calculated pKa is: %s
         try:
             if obj.QMSoftwareM in ['Gaussian']:
                 inp = qmclac.gen_g09input(conf_M)
+                inp_link1 = qmclac.gen_g09input(conf_M_link1)
+                inp_link1 = '\n'.join([i.replace('step2_', 'step1_') for i in inp_link1.split('\n') if not i.startswith("%OldChk")])
             elif obj.QMSoftwareM in ['NWChem']:
                 inp = qmclac.gen_NWinput(conf_M)
             elif obj.QMSoftwareM in ['Arrows']:
@@ -1106,12 +1123,18 @@ The calculated pKa is: %s
             # write input file
             if obj.QMSoftwareM in ['Gaussian']:
                 fout = open('%s/M_%s-%s.com' % (job_dir, JobType, obj.JobID), 'w')
+                fout.write(inp)
+                fout.write('\n--link1--\n')
+                fout.write(inp_link1)
+                fout.close()
             elif obj.QMSoftwareM in ['NWChem']:
                 fout = open('%s/M_%s-%s.nw' % (job_dir, JobType, obj.JobID), 'w')
+                fout.write(inp)
+                fout.close()
             elif obj.QMSoftwareM in ['Arrows']:
                 fout = open('%s/M_%s-%s.arrows' % (job_dir, JobType, obj.JobID), 'w')
-            fout.write(inp)
-            fout.close()
+                fout.write(inp)
+                fout.close()
 
             obj.Successful = True
             obj.CurrentStatus = '2'
@@ -1136,7 +1159,7 @@ The calculated pKa is: %s
 
 
         obj.save()
-        return
+        return conf_L_link1
 
     def LogKCollectResults(self, obj, JobType='logk'):
         # get basic info
