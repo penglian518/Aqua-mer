@@ -22,7 +22,7 @@
         <p>
             <b>A_{{ Item.Name }}_{{ Item.JobID }}.com</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/pka/inputfile/{{ Item.JobID }}/A/" ></iframe>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/pka/inputfile/{{ Item.JobID }}/A/" ></iframe>
         </p>
     {% elif Item.QMSoftware == 'NWChem' %}
         <p>The bellow is your input file for {{ Item.QMSoftware }}. The user can do the calculation locally
@@ -30,7 +30,7 @@
         <p>
             <b>A_{{ Item.Name }}_{{ Item.JobID }}.nw</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/pka/inputfile/{{ Item.JobID }}/A/" ></iframe>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/pka/inputfile/{{ Item.JobID }}/A/" ></iframe>
         </p>
     {% elif Item.QMSoftware == 'Arrows' %}
         <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/pka/download/{{ Item.JobID }}">HERE</a> to download the structure files.</p>
@@ -47,7 +47,7 @@
         <p>
             <b>HA_{{ Item.Name }}_{{ Item.JobID }}.com</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/pka/inputfile/{{ Item.JobID }}/HA/" ></iframe>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/pka/inputfile/{{ Item.JobID }}/HA/" ></iframe>
         </p>
     {% elif Item.QMSoftwareP1 == 'NWChem' %}
         <p>The bellow is your input file for {{ Item.QMSoftwareP1 }}. The user can do the calculation locally
@@ -55,7 +55,7 @@
         <p>
             <b>HA_{{ Item.Name }}_{{ Item.JobID }}.nw</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/pka/inputfile/{{ Item.JobID }}/HA/" ></iframe>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/pka/inputfile/{{ Item.JobID }}/HA/" ></iframe>
         </p>
     {% elif Item.QMSoftwareP1 == 'Arrows' %}
         <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/pka/download/{{ Item.JobID }}">HERE</a> to download the structure files.</p>

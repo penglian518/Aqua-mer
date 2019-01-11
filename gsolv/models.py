@@ -96,7 +96,7 @@ class GSolvJob(models.Model):
 
     QMTitle = models.CharField(max_length=100, blank=True, default='AQUA-MER GSOLV')
     QMCalType = models.CharField(max_length=30, choices=QMCalTypes, default='Opt-Freq')
-    QMProcessors = models.PositiveIntegerField(blank=True, default=1, validators=[MaxValueValidator(4), MinValueValidator(1)])
+    QMProcessors = models.PositiveIntegerField(blank=True, default=1, validators=[MaxValueValidator(32), MinValueValidator(1)])
     QMMemory = models.PositiveIntegerField(blank=True, default=1)
     QMFunctional = models.CharField(max_length=30, choices=QMFunctionals, default='M06-2X')
     QMBasisSet = models.CharField(max_length=30, choices=QMBasisSets, default='6-31+G(d,p)')
@@ -174,8 +174,8 @@ class GsolvInputForm(ModelForm):
             'QMSoftware': _('Software'),
             'QMTitle': _('Title of calculations'),
             'QMCalType': _('Type of calculations'),
-            'QMProcessors': _('Number of processors (max: 4)'),
-            'QMMemory': _('Meory to use (unit: GB, max: 2)'),
+            'QMProcessors': _('Number of processors (max: 32)'),
+            'QMMemory': _('Meory to use (unit: GB)'),
             'QMFunctional': _('Functional'),
             'QMBasisSet': _('BasisSet'),
             'QMCharge': _('Charge'),

@@ -30,7 +30,7 @@ class QMCalculationPrepare:
             conf_ML_link1 = self.obj_to_dict_HA_link1(obj=obj)
             conf_M_link1 = self.obj_to_dict_M_link1(obj=obj)
             return conf_L, conf_ML, conf_M, conf_L_link1, conf_ML_link1, conf_M_link1
-        else:
+        elif obj.Name in ['gsolv']:
             conf = self.obj_to_dict(obj=obj)
             conf_gas = self.obj_to_dict_gas(obj=obj)
             return conf, conf_gas
@@ -107,10 +107,14 @@ class QMCalculationPrepare:
             #'path_to_input_xyz': '%s/%s/%s/jobs/%s/%s-%s.xyz' %
             #                     (self.DjangoHome, self.JobLocation, obj.Name, obj.JobID, obj.Name, obj.JobID)
 
-            'path_to_input_xyz': '%s/%s/%s/jobs/%s/%s_%s-%s.xyz' %
-                                 (self.DjangoHome, self.JobLocation, obj.Name, obj.JobID, complex_name, obj.Name,
+            'path_to_input_xyz': '%s/%s/%s/jobs/%s/%s-%s.xyz' %
+                                 (self.DjangoHome, self.JobLocation, obj.Name, obj.JobID, obj.Name,
                                   obj.JobID)
         }
+
+        if obj.Name in ['pka', 'logk']:
+            resource_conf['path_to_input_xyz'] = '%s/%s/%s/jobs/%s/%s_%s-%s.xyz' % (self.DjangoHome, self.JobLocation, obj.Name, obj.JobID, complex_name, obj.Name, obj.JobID)
+
 
         # read the coordinates
         mol = pybel.readfile('xyz', resource_conf['path_to_input_xyz']).next()
@@ -159,9 +163,6 @@ class QMCalculationPrepare:
                                         (ele, self.ele_Table.GetCovalentRad(self.ele_Table.GetAtomicNum(ele)), str(obj.QMScalingFactor))
                 step1_qm_conf['SCRF_ReadConf'] = scrf_str
 
-
-        if obj.Name in ['pka', 'logk']:
-            resource_conf['path_to_input_xyz'] = '%s/%s/%s/jobs/%s/%s_%s-%s.xyz' % (self.DjangoHome, self.JobLocation, obj.Name, obj.JobID, complex_name, obj.Name, obj.JobID)
 
         pbs_conf = {
 
@@ -1398,21 +1399,29 @@ class QMResultsCalculation:
         A_out_software = obj.QMSoftwareOutput
         HA_out_software = obj.QMSoftwareOutputP1
 
+        # create the results directory
+        results_dir = '%s/results/' % workdir
+        try:
+            os.makedirs(results_dir)
+        except Exception as e:
+            logging.warning('Failed to make the results dir at %s, the reason is %s' % (results_dir, e))
+            pass
+
         # get the energies and convert to xyz
         if A_out_software in ['Gaussian']:
             Gaq_A = g09checkResults.finalE(open(A_out).readlines())[8]
             try:
                 # convert to xyz
-                cmd = '%s -ig09 %s -O %s/A_out.xyz' % (self.obabel, A_out, workdir)
+                cmd = '%s -ig09 %s -O %s/A_out.xyz' % (self.obabel, A_out, results_dir)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             except:
-                logging.warning('\nWARN: Failed to convert %s to xyz!' % A_out)
+                logging.warning('\nWARN: Failed to convert %s to xyz! the reason is %s' % (A_out, err))
         elif A_out_software in ['NWChem']:
             Gaq_A = NWcheckResults.finalE(open(A_out).readlines())[8]
             try:
                 # convert to xyz
-                cmd = '%s -inwo %s -O %s/A_out.xyz' % (self.obabel, A_out, workdir)
+                cmd = '%s -inwo %s -O %s/A_out.xyz' % (self.obabel, A_out, results_dir)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             except:
@@ -1424,16 +1433,16 @@ class QMResultsCalculation:
             Gaq_HA = g09checkResults.finalE(open(HA_out).readlines())[8]
             try:
                 # convert to xyz
-                cmd = '%s -ig09 %s -O %s/HA_out.xyz' % (self.obabel, HA_out, workdir)
+                cmd = '%s -ig09 %s -O %s/HA_out.xyz' % (self.obabel, HA_out, results_dir)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             except:
-                logging.warning('\nWARN: Failed to convert %s to xyz!' % HA_out)
+                logging.warning('\nWARN: Failed to convert %s to xyz! the reason is %s' % (HA_out, err))
         elif HA_out_software in ['NWChem']:
             Gaq_HA = NWcheckResults.finalE(open(HA_out).readlines())[8]
             try:
                 # convert to xyz
-                cmd = '%s -inwo %s -O %s/HA_out.xyz' % (self.obabel, HA_out, workdir)
+                cmd = '%s -inwo %s -O %s/HA_out.xyz' % (self.obabel, HA_out, results_dir)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             except:
@@ -1459,12 +1468,20 @@ class QMResultsCalculation:
         ML_out_software = obj.QMSoftwareOutputP1
         M_out_software = obj.QMSoftwareOutputM
 
+        # create the results directory
+        results_dir = '%s/results/' % workdir
+        try:
+            os.makedirs(results_dir)
+        except Exception as e:
+            logging.warning('Failed to make the results dir at %s, the reason is %s' % (results_dir, e))
+            pass
+
         # get the energies and convert to xyz
         if L_out_software in ['Gaussian']:
             Gaq_L = g09checkResults.finalE(open(L_out).readlines())[0] + g09checkResults.finalE(open(L_out).readlines())[4]
             try:
                 # convert to xyz
-                cmd = '%s -ig09 %s -O %s/L_out.xyz' % (self.obabel, L_out, workdir)
+                cmd = '%s -ig09 %s -O %s/L_out.xyz' % (self.obabel, L_out, results_dir)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             except:
@@ -1473,7 +1490,7 @@ class QMResultsCalculation:
             Gaq_L = NWcheckResults.finalE(open(L_out).readlines())[8]
             try:
                 # convert to xyz
-                cmd = '%s -inwo %s -O %s/L_out.xyz' % (self.obabel, L_out, workdir)
+                cmd = '%s -inwo %s -O %s/L_out.xyz' % (self.obabel, L_out, results_dir)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             except:
@@ -1485,7 +1502,7 @@ class QMResultsCalculation:
             Gaq_ML = g09checkResults.finalE(open(ML_out).readlines())[0] + g09checkResults.finalE(open(ML_out).readlines())[4]
             try:
                 # convert to xyz
-                cmd = '%s -ig09 %s -O %s/ML_out.xyz' % (self.obabel, ML_out, workdir)
+                cmd = '%s -ig09 %s -O %s/ML_out.xyz' % (self.obabel, ML_out, results_dir)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             except:
@@ -1494,7 +1511,7 @@ class QMResultsCalculation:
             Gaq_ML = NWcheckResults.finalE(open(ML_out).readlines())[8]
             try:
                 # convert to xyz
-                cmd = '%s -inwo %s -O %s/ML_out.xyz' % (self.obabel, ML_out, workdir)
+                cmd = '%s -inwo %s -O %s/ML_out.xyz' % (self.obabel, ML_out, results_dir)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             except:
@@ -1506,7 +1523,7 @@ class QMResultsCalculation:
             Gaq_M = g09checkResults.finalE(open(M_out).readlines())[0] + g09checkResults.finalE(open(M_out).readlines())[4]
             try:
                 # convert to xyz
-                cmd = '%s -ig09 %s -O %s/M_out.xyz' % (self.obabel, M_out, workdir)
+                cmd = '%s -ig09 %s -O %s/M_out.xyz' % (self.obabel, M_out, results_dir)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             except:
@@ -1515,7 +1532,7 @@ class QMResultsCalculation:
             Gaq_M = NWcheckResults.finalE(open(M_out).readlines())[8]
             try:
                 # convert to xyz
-                cmd = '%s -inwo %s -O %s/M_out.xyz' % (self.obabel, M_out, workdir)
+                cmd = '%s -inwo %s -O %s/M_out.xyz' % (self.obabel, M_out, results_dir)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             except:
@@ -1540,12 +1557,20 @@ class QMResultsCalculation:
         aq_out_software = obj.QMSoftwareOutput
         gas_out_software = obj.QMSoftwareOutputP1
 
+        # create the results directory
+        results_dir = '%s/results/' % workdir
+        try:
+            os.makedirs(results_dir)
+        except Exception as e:
+            logging.warning('Failed to make the results dir at %s, the reason is %s' % (results_dir, e))
+            pass
+
         # get the energies and convert to xyz
         if aq_out_software in ['Gaussian']:
             Gaq = g09checkResults.finalE(open(aq_out).readlines())[8]
             try:
                 # convert to xyz
-                cmd = '%s -ig09 %s -O %s/aq_out.xyz' % (self.obabel, aq_out, workdir)
+                cmd = '%s -ig09 %s -O %s/aq_out.xyz' % (self.obabel, aq_out, results_dir)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             except:
@@ -1554,7 +1579,7 @@ class QMResultsCalculation:
             Gaq = NWcheckResults.finalE(open(aq_out).readlines())[8]
             try:
                 # convert to xyz
-                cmd = '%s -inwo %s -O %s/aq_out.xyz' % (self.obabel, aq_out, workdir)
+                cmd = '%s -inwo %s -O %s/aq_out.xyz' % (self.obabel, aq_out, results_dir)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             except:
@@ -1566,7 +1591,7 @@ class QMResultsCalculation:
             Ggas = g09checkResults.finalE(open(gas_out).readlines())[8]
             try:
                 # convert to xyz
-                cmd = '%s -ig09 %s -O %s/gas_out.xyz' % (self.obabel, gas_out, workdir)
+                cmd = '%s -ig09 %s -O %s/gas_out.xyz' % (self.obabel, gas_out, results_dir)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             except:
@@ -1575,7 +1600,7 @@ class QMResultsCalculation:
             Ggas = NWcheckResults.finalE(open(gas_out).readlines())[8]
             try:
                 # convert to xyz
-                cmd = '%s -inwo %s -O %s/gas_out.xyz' % (self.obabel, gas_out, workdir)
+                cmd = '%s -inwo %s -O %s/gas_out.xyz' % (self.obabel, gas_out, results_dir)
                 cmd = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
                 out, err = cmd.communicate()
             except:

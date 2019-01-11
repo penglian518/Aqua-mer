@@ -7,7 +7,7 @@ urlpatterns = [
     url(r'^upload/(?P<JobID>.*)/$', views.upload, name='upload'),
     url(r'^start/(?P<type>.*)/$', views.start, name='start'),
     url(r'^smiles/(?P<JobID>[0-9]+)/$', views.smiles, name='smiles'),
-    url(r'^inputcoor/(?P<JobID>[0-9]+)/$', views.inputcoor, name='inputcoor'),
+    url(r'^inputcoor/(?P<JobID>[0-9]+)/(?P<Mol>.*)/$', views.inputcoor, name='inputcoor'),
     url(r'^inputfile/(?P<JobID>[0-9]+)/(?P<JobType>.*)/$', views.inputfile, name='inputfile'),
     url(r'^outputfile/(?P<JobID>[0-9]+)/(?P<Mol>.*)/$', views.outputfile, name='outputfile'),
 

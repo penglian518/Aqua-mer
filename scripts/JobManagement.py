@@ -630,7 +630,7 @@ echo "Reclustering Job is Done!"
                 inp = qmclac.gen_Arrowsinput(conf)
             obj.Successful = True
         except Exception as e:
-            obj.FailedReason += 'Could not generate input file for %s' % JobType
+            obj.FailedReason += 'Could not generate input file for %s.' % JobType
             obj.CurrentStatus = '3'
             obj.Successful = False
             print 'Could not generate input file: %s' % e
@@ -638,11 +638,11 @@ echo "Reclustering Job is Done!"
         try:
             # write input file
             if obj.QMSoftware in ['Gaussian']:
-                fout = open('%s/%s-%s.com' % (job_dir, JobType, obj.JobID), 'w')
+                fout = open('%s/%s-%s_aq.com' % (job_dir, JobType, obj.JobID), 'w')
             elif obj.QMSoftware in ['NWChem']:
-                fout = open('%s/%s-%s.nw' % (job_dir, JobType, obj.JobID), 'w')
+                fout = open('%s/%s-%s_aq.nw' % (job_dir, JobType, obj.JobID), 'w')
             elif obj.QMSoftware in ['Arrows']:
-                fout = open('%s/%s-%s.arrows' % (job_dir, JobType, obj.JobID), 'w')
+                fout = open('%s/%s-%s_aq.arrows' % (job_dir, JobType, obj.JobID), 'w')
             fout.write(inp)
             fout.close()
 
@@ -766,7 +766,7 @@ echo "Reclustering Job is Done!"
         out_txt = '''The absolute free energy for the molecule in GAS phase is: %s kcal/mol
 The absolute free energy for the molecule in SOLUTION is: %s kcal/mol
 The standard state correction factor at 298 K is: 1.89 kcal/mol
-The calculated solvation free energy is: %s
+The calculated solvation free energy is: %s kcal/mol
 \n''' % (str(Ggas), str(Gaq), str(Gsolv))
 
         try:

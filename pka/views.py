@@ -487,6 +487,11 @@ def inputcoor(request, JobID, JobType='pka', Mol='A'):
         xyzfile = '%s/A_%s-%s.xyz' % (job_dir, JobType, JobID)
     elif Mol in ['HA']:
         xyzfile = '%s/HA_%s-%s.xyz' % (job_dir, JobType, JobID)
+    elif Mol in ['A_out']:
+        xyzfile = '%s/results/A_out.xyz' % (job_dir)
+    elif Mol in ['HA_out']:
+        xyzfile = '%s/results/HA_out.xyz' % (job_dir)
+
     fcon = ''.join(open(xyzfile).readlines())
 
     return HttpResponse(fcon, content_type='text/plain')

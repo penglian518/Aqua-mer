@@ -3,6 +3,9 @@
 {% load myfilter %}
 
 {% block content %}
+<!-- 3Dmol.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/1.3.0/3Dmol-min.js"></script>
+
 <!-- nav box on the left -->
 {% include 'logk/memu.html' %}
 
@@ -12,10 +15,57 @@
 <div id=main>
     <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/logk/download/{{ Item.JobID }}">HERE</a> to download the results.</p>
 
-    <h3>The log <i>K</i> calculated from the uploaded output files is: </h3>
     <p>
-        log <i>K</i> = -1*(G<sub>aq</sub>_ML - G<sub>aq</sub>_L - G<sub>aq</sub>_M - &Delta;G<sup>o-></sup>*) / (2.303 * RT) = -1*(({{ Item.EnergyfromOutputFilesP1 }} - {{ Item.EnergyfromOutputFiles }} - {{ Item.EnergyfromOutputFilesM }}) * 627.5095 - 1.89) / (2.303 *
-0.5925) =  {{ Item.LogKfromOutputFiles }}</p>
+    <h3>The log <i>K</i> calculated from the uploaded output files is: </h3>
+
+    <table  id="basic" class="hover compact pure-table sortable">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Ligand (L-)</th>
+                <th>Metal ion (M+)</th>
+                <th>Complex (ML)</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td><b>3D strucutures</b></td>
+                <td>
+                    <div style="height: 150px; width: 250px; position: relative;" class='viewer_3Dmoljs'
+                     data-href='/logk/inputcoor/{{ Item.JobID }}/L_out/'
+                     data-backgroundcolor='0xffffff' data-type="xyz"
+                     data-select1="all" data-style1='stick'></div>
+                </td>
+                <td>
+                    <div style="height: 150px; width: 250px; position: relative;" class='viewer_3Dmoljs'
+                     data-href='/logk/inputcoor/{{ Item.JobID }}/M_out/'
+                     data-backgroundcolor='0xffffff' data-type="xyz"
+                     data-select1="all" data-style1='sphere'></div>
+                </td>
+                <td>
+                    <div style="height: 150px; width: 250px; position: relative;" class='viewer_3Dmoljs'
+                     data-href='/logk/inputcoor/{{ Item.JobID }}/ML_out/'
+                     data-backgroundcolor='0xffffff' data-type="xyz"
+                     data-select1="all" data-style1='stick'></div>
+                </td>
+            </tr>
+            <tr>
+                <td><b>G<sub>aq</sub></b></td>
+                <td><center>{{ Item.EnergyfromOutputFiles }} a.u.</center></td>
+                <td><center>{{ Item.EnergyfromOutputFilesM }} a.u.</center></td>
+                <td><center>{{ Item.EnergyfromOutputFilesP1 }} a.u.</center></td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <br>
+    <b>log <i>K</i></b> = -1*(G<sub>aq</sub>_ML - G<sub>aq</sub>_L - G<sub>aq</sub>_M - &Delta;G<sup>o-></sup>*) / (2.303 * RT) <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= -1*(({{ Item.EnergyfromOutputFilesP1 }} - {{ Item.EnergyfromOutputFiles }} - {{ Item.EnergyfromOutputFilesM }}) * 627.5095 - 1.89) / (2.303 *
+0.5925) <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=<b> {{ Item.LogKfromOutputFiles }} </b>
+
+    </p>
 
 
     <br>
@@ -24,13 +74,13 @@
     {% if Item.QMSoftwareOutputM == 'Gaussian' %}
         <p>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/outputfile/{{ Item.JobID }}/M/" ></iframe>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/logk/outputfile/{{ Item.JobID }}/M/" ></iframe>
         </p>
     {% elif Item.QMSoftwareOutputP1 == 'NWChem' %}
 
         <p>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/outputfile/{{ Item.JobID }}/M/" ></iframe>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/logk/outputfile/{{ Item.JobID }}/M/" ></iframe>
         </p>
     {% elif Item.QMSoftwareOutputP1 == 'Unknown' %}
         <p>Cannot identify the property of the uploaded file. Make sure the QM calculation was finished successfully. </p>
@@ -43,12 +93,12 @@
     {% if Item.QMSoftwareOutput == 'Gaussian' %}
         <p>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/outputfile/{{ Item.JobID }}/L/" ></iframe>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/logk/outputfile/{{ Item.JobID }}/L/" ></iframe>
         </p>
     {% elif Item.QMSoftwareOutput == 'NWChem' %}
         <p>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/outputfile/{{ Item.JobID }}/L/" ></iframe>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/logk/outputfile/{{ Item.JobID }}/L/" ></iframe>
         </p>
     {% elif Item.QMSoftwareOutput == 'Unknown' %}
         <p>Cannot identify the property of the uploaded file. Make sure the QM calculation was finished successfully. </p>
@@ -61,13 +111,13 @@
     {% if Item.QMSoftwareOutputP1 == 'Gaussian' %}
         <p>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/outputfile/{{ Item.JobID }}/ML/" ></iframe>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/logk/outputfile/{{ Item.JobID }}/ML/" ></iframe>
         </p>
     {% elif Item.QMSoftwareOutputP1 == 'NWChem' %}
 
         <p>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/logk/outputfile/{{ Item.JobID }}/ML/" ></iframe>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/logk/outputfile/{{ Item.JobID }}/ML/" ></iframe>
         </p>
     {% elif Item.QMSoftwareOutputP1 == 'Unknown' %}
         <p>Cannot identify the property of the uploaded file. Make sure the QM calculation was finished successfully. </p>

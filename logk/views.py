@@ -526,6 +526,14 @@ def inputcoor(request, JobID, JobType='logk', Mol='A'):
         xyzfile = '%s/ML_%s-%s.xyz' % (job_dir, JobType, JobID)
     elif Mol in ['M', 'H']:
         xyzfile = '%s/M_%s-%s.xyz' % (job_dir, JobType, JobID)
+    elif Mol in ['L_out', 'A_out']:
+        xyzfile = '%s/results/L_out.xyz' % (job_dir)
+    elif Mol in ['ML_out', 'HA_out']:
+        xyzfile = '%s/results/ML_out.xyz' % (job_dir)
+    elif Mol in ['M_out', 'H_out']:
+        xyzfile = '%s/results/M_out.xyz' % (job_dir)
+
+
     fcon = ''.join(open(xyzfile).readlines())
 
     return HttpResponse(fcon, content_type='text/plain')

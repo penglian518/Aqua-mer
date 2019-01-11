@@ -335,7 +335,7 @@ def results_xyz(request, JobID, Ith, JobType='gsolv'):
     return HttpResponse(fcon, content_type='text/plain')
 
 
-def inputcoor(request, JobID, JobType='gsolv'):
+def inputcoor(request, JobID, JobType='gsolv', Mol='input'):
     """
     convert input files to xyz and show
     """
@@ -347,7 +347,13 @@ def inputcoor(request, JobID, JobType='gsolv'):
 
     # read xyz file
     job_dir = get_job_dir(JobID)
-    xyzfile = '%s/%s-%s.xyz' % (job_dir, JobType, JobID)
+    if Mol in ['input']:
+        xyzfile = '%s/%s-%s.xyz' % (job_dir, JobType, JobID)
+    elif Mol in ['aq']:
+        xyzfile = '%s/results/aq_out.xyz' % job_dir
+    elif Mol in ['gas']:
+        xyzfile = '%s/results/gas_out.xyz' % job_dir
+
     fcon = ''.join(open(xyzfile).readlines())
 
     return HttpResponse(fcon, content_type='text/plain')
@@ -363,9 +369,9 @@ def inputfile(request, JobID, JobType='gsolv'):
 
     if JobType in ['gsolv']:
         if item.QMSoftware == 'Gaussian':
-            inputfile = '%s/%s-%s.com' % (job_dir, JobType, JobID)
+            inputfile = '%s/%s-%s_aq.com' % (job_dir, JobType, JobID)
         elif item.QMSoftware == 'NWChem':
-            inputfile = '%s/%s-%s.nw' % (job_dir, JobType, JobID)
+            inputfile = '%s/%s-%s_aq.nw' % (job_dir, JobType, JobID)
     elif JobType in ['gsolv_gas']:
         if item.QMSoftware == 'Gaussian':
             inputfile = '%s/gsolv-%s_gas.com' % (job_dir, JobID)

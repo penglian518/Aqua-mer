@@ -103,7 +103,7 @@ class pKaJob(models.Model):
 
     QMTitle = models.CharField(max_length=100, blank=True, default='AQUA-MER pKa Calculation')
     QMCalType = models.CharField(max_length=30, choices=QMCalTypes, default='Opt-Freq')
-    QMProcessors = models.PositiveIntegerField(blank=True, default=1, validators=[MaxValueValidator(4), MinValueValidator(1)])
+    QMProcessors = models.PositiveIntegerField(blank=True, default=1, validators=[MaxValueValidator(32), MinValueValidator(1)])
     QMMemory = models.PositiveIntegerField(blank=True, default=1)
     QMFunctional = models.CharField(max_length=30, choices=QMFunctionals, default='M06-2X')
     QMBasisSet = models.CharField(max_length=30, choices=QMBasisSets, default='6-31+G(d,p)')
@@ -125,7 +125,7 @@ class pKaJob(models.Model):
 
     QMTitleP1 = models.CharField(max_length=100, blank=True, default='AQUA-MER pKa Calculation')
     QMCalTypeP1 = models.CharField(max_length=30, choices=QMCalTypes, default='Opt-Freq')
-    QMProcessorsP1 = models.PositiveIntegerField(blank=True, default=1, validators=[MaxValueValidator(4), MinValueValidator(1)])
+    QMProcessorsP1 = models.PositiveIntegerField(blank=True, default=1, validators=[MaxValueValidator(32), MinValueValidator(1)])
     QMMemoryP1 = models.PositiveIntegerField(blank=True, default=1)
     QMFunctionalP1 = models.CharField(max_length=30, choices=QMFunctionals, default='M06-2X')
     QMBasisSetP1 = models.CharField(max_length=30, choices=QMBasisSets, default='6-31+G(d,p)')
@@ -256,8 +256,8 @@ class pKaInputForm(ModelForm):
             'QMSoftware': _('Software'),
             'QMTitle': _('Title of calculations (optional)'),
             'QMCalType': _('Type of calculations'),
-            'QMProcessors': _('Number of processors (max: 4)'),
-            'QMMemory': _('Meory to use (unit: GB, max: 2)'),
+            'QMProcessors': _('Number of processors (max: 32)'),
+            'QMMemory': _('Meory to use (unit: GB)'),
             'QMFunctional': _('Functional'),
             'QMBasisSet': _('BasisSet'),
             'QMCharge': _('Charge'),
@@ -271,8 +271,8 @@ class pKaInputForm(ModelForm):
             'QMSoftwareP1': _('Software'),
             'QMTitleP1': _('Title of calculations (optional)'),
             'QMCalTypeP1': _('Type of calculations'),
-            'QMProcessorsP1': _('Number of processors (max: 4)'),
-            'QMMemoryP1': _('Meory to use (unit: GB, max: 2)'),
+            'QMProcessorsP1': _('Number of processors (max: 32)'),
+            'QMMemoryP1': _('Meory to use (unit: GB)'),
             'QMFunctionalP1': _('Functional'),
             'QMBasisSetP1': _('BasisSet'),
             'QMChargeP1': _('Charge'),

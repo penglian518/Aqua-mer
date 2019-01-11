@@ -3,6 +3,9 @@
 {% load myfilter %}
 
 {% block content %}
+<!-- 3Dmol.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/3Dmol/1.3.0/3Dmol-min.js"></script>
+
 <!-- nav box on the left -->
 {% include 'gsolv/memu.html' %}
 
@@ -12,8 +15,49 @@
 <div id=main>
     <p>Job <b>{{ Item.JobID }}</b> is finished, click <a href="/gsolv/download/{{ Item.JobID }}">HERE</a> to download the results.</p>
 
+    <p>
     <h3>The &Delta;G<sub>solv</sub> calculated from the uploaded output files is: </h3>
-    &Delta;G<sub>solv</sub> = ((G<sub>aq</sub> - G<sub>gas</sub>) = ({{ Item.EnergyfromOutputFiles }} - {{ Item.EnergyfromOutputFilesP1 }}) * 627.5095 =  {{ Item.GsolvCorrected }}</p>
+
+    <table  id="basic" class="hover compact pure-table sortable">
+        <thead>
+            <tr>
+                <th></th>
+                <th>In Aqueous phase</th>
+                <th>In Gas phase</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td><b>3D strucutures</b></td>
+                <td>
+                    <div style="height: 150px; width: 250px; position: relative;" class='viewer_3Dmoljs'
+                     data-href='/gsolv/inputcoor/{{ Item.JobID }}/aq/'
+                     data-backgroundcolor='0xffffff' data-type="xyz"
+                     data-select1="all" data-style1='stick'></div>
+                </td>
+                <td>
+                    <div style="height: 150px; width: 250px; position: relative;" class='viewer_3Dmoljs'
+                     data-href='/gsolv/inputcoor/{{ Item.JobID }}/gas/'
+                     data-backgroundcolor='0xffffff' data-type="xyz"
+                     data-select1="all" data-style1='stick'></div>
+                </td>
+            </tr>
+            <tr>
+                <td><b>G<sub>aq</sub></b></td>
+                <td><center>{{ Item.EnergyfromOutputFiles }} a.u.</center></td>
+                <td><center>{{ Item.EnergyfromOutputFilesP1 }} a.u.</center></td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <br>
+
+    <b>&Delta;G<sub>solv</sub> = ((G<sub>aq</sub> - G<sub>gas</sub>) <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= ({{ Item.EnergyfromOutputFiles }} - {{ Item.EnergyfromOutputFilesP1 }}) * 627.5095 <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=  {{ Item.GsolvCorrected }} kcal/mol</b>
+
+    </p>
 
     <br>
     <h3>The output file for the uploaded molecule in Gas phase:</h3>
@@ -22,13 +66,13 @@
     {% if Item.QMSoftwareOutputP1 == 'Gaussian' %}
         <p>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/outputfile/{{ Item.JobID }}/gas/" ></iframe>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/gsolv/outputfile/{{ Item.JobID }}/gas/" ></iframe>
         </p>
 
     {% elif Item.QMSoftwareOutputP1 == 'NWChem' %}
         <p>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/outputfile/{{ Item.JobID }}/gas/" ></iframe>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/gsolv/outputfile/{{ Item.JobID }}/gas/" ></iframe>
         </p>
     {% elif Item.QMSoftwareOutputP1 == 'Unknown' %}
         <p>Cannot identify the property of the uploaded file. Make sure the QM calculation was finished successfully. </p>
@@ -40,13 +84,13 @@
     {% if Item.QMSoftwareOutput == 'Gaussian' %}
         <p>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/outputfile/{{ Item.JobID }}/aq/" ></iframe>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/gsolv/outputfile/{{ Item.JobID }}/aq/" ></iframe>
         </p>
 
     {% elif Item.QMSoftwareOutput == 'NWChem' %}
         <p>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/outputfile/{{ Item.JobID }}/aq/" ></iframe>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/gsolv/outputfile/{{ Item.JobID }}/aq/" ></iframe>
         </p>
     {% elif Item.QMSoftwareOutput == 'Unknown' %}
         <p>Cannot identify the property of the uploaded file. Make sure the QM calculation was finished successfully. </p>

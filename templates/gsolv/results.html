@@ -22,14 +22,14 @@
         <p>
             <b>{{ Item.Name }}_{{ Item.JobID }}_gas.com</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/inputfile/{{ Item.JobID }}/gsolv_gas/" ></iframe>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/gsolv/inputfile/{{ Item.JobID }}/gsolv_gas/" ></iframe>
         </p>
 
         <h3>Input file for <i>aqueous</i> phase calculation:</b></h3>
         <p>
-            <b>{{ Item.Name }}_{{ Item.JobID }}.com</b><br>
+            <b>{{ Item.Name }}_{{ Item.JobID }}_aq.com</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/inputfile/{{ Item.JobID }}/gsolv/" ></iframe>
+            <iframe id="ifm_g09inp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/gsolv/inputfile/{{ Item.JobID }}/gsolv/" ></iframe>
         </p>
 
     {% elif Item.QMSoftware == 'NWChem' %}
@@ -42,14 +42,14 @@
         <p>
             <b>{{ Item.Name }}_{{ Item.JobID }}_gas.nw</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/inputfile/{{ Item.JobID }}/gsolv_gas/" ></iframe>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/gsolv/inputfile/{{ Item.JobID }}/gsolv_gas/" ></iframe>
         </p>
 
         <h3>Input file for <i>aqueous</i> phase calculation:</b></h3>
         <p>
-            <b>{{ Item.Name }}_{{ Item.JobID }}.nw</b><br>
+            <b>{{ Item.Name }}_{{ Item.JobID }}_aq.nw</b><br>
             <hr width="40%" color="#000000" size="1" style="float:left"><br>
-            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="100%" src="/gsolv/inputfile/{{ Item.JobID }}/gsolv/" ></iframe>
+            <iframe id="ifm_nwcheminp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/gsolv/inputfile/{{ Item.JobID }}/gsolv/" ></iframe>
         </p>
 
     {% elif Item.QMSoftware == 'Arrows' %}
