@@ -10,6 +10,20 @@ class QMCalculationPrepare:
         # get the element table
         self.ele_Table = pybel.ob.OBElementTable()
 
+    def metal_in_mol(self, pybel_mol):
+        try:
+            metal = list(set([self.ele_Table.GetSymbol(i.atomicnum) for i in pybel_mol if i.OBAtom.IsMetal()]))
+        except:
+            metal = []
+        return metal
+
+    def elements_in_mol(self, pybel_mol):
+        try:
+            ele = list(set([self.ele_Table.GetSymbol(i.atomicnum) for i in pybel_mol]))
+        except:
+            ele = []
+        return ele
+
     def gen_conf_dict(self, obj):
         '''
         genearte the conf dict according to obj. If obj.Name in pka or logk, return dict for each molecule,
@@ -119,7 +133,7 @@ class QMCalculationPrepare:
         # read the coordinates
         mol = pybel.readfile('xyz', resource_conf['path_to_input_xyz']).next()
         # get all elements and all metals
-        all_elements_metal = list(set([self.ele_Table.GetSymbol(i.atomicnum) for i in mol if i.OBAtom.IsMetal()]))
+        all_elements_metal = self.metal_in_mol(mol)
 
 
         # optimzation or frequencies
@@ -315,7 +329,7 @@ class QMCalculationPrepare:
         # read the coordinates
         mol = pybel.readfile('xyz', resource_conf['path_to_input_xyz']).next()
         # get all elements and all metals
-        all_elements_metal = list(set([self.ele_Table.GetSymbol(i.atomicnum) for i in mol if i.OBAtom.IsMetal()]))
+        all_elements_metal = self.metal_in_mol(mol)
 
 
         # solvation model
@@ -493,7 +507,7 @@ class QMCalculationPrepare:
         # read the coordinates
         mol = pybel.readfile('xyz', resource_conf['path_to_input_xyz']).next()
         # get all elements and all metals
-        all_elements_metal = list(set([self.ele_Table.GetSymbol(i.atomicnum) for i in mol if i.OBAtom.IsMetal()]))
+        all_elements_metal = self.metal_in_mol(mol)
 
 
         # optimzation or frequencies
@@ -688,7 +702,7 @@ class QMCalculationPrepare:
         # read the coordinates
         mol = pybel.readfile('xyz', resource_conf['path_to_input_xyz']).next()
         # get all elements and all metals
-        all_elements_metal = list(set([self.ele_Table.GetSymbol(i.atomicnum) for i in mol if i.OBAtom.IsMetal()]))
+        all_elements_metal = self.metal_in_mol(mol)
 
 
         # solvation model
@@ -858,7 +872,7 @@ class QMCalculationPrepare:
         # read the coordinates
         mol = pybel.readfile('xyz', resource_conf['path_to_input_xyz']).next()
         # get all elements and all metals
-        all_elements_metal = list(set([self.ele_Table.GetSymbol(i.atomicnum) for i in mol if i.OBAtom.IsMetal()]))
+        all_elements_metal = self.metal_in_mol(mol)
 
         # optimzation or frequencies
         if obj.QMCalTypeM in ['Opt-Freq']:
@@ -1047,7 +1061,7 @@ class QMCalculationPrepare:
         # read the coordinates
         mol = pybel.readfile('xyz', resource_conf['path_to_input_xyz']).next()
         # get all elements and all metals
-        all_elements_metal = list(set([self.ele_Table.GetSymbol(i.atomicnum) for i in mol if i.OBAtom.IsMetal()]))
+        all_elements_metal = self.metal_in_mol(mol)
 
         # solvation model
         if obj.QMCavitySurfaceM in ['Default']:

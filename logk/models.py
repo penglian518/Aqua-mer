@@ -123,7 +123,8 @@ class LogKJob(models.Model):
     QMSolvationModel = models.CharField(max_length=30, choices=QMSolvationModels, default='SMD')
     QMSolvent = models.CharField(max_length=30, choices=QMSolvents, default='water')
     QMCavitySurface = models.CharField(max_length=30, choices=QMCavitySurfaces, default='SAS')
-    QMScalingFactor = models.DecimalField(max_digits=5, decimal_places=3, null=True)
+    #QMScalingFactor = models.DecimalField(max_digits=5, decimal_places=3, null=True)
+    QMScalingFactor = models.DecimalField(max_digits=5, decimal_places=3, default=0.485)
 
     Note = models.CharField(max_length=100, blank=True, default='')
 
@@ -146,8 +147,8 @@ class LogKJob(models.Model):
     QMSolvationModelP1 = models.CharField(max_length=30, choices=QMSolvationModels, default='SMD')
     QMSolventP1 = models.CharField(max_length=30, choices=QMSolvents, default='water')
     QMCavitySurfaceP1 = models.CharField(max_length=30, choices=QMCavitySurfaces, default='SAS')
-    QMScalingFactorP1 = models.DecimalField(max_digits=5, decimal_places=3, null=True)
-    #QMScalingFactorP1 = models.DecimalField(max_digits=5, decimal_places=3, choices=QMScalingFactors, default='1.08')
+    #QMScalingFactorP1 = models.DecimalField(max_digits=5, decimal_places=3, null=True)
+    QMScalingFactorP1 = models.DecimalField(max_digits=5, decimal_places=3, default=1.000)
 
     NoteP1 = models.CharField(max_length=100, blank=True, default='')
 
@@ -170,7 +171,8 @@ class LogKJob(models.Model):
     QMSolvationModelM = models.CharField(max_length=30, choices=QMSolvationModels, default='SMD')
     QMSolventM = models.CharField(max_length=30, choices=QMSolvents, default='water')
     QMCavitySurfaceM = models.CharField(max_length=30, choices=QMCavitySurfaces, default='SAS')
-    QMScalingFactorM = models.DecimalField(max_digits=5, decimal_places=3, null=True)
+    #QMScalingFactorM = models.DecimalField(max_digits=5, decimal_places=3, null=True)
+    QMScalingFactorM = models.DecimalField(max_digits=5, decimal_places=3, default=0.977)
 
     NoteM = models.CharField(max_length=100, blank=True, default='')
 
@@ -379,9 +381,9 @@ class paraInputForm(ModelForm):
             'Successful': forms.HiddenInput(),
 
             # set the default value for the scaling factors.
-            'QMScalingFactor': forms.TextInput(attrs={'value': 0.485, 'required': True}),
-            'QMScalingFactorP1': forms.TextInput(attrs={'value': 1.000, 'required': True}),
-            'QMScalingFactorM': forms.TextInput(attrs={'value': 0.977, 'required': True})
+            #'QMScalingFactor': forms.TextInput(attrs={'value': 0.485, 'required': True}),
+            #'QMScalingFactorP1': forms.TextInput(attrs={'value': 1.000, 'required': True}),
+            #'QMScalingFactorM': forms.TextInput(attrs={'value': 0.977, 'required': True})
         }
 
 

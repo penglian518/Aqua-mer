@@ -71,6 +71,20 @@ def smiles(request, JobID):
             model_instance.CurrentStep = "1"
             model_instance.Successful = True
             model_instance.save()
+
+        if form.is_valid() and formP1.is_valid() and formMetal.is_valid():
+            # convert smi to xyz
+            jobmanger = JobManagement()
+            try:
+                jobmanger.Convert2XYZ(SPJob, JobType='logk')
+                jobmanger.CheckElements(SPJob, JobType='logk')
+            except Exception as e:
+                SPJob.FailedReason += 'Could not convert smi to xyz, the reason is %s ' % (e)
+                SPJob.CurrentStatus = '1'
+                SPJob.Successful = False
+                SPJob.save()
+                pass
+
         return redirect('/logk/parameters/%d' % int(JobID))
     else:
         form = SmilesForm(instance=SPJob)

@@ -3,6 +3,8 @@ from .PhreeqcPrepare import PhreeqcPrepare
 from .QMCalculationPrepare import QMCalculationPrepare, QMResultsCalculation
 from django.core.mail import send_mail
 
+import pybel
+
 class JobManagement:
     def __init__(self):
         self.DjangoHome = '/home/p6n/workplace/website/cyshg'
@@ -15,7 +17,7 @@ class JobManagement:
         job_id = obj.JobID
         job_dir = '%s/media/%s/jobs/%s' % (self.DjangoHome, JobType, obj.JobID)
 
-        mol_name = '%s-%d' % (JobType, job_id)
+        mol_name = '%s-%s' % (JobType, job_id)
 
         try:
             os.makedirs(job_dir)
@@ -247,6 +249,109 @@ class JobManagement:
                     # change the job status in DB to '2' finished
                     obj.CurrentStatus = '2'
                     obj.save()
+
+        return
+
+    def CheckElements(self, obj, JobType='logk'):
+        '''
+        Check elements and detect the basis set and scaling factors in the input structures for logk calculations .
+        '''
+
+        qmclac = QMCalculationPrepare()
+
+        # get basic info
+        job_id = obj.JobID
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+        os.chdir(job_dir)
+
+        mol_name = '%s-%s' % (JobType, job_id)
+
+        ligand_name = 'L'
+        complex_name = 'ML'
+        metal_name = 'M'
+
+        for prefix in [ligand_name, complex_name, metal_name]:
+            coorfile = '%s_%s.xyz' % (prefix, mol_name)
+
+            mol = pybel.readfile('xyz', coorfile).next()
+            all_elements_metal = qmclac.metal_in_mol(mol)
+            all_elements = qmclac.elements_in_mol(mol)
+            all_elements_nonmetal = [i for i in all_elements if i not in all_elements_metal]
+
+            # determine basis set
+            if len(all_elements_nonmetal) == 0:
+                if prefix in [ligand_name]:
+                    obj.QMBasisSet = 'SDD'
+                elif prefix in [complex_name]:
+                    obj.QMBasisSetP1 = 'SDD'
+                elif prefix in [metal_name]:
+                    obj.QMBasisSetM = 'SDD'
+            elif len(all_elements_nonmetal) != 0:
+                if prefix in [ligand_name]:
+                    obj.QMBasisSet = '6-31+G(d,p)'
+                elif prefix in [complex_name]:
+                    obj.QMBasisSetP1 = '6-31+G(d,p)'
+                elif prefix in [metal_name]:
+                    obj.QMBasisSetM = '6-31+G(d,p)'
+
+            # scaling factors
+            if len(all_elements_nonmetal) == 0:
+                # all metal
+                if prefix in [ligand_name]:
+                    obj.QMScalingFactor = 0.977
+                elif prefix in [complex_name]:
+                    obj.QMScalingFactorP1 = 0.977
+                elif prefix in [metal_name]:
+                    obj.QMScalingFactorM = 0.977
+            elif len(all_elements_metal) == 0:
+                # all element are not metal
+                if prefix in [ligand_name]:
+                    obj.QMScalingFactor = 0.485
+                elif prefix in [complex_name]:
+                    obj.QMScalingFactorP1 = 0.485
+                elif prefix in [metal_name]:
+                    obj.QMScalingFactorM = 0.485
+            else:
+                # have both metal and non metal element
+                if 80 in [i.atomicnum for i in mol]:
+                    valence_list = []
+                    for ele in mol.atoms:
+                        if ele.atomicnum == 80:
+                            valence_list.append(ele.valence)
+                    if 2 in valence_list:
+                        if prefix in [ligand_name]:
+                            obj.QMScalingFactor = 1.080
+                        elif prefix in [complex_name]:
+                            obj.QMScalingFactorP1 = 1.080
+                        elif prefix in [metal_name]:
+                            obj.QMScalingFactorM = 1.080
+                    elif 1 in valence_list:
+                        smi = mol.write(format='can').split('\t')[0]
+                        if (smi.find('C(=O)[O]') >= 0 or smi.find('C(=O)O') >=0 or smi.find('[O]C(=O)') >= 0 or smi.find('OC(=O)') >= 0 )\
+                                and (smi.find('S[Hg]') >= 0 or smi.find('[Hg]S') >= 0):
+                            if prefix in [ligand_name]:
+                                obj.QMScalingFactor = 0.977
+                            elif prefix in [complex_name]:
+                                obj.QMScalingFactorP1 = 0.977
+                            elif prefix in [metal_name]:
+                                obj.QMScalingFactorM = 0.977
+                        else:
+                            if prefix in [ligand_name]:
+                                obj.QMScalingFactor = 1.000
+                            elif prefix in [complex_name]:
+                                obj.QMScalingFactorP1 = 1.000
+                            elif prefix in [metal_name]:
+                                obj.QMScalingFactorM = 1.000
+                else:
+                    if prefix in [ligand_name]:
+                        obj.QMScalingFactor = 1.000
+                    elif prefix in [complex_name]:
+                        obj.QMScalingFactorP1 = 1.000
+                    elif prefix in [metal_name]:
+                        obj.QMScalingFactorM = 1.000
+
+            obj.save()
 
         return
 
