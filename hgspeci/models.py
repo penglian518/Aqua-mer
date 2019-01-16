@@ -28,6 +28,28 @@ class HgSpeciJob(models.Model):
         ('ppt', 'parts per thousand (ppt)'),
         ('ppm', 'parts per million (ppm)'),
         ('ppb', 'parts per billion (ppb)'),
+
+        ('mol/L', 'mole per liter (mol/L)'),
+        ('umol/L', 'micromoles per liter (umol/L)'),
+        ('mmol/L', 'millimoles per liter (mmol/L)'),
+        ('g/L', 'gram per liter (g/L)'),
+        ('ug/L', 'micrograms per liter (ug/L)'),
+        ('mg/L', 'milligrams per liter (mg/L)'),
+
+        ('mol/kgw', 'mole per kilogram water (mol/kgw)'),
+        ('umol/kgw', 'micromoles per kilogram water (umol/kgw)'),
+        ('mmol/kgw', 'millimoles per kilogram water (mmol/kgw)'),
+        ('g/kgw', 'gram per kilogram water (g/kgw)'),
+        ('ug/kgw', 'micrograms per kilogram water (ug/kgw)'),
+        ('mg/kgw', 'milligrams per kilogram water (mg/kgw)'),
+
+        ('mol/kgs', 'mole per kilogram solution (mol/kgs)'),
+        ('umol/kgs', 'micromoles per kilogram solution (umol/kgs)'),
+        ('mmol/kgs', 'millimoles per kilogram solution (mmol/kgs)'),
+        ('g/kgs', 'gram per kilogram solution (g/kgs)'),
+        ('ug/kgs', 'micrograms per kilogram solution (ug/kgs)'),
+        ('mg/kgs', 'milligrams per kilogram solution (mg/kgs)'),
+
     )
 
     # use self.id or self.pk as JobID
@@ -41,7 +63,7 @@ class HgSpeciJob(models.Model):
 
     # input file
     SPTitle = models.CharField(max_length=100, default='AQUA-MER SOLUTION')
-    SPUnit = models.CharField(max_length=10, choices=Units, default='ppm')
+    SPUnit = models.CharField(max_length=10, choices=Units, default='mol/L')
     SPTemperature = models.FloatField(blank=False, default=25.0)
     SPpHMin = models.FloatField(blank=False, default=0.0)
     SPpHMax = models.FloatField(blank=False, default=14.0)
