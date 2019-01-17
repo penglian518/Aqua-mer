@@ -19,7 +19,7 @@ def faq(request):
 
 # function for ajax query
 def query_statistics(request):
-    clientStatistics(request)
+    #clientStatistics(request)
 
     response_dict = {'success': True}
     response_dict['numVist'] = StatisticsData.objects.count()

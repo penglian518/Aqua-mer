@@ -40,7 +40,7 @@ def species(request):
                   {'all_species': all_species, 'refs': list(set(all_refs))})
 
 def xyz(request, ID):
-    clientStatistics(request)
+    #clientStatistics(request)
     DjangoHome = '/home/p6n/workplace/website/cyshg'
 
     item = get_object_or_404(CalcSolutionMasterSpecies, id=ID)
@@ -53,14 +53,14 @@ def xyz(request, ID):
     return HttpResponse(fcon, content_type='text/plain')
 
 def viewxyz(request, ID):
-    clientStatistics(request)
+    #clientStatistics(request)
     item = get_object_or_404(CalcSolutionMasterSpecies, id=ID)
 
     return render(request, 'calcdata/viewxyz.html',
                   {'Item': item})
 
 def viewele(request, element):
-    clientStatistics(request)
+    #clientStatistics(request)
     item = get_object_or_404(CalcSolutionMasterSpecies, Element=element)
 
     return render(request, 'calcdata/viewxyz.html',

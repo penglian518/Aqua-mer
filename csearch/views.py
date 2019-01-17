@@ -21,11 +21,11 @@ def index(request):
     return render(request, 'csearch/index.html')
 
 def draw(request):
-    clientStatistics(request)
+    #clientStatistics(request)
     return render(request, 'csearch/draw.html')
 
 def upload(request):
-    clientStatistics(request)
+    #clientStatistics(request)
     if request.method == 'POST':
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
@@ -381,7 +381,7 @@ def reclustering_doc(request):
     return render(request, 'csearch/reclustering_doc.html', {'form': form})
 
 def download(request, JobID, JobType='csearch'):
-    clientStatistics(request)
+    #clientStatistics(request)
     item = get_object_or_404(CSearchJob, JobID=JobID)
 
     if item.CurrentStatus == '2':
@@ -430,7 +430,7 @@ def results_xyz(request, JobID, Ith, JobType='csearch'):
     :param Ith: the ith molecule from top
     :return:
     """
-    clientStatistics(request)
+    #clientStatistics(request)
     job_dir = get_job_dir(JobID)
 
     item = get_object_or_404(CSearchJob, JobID=JobID)
@@ -460,7 +460,7 @@ def results_log(request, JobID, JobType='csearch'):
     :param Ith: the ith molecule from top
     :return:
     """
-    clientStatistics(request)
+    #clientStatistics(request)
     job_dir = get_job_dir(JobID)
     item = get_object_or_404(CSearchJob, JobID=JobID)
 
@@ -533,7 +533,7 @@ def inputcoor(request, JobID, JobType='csearch'):
     """
     convert input files to xyz and show
     """
-    clientStatistics(request)
+    #clientStatistics(request)
     item = get_object_or_404(CSearchJob, JobID=JobID)
     # convert smi to xyz
     jobmanger = JobManagement()

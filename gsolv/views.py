@@ -19,7 +19,7 @@ def index(request):
     return render(request, 'gsolv/index.html')
 
 def upload(request, JobID):
-    clientStatistics(request)
+    #clientStatistics(request)
 
     # get job handle
     try:
@@ -242,7 +242,7 @@ def results_doc(request):
     return render(request, 'gsolv/results_doc.html', {'form': form})
 
 def download(request, JobID, JobType='gsolv'):
-    clientStatistics(request)
+    #clientStatistics(request)
     item = get_object_or_404(GSolvJob, JobID=JobID)
 
     if item.CurrentStatus == '2':
@@ -326,7 +326,7 @@ def results_xyz(request, JobID, Ith, JobType='gsolv'):
     :param Ith: the ith molecule from top
     :return:
     """
-    clientStatistics(request)
+    #clientStatistics(request)
     job_dir = get_job_dir(JobID)
     xyzfile = '%s/%s-%s/xyz/CSearch_%s_%s-%s.xyz' % (job_dir, JobType, JobID, Ith, JobType, JobID)
 
@@ -339,7 +339,7 @@ def inputcoor(request, JobID, JobType='gsolv', Mol='input'):
     """
     convert input files to xyz and show
     """
-    clientStatistics(request)
+    #clientStatistics(request)
     item = get_object_or_404(GSolvJob, JobID=JobID)
     # convert smi to xyz
     jobmanger = JobManagement()
@@ -362,7 +362,7 @@ def inputfile(request, JobID, JobType='gsolv'):
     """
     display the input files
     """
-    clientStatistics(request)
+    #clientStatistics(request)
     item = get_object_or_404(GSolvJob, JobID=JobID)
     # read xyz file
     job_dir = get_job_dir(JobID)
@@ -386,7 +386,7 @@ def outputfile(request, JobID, JobType='gsolv',  Mol='aq'):
     """
     display the input files
     """
-    clientStatistics(request)
+    #clientStatistics(request)
     item = get_object_or_404(GSolvJob, JobID=JobID)
     # read xyz file
     job_dir = get_job_dir(JobID)

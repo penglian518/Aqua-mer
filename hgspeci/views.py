@@ -98,7 +98,7 @@ def parameters_input(request, JobID):
                   {'paraform': paraform, 'formset': formset, 'JobID': JobID})
 
 def input_masterspecies(request, JobID):
-    clientStatistics(request)
+    #clientStatistics(request)
     # get the job handle
     try:
         SPJob = HgSpeciJob.objects.get(JobID=JobID)
@@ -143,7 +143,7 @@ def input_masterspecies(request, JobID):
                   {'paraform': paraform, 'masterformset': masterformset, 'success': success})
 
 def input_solutionspecies(request, JobID):
-    clientStatistics(request)
+    #clientStatistics(request)
     # get the job handle
     try:
         SPJob = HgSpeciJob.objects.get(JobID=JobID)
@@ -190,7 +190,7 @@ def input_solutionspecies(request, JobID):
 
 def elements(request):
     '''This function displays all avaialbe elemetns in the database'''
-    clientStatistics(request)
+    #clientStatistics(request)
     # from phreeqcdb
     all_master = SolutionMasterSpecies.objects.all()
     all_master = sorted(all_master, key=lambda x: x.Element)
@@ -445,7 +445,7 @@ def results_doc(request):
     return render(request, 'hgspeci/results_doc.html', {'form': form})
 
 def download(request, JobID, JobType='hgspeci'):
-    clientStatistics(request)
+    #clientStatistics(request)
     item = get_object_or_404(HgSpeciJob, JobID=JobID)
 
     if item.CurrentStatus == '2':
@@ -467,7 +467,7 @@ def download(request, JobID, JobType='hgspeci'):
 
 # function for ajax query
 def query_solutionmaster(request, ele):
-    clientStatistics(request)
+    #clientStatistics(request)
     response_dict = {'success': True}
     response_dict['ele'] = ele
     masters = []
@@ -489,7 +489,7 @@ def query_solutionmaster(request, ele):
     return render(request, 'hgspeci/solutionmaster.html', response_dict)
 
 def query_solutionspecies(request, ele):
-    clientStatistics(request)
+    #clientStatistics(request)
     response_dict = {'success': True}
     response_dict['ele'] = ele
     try:
@@ -519,7 +519,7 @@ def query_solutionspecies(request, ele):
     return render(request, 'hgspeci/solutionspecies.html', response_dict)
 
 def query_elements(request):
-    clientStatistics(request)
+    #clientStatistics(request)
     if request.is_ajax():
 
         ele = request.GET.get('term', '')

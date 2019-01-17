@@ -102,7 +102,7 @@ def smiles_single(request, JobID, Mol):
     return render(request, 'pka/smiles_single.html', return_dict)
 
 def upload(request, Mol, JobID):
-    clientStatistics(request)
+    #clientStatistics(request)
     if Mol in ['Success', 'success'] and JobID in ['0', 0]:
         return render(request, 'pka/upload_success.html')
 
@@ -354,7 +354,7 @@ def results_doc(request):
     return render(request, 'pka/results_doc.html', {'form': form})
 
 def download(request, JobID, JobType='pka'):
-    clientStatistics(request)
+    #clientStatistics(request)
     item = get_object_or_404(pKaJob, JobID=JobID)
 
     if item.CurrentStatus == '2':
@@ -408,7 +408,7 @@ def calculate(request, JobID):
 
 # function for ajax query
 def query_coor(request, JobID):
-    clientStatistics(request)
+    #clientStatistics(request)
 
     response_dict = {'success': True}
     response_dict['JobID'] = JobID
@@ -461,7 +461,7 @@ def results_xyz(request, JobID, Ith, JobType='pka'):
     :param Ith: the ith molecule from top
     :return:
     """
-    clientStatistics(request)
+    #clientStatistics(request)
     job_dir = get_job_dir(JobID)
     xyzfile = '%s/%s-%s/xyz/CSearch_%s_%s-%s.xyz' % (job_dir, JobType, JobID, Ith, JobType, JobID)
 
@@ -474,7 +474,7 @@ def inputcoor(request, JobID, JobType='pka', Mol='A'):
     """
     convert input files to xyz and show
     """
-    clientStatistics(request)
+    #clientStatistics(request)
     item = get_object_or_404(pKaJob, JobID=JobID)
     # convert smi to xyz
     jobmanger = JobManagement()
@@ -500,7 +500,7 @@ def inputfile(request, JobID, JobType='pka', Mol='A'):
     """
     display the input files
     """
-    clientStatistics(request)
+    #clientStatistics(request)
     item = get_object_or_404(pKaJob, JobID=JobID)
     # read xyz file
     job_dir = get_job_dir(JobID)
@@ -524,7 +524,7 @@ def outputfile(request, JobID, JobType='pka', Mol='A'):
     """
     display the input files
     """
-    clientStatistics(request)
+    #clientStatistics(request)
     item = get_object_or_404(pKaJob, JobID=JobID)
     # read xyz file
     job_dir = get_job_dir(JobID)
