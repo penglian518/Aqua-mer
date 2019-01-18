@@ -10,7 +10,7 @@ class AllJobIDsAdmin(admin.ModelAdmin):
 
 class StatisticsDataAdmin(admin.ModelAdmin):
     model = StatisticsData
-    list_display = ('IP', 'IPType', 'PagesVisted', 'Date')
+    list_display = ('IP', 'IPType', 'PagesVisted', 'Browser', 'Date')
 
 
 

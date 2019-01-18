@@ -30,6 +30,7 @@ class StatisticsData(models.Model):
     IP = models.CharField(max_length=20, default='')
     IPType = models.CharField(max_length=20, default='')
     PagesVisted = models.CharField(max_length=200, default='')
+    Browser = models.CharField(max_length=200, default='')
     Date = models.DateTimeField(auto_now_add=True, blank=True)
 
     def __str__(self):
