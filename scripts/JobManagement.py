@@ -373,6 +373,8 @@ class JobManagement:
             results_dir = '%s-%d_results' % (JobType, job_id)
         elif JobType in ['csearch'] and obj.CSearchType in ['DFT']:
             results_dir = '%s-%d' % (JobType, job_id)
+        elif JobType in ['hgspeci']:
+            results_dir = '%s-%d' % (JobType, job_id)
         else:
             try:
                 os.mkdir('results')
@@ -387,6 +389,13 @@ class JobManagement:
                         pass
 
             results_dir = 'results'
+
+        # delete the exist .zip file
+        try:
+            os.remove('%s.zip' % results_dir)
+        except:
+            pass
+
 
         # make archive file for download
         try:

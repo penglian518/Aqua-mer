@@ -108,13 +108,21 @@ class PhreeqcPrepare:
         ss_line = '    %s\n        log_k\t%s\n' % (ss.Reaction, str(ss.LogK))
         return ss_line
 
+    def genpHRange(self, obj):
+        if obj.SPpHMax <= obj.SPpHMin:
+            pHrange = [round(obj.SPpHMin, 2)]
+        elif obj.SPpHIncrease == 0 :
+            pHrange = [round(obj.SPpHMin, 2), round(obj.SPpHMax, 2)]
+        else:
+            pHrange = list(np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)) + [obj.SPpHMax]
+            pHrange = [round(i, 2) for i in pHrange]
+        return pHrange
 
     def genInputFile(self, obj, outdir):
         '''
         Requires not null in database!
         '''
-        pHrange = list(np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)) + [obj.SPpHMax]
-        pHrange = [round(i, 2) for i in pHrange]
+        pHrange = self.genpHRange(obj=obj)
 
         for ph in pHrange:
             fout = open('%s/pH-%s.phrq' % (outdir, str(ph)), 'w')
@@ -255,8 +263,7 @@ class PhreeqcPrepare:
         return
 
     def genJobScript(self, obj, outdir):
-        pHrange = list(np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)) + [obj.SPpHMax]
-        pHrange = [round(i, 2) for i in pHrange]
+        pHrange = self.genpHRange(obj=obj)
 
         fout = open('%s/runPhreeqc.sh' % outdir, 'w')
         for ph in pHrange:
@@ -277,8 +284,8 @@ class PhreeqcPrepare:
         return
 
     def collectResultsfromPhreeqc(self, obj, outdir, datatype='molality'):
-        pHrange = list(np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)) + [obj.SPpHMax]
-        pHrange = [round(i, 2) for i in pHrange]
+        pHrange = self.genpHRange(obj=obj)
+
         pphaser = PhreeqcParser()
         columns = ['Species']
         df_out = pd.DataFrame()
