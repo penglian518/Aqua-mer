@@ -131,8 +131,14 @@ class PhreeqcPrepare:
             fout.write('SOLUTION 1\n')
             fout.write('    units %s\n' % obj.SPUnit)
             #fout.write('    pH %s\n' % str(ph))
-            fout.write('    pH %s\n' % str(0.0))
-            fout.write('    pe %s\n' % str(obj.SPpe))
+            if obj.SPTitrant in ['NaOH']:
+                fout.write('    pH %s\n' % str(obj.SPpHMin))
+            elif obj.SPTitrant in ['HCl', 'HNO3', 'H2SO4', 'H2S']:
+                fout.write('    pH %s\n' % str(obj.SPpHMax))
+            if obj.SPRedoxMethod in ['pe']:
+                fout.write('    pe %s\n' % str(obj.SPRedoxValue))
+            elif obj.SPRedoxMethod in ['couple', 'Redox Couple']:
+                fout.write('    redox %s\n' % str(obj.SPRedoxValue))
             fout.write('    temp %s\n' % str(obj.SPTemperature))
             # add elements
             for ele in obj.spelements.all():
@@ -164,7 +170,7 @@ class PhreeqcPrepare:
             fout.write('    log_k 0.0\n')
             fout.write('\n')
             fout.write('EQUILIBRIUM_PHASES 1\n')
-            fout.write('    Fix_H+   -%s   NaOH    10.0\n' % str(ph))
+            fout.write('    Fix_H+   -%s   %s    %.1f\n' % (str(ph), obj.SPTitrant, obj.SPTitrantConcentration))
             fout.write('\n')
 
             fout.close()
@@ -290,45 +296,50 @@ class PhreeqcPrepare:
         columns = ['Species']
         df_out = pd.DataFrame()
 
-        for ph in pHrange:
-            phreeqcout = '%s/pH-%s.out' % (outdir, str(ph))
-            df = pphaser.getSpeciesData(phreeqcout)
-            df_column = pd.DataFrame()
-            columns += [ph]
-
-            if ph == obj.SPpHMin:
-                df_out = df[['Species']]
-
-            if datatype.lower() in ['molality']:
-                df_column = df[['Species', 'Molality']]
-            if datatype.lower() in ['activity']:
-                df_column = df[['Species', 'Activity']]
-            if datatype.lower() in ['logmolality']:
-                df_column = df[['Species', 'LogMolality']]
-            if datatype.lower() in ['logactivity']:
-                df_column = df[['Species', 'LogActivity']]
-            if datatype.lower() in ['gamma']:
-                df_column = df[['Species', 'Gamma']]
-            if datatype.lower() in ['molev']:
-                df_column = df[['Species', 'moleV']]
-
-            df_out = df_out.merge(df_column, how='left', on='Species')
-        df_out.columns = columns
-
-        # write out the species data
-        outfile = '%s/speciation-%s.csv' % (outdir, datatype.lower())
-        df_out.to_csv(outfile)
-
-        # collect data for downloading
+        # prepare download dir
         dir_download = '%s-%d' % ('hgspeci', obj.JobID)
         try:
             os.makedirs(dir_download)
         except:
             pass
 
-        # csv files
-        shutil.copy(outfile, '%s/%s/' % (outdir, dir_download))
+        # collect result to generate csv file
+        try:
+            for ph in pHrange:
+                phreeqcout = '%s/pH-%s.out' % (outdir, str(ph))
+                df = pphaser.getSpeciesData(phreeqcout)
+                df_column = pd.DataFrame()
+                columns += [ph]
 
+                if ph == obj.SPpHMin:
+                    df_out = df[['Species']]
+
+                if datatype.lower() in ['molality']:
+                    df_column = df[['Species', 'Molality']]
+                if datatype.lower() in ['activity']:
+                    df_column = df[['Species', 'Activity']]
+                if datatype.lower() in ['logmolality']:
+                    df_column = df[['Species', 'LogMolality']]
+                if datatype.lower() in ['logactivity']:
+                    df_column = df[['Species', 'LogActivity']]
+                if datatype.lower() in ['gamma']:
+                    df_column = df[['Species', 'Gamma']]
+                if datatype.lower() in ['molev']:
+                    df_column = df[['Species', 'moleV']]
+
+                df_out = df_out.merge(df_column, how='left', on='Species')
+            df_out.columns = columns
+
+            # write out the species data
+            outfile = '%s/speciation-%s.csv' % (outdir, datatype.lower())
+            df_out.to_csv(outfile)
+
+            # copy csv files to download dir
+            shutil.copy(outfile, '%s/%s/' % (outdir, dir_download))
+        except:
+            pass
+
+        # collect data for downloading
         # input & output files
         for ph in pHrange:
             f_input = '%s/pH-%s.phrq' % (outdir, str(ph))

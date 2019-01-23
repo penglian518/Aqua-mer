@@ -15,11 +15,15 @@
     <br>
     <div id="phreeqcinput">
         <p>Title {{ Item.SPTitle }}</p>
+        <p>Titrant: {{ Item.SPTitrant }} {{ Item.SPTitrantConcentration }} {{ Item.SPUnit }}</p>
         <p>SOLUTION 1</p>
         <p>&nbsp;&nbsp;&nbsp;&nbsp;temp {{ Item.SPTemperature }}</p>
         <p>&nbsp;&nbsp;&nbsp;&nbsp;pH {{ Item.SPpHMin }} {{ Item.SPpHMax}} {{ Item.SPpHIncrease}}</p>
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;pe {{ Item.SPpe }}</p>
-        <p>&nbsp;&nbsp;&nbsp;&nbsp;redox {{ Item.SPRedox }}</p>
+        {% if Item.SPRedoxMethod == 'pe' %}
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;pe {{ Item.SPRedoxValue }}</p>
+        {% else %}
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;redox {{ Item.SPRedoxValue }}</p>
+        {% endif %}
         <p>&nbsp;&nbsp;&nbsp;&nbsp;units {{ Item.SPUnit }}</p>
         <p>&nbsp;&nbsp;&nbsp;&nbsp;density {{ Item.SPDensity }}</p>
 

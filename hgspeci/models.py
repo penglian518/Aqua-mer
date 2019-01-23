@@ -52,6 +52,19 @@ class HgSpeciJob(models.Model):
 
     )
 
+    RedoxMethods = (
+        ('pe', 'pe'),
+        ('couple', 'Redox Couple'),
+    )
+
+    Titrants = (
+        ('NaOH', 'NaOH'),
+        ('HCl', 'HCl'),
+        ('HNO3', 'HNO3'),
+        ('H2SO4', 'H2SO4'),
+        ('H2S', 'H2S'),
+    )
+
     # use self.id or self.pk as JobID
     JobID = models.PositiveIntegerField(blank=True, default=0)
     Name = models.CharField(max_length=50, blank=True, default='HgSpeci')
@@ -68,11 +81,15 @@ class HgSpeciJob(models.Model):
     SPpHMin = models.FloatField(blank=False, default=0.0)
     SPpHMax = models.FloatField(blank=False, default=14.0)
     SPpHIncrease = models.FloatField(blank=False, default=1.0)
-    SPpe = models.FloatField(blank=False, default=4.0)
-    SPRedox = models.CharField(max_length=20, default='O(-2)/O(0)')
+    SPRedoxMethod = models.CharField(max_length=10, choices=RedoxMethods, default='pe')
+    SPRedoxValue = models.CharField(max_length=20, default='4.0')
     SPDensity = models.FloatField(blank=False, default=1.0)
+    SPTitrant = models.CharField(max_length=10, choices=Titrants, default='pe')
+    SPTitrantConcentration = models.FloatField(max_length=20, default=10.0)
 
-
+    # do not use anymore
+    SPpe = models.FloatField(blank=False, default=4.0)                   # not use anymore
+    SPRedox = models.CharField(max_length=20, default='O(-2)/O(0)')      # not use anymore
 
     def __str__(self):
         return str(self.pk)
@@ -103,7 +120,7 @@ class ParameterForm(ModelForm):
     class Meta:
         model = HgSpeciJob
         fields = ['JobID', 'CurrentStep', 'Successful', 'SPTitle', 'SPTemperature', 'SPpHMin', 'SPpHMax', 'SPpHIncrease',
-                  'SPpe', 'SPRedox', 'SPDensity', 'SPUnit']
+                  'SPRedoxMethod', 'SPRedoxValue', 'SPDensity', 'SPUnit', 'SPTitrant', 'SPTitrantConcentration']
         labels = {
             'SPTitle': _('Title'),
             'SPUnit': _('Concentration Units'),
@@ -111,14 +128,16 @@ class ParameterForm(ModelForm):
             'SPpHMin': _('pH (min)'),
             'SPpHMax': _('pH (max)'),
             'SPpHIncrease': _('pH (increment)'),
-            'SPpe': _('pe'),
-            'SPRedox': _('Redox'),
+            'SPRedoxMethod': _('Redox state calculation options'),
+            'SPRedoxValue': _('pe value/redox couple'),
             'SPDensity': _('Density'),
+            'SPTitrant': _('Titrant'),
+            'SPTitrantConcentration': _('Titrant concentration'),
         }
         help_texts = {
             'SPTitle': _('(Title for this solution)'),
-            'SPpe': _('(Conventional negative log of the activity of the electron. For distributing redox elements and calculating saturation indices)'),
-            'SPRedox': _('(A redox couple used to calculate pe)'),
+            'SPRedoxMethod': _('(Select one of the methods to calculate redox state)'),
+            'SPRedoxValue': _('(If using redox couple (e.g. O(-2)/O(0) ), make sure include one/both species in the Elements/Species section.)'),
             'SPDensity': _('(Density of the solution, kg/L)'),
             'SPUnit': _('(Default concentration unit for elements in this solution)'),
         }
