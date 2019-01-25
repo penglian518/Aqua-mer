@@ -292,6 +292,10 @@ def results(request, JobID, JobType='hgspeci'):
         species = [str(i) for i in df.Species.values]
         pHs = [float(i) for i in df.columns.values[1:]]
 
+        chartType = 'line'
+        if len(pHs) == 1:
+            chartType = 'bar'
+
         # generate color does
         red = Color("red")
         blue = Color("blue")
@@ -375,7 +379,7 @@ def results(request, JobID, JobType='hgspeci'):
             data_gamma.append(di)
 
         return render(request, 'hgspeci/results.html',
-                      {'JobID': JobID, 'Item': item, 'species': species, 'pHs': pHs,
+                      {'JobID': JobID, 'Item': item, 'species': species, 'pHs': pHs, 'chartType': chartType,
                        'data_molality': data_molality,
                        'data_activity': data_activity,
                        'data_logmolality': data_logmolality,

@@ -40,7 +40,7 @@ class RatesAdmin(admin.ModelAdmin):
 
 class RefsAdmin(admin.ModelAdmin):
     model = Refs
-    list_display = ('RefID', 'Reference')
+    list_display = ('id', 'RefID', 'Reference')
 
 
 admin.site.register(SolutionMasterSpecies, SolutionMasterSpeciesAdmin)
