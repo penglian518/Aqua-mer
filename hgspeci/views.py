@@ -5,8 +5,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
+from django.db.models import Q
 from django.forms import inlineformset_factory
-from .models import HgSpeciJob, SPElements, SPElementsForm, ParameterForm
+from .models import HgSpeciJob, SPElements, SPElementsForm, ParameterForm, SPDBtoUseForm
 from .models import SPMasterSpecies, SPMasterSpeciesForm, SPSolutionSpecies, SPSolutionSpeciesForm, QueryForm
 from phreeqcdb.models import SolutionMasterSpecies, SolutionSpecies
 from calcdata.models import CalcSolutionMasterSpecies, CalcSolutionSpecies
@@ -16,6 +17,7 @@ from gsolv.models import GSolvJob
 from logk.models import LogKJob
 
 from scripts.JobManagement import JobManagement
+from scripts.PhreeqcPrepare import PhreeqcPrepare
 from scripts.VistorStatistics import clientStatistics
 import threading
 import base64, os, datetime, json
@@ -74,6 +76,15 @@ def parameters_input(request, JobID):
     if request.method == 'POST':
         paraform = ParameterForm(request.POST, request.FILES, instance=SPJob, prefix='main')
         formset = SPElementsInlineFormSet(request.POST, request.FILES, instance=SPJob, prefix='spelements')
+        dbform = SPDBtoUseForm(request.POST, request.FILES, instance=SPJob, prefix='db')
+
+        if dbform.is_valid():
+            model_instance = dbform.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "1.1"
+            model_instance.Successful = True
+            model_instance.save()
+            dbform.save()
 
         if paraform.is_valid() and formset.is_valid():
             model_instance = paraform.save(commit=False)
@@ -93,9 +104,10 @@ def parameters_input(request, JobID):
     else:
         paraform = ParameterForm(instance=SPJob, prefix='main')
         formset = SPElementsInlineFormSet(instance=SPJob, prefix='spelements')
+        dbform = SPDBtoUseForm(instance=SPJob, prefix='db')
 
     return render(request, 'hgspeci/parameters_input.html',
-                  {'paraform': paraform, 'formset': formset, 'JobID': JobID})
+                  {'paraform': paraform, 'formset': formset, 'dbform': dbform, 'JobID': JobID})
 
 def input_masterspecies(request, JobID):
     #clientStatistics(request)
@@ -466,78 +478,124 @@ def download(request, JobID, JobType='hgspeci'):
 
 
 # function for ajax query
-def query_solutionmaster(request, ele):
+def query_solutionmaster(request, JobID, ele):
     #clientStatistics(request)
     response_dict = {'success': True}
     response_dict['ele'] = ele
+
+    item = get_object_or_404(HgSpeciJob, JobID=JobID)
+
+    # genearte the query string.
+    phreeqc = PhreeqcPrepare()
+    query_str, query_str_calc = phreeqc.genQueryStr(item, type='SolutionMasterSpecies', string=ele, string_calc=ele)
+
     masters = []
+    master_calc = []
     try:
-        master = SolutionMasterSpecies.objects.get(Element=ele)
+        master = list(SolutionMasterSpecies.objects.filter(eval(query_str)))
     except:
-        master = ''
+        master = []
+
     try:
-        master_calc = CalcSolutionMasterSpecies.objects.get(Element=ele)
+        master_calc = list(CalcSolutionMasterSpecies.objects.filter(eval(query_str_calc)))
     except:
-        master_calc = ''
+        master_calc = []
+
+    # remove repeat species
+    master_species = [i.Species for i in master]
+    master_calc_new = []
+    for j in master_calc:
+        if j.Species not in master_species:
+            master_calc_new.append(j)
 
     if master:
-        masters.append(master)
+        masters += master
     if master_calc:
-        masters.append(master_calc)
+        masters += master_calc_new
 
     response_dict['masters'] = masters
     return render(request, 'hgspeci/solutionmaster.html', response_dict)
 
-def query_solutionspecies(request, ele):
+def query_solutionspecies(request, JobID, ele):
     #clientStatistics(request)
     response_dict = {'success': True}
     response_dict['ele'] = ele
+
+    item = get_object_or_404(HgSpeciJob, JobID=JobID)
+
     try:
         master = SolutionMasterSpecies.objects.get(Element=ele)
+        master_species = master.Species
     except:
         master = ''
-
-    if master:
-        objs = list(SolutionSpecies.objects.filter(Reaction__contains=master.Species))
-    else:
-        objs = []
-
+        master_species = False
     try:
         master_calc = CalcSolutionMasterSpecies.objects.get(Element=ele)
+        master_calc_species = master_calc.Species
     except:
         master_calc = ''
+        master_calc_species = False
 
+    # genearte the query string.
+    phreeqc = PhreeqcPrepare()
+    query_str, query_str_calc = phreeqc.genQueryStr(item, type='SolutionSpecies', string=master_species, string_calc=master_calc_species)
+
+    objs = []
+    if master:
+        objs = list(SolutionSpecies.objects.filter(eval(query_str)))
+
+    objs_calc = []
     if master_calc:
-        objs_calc = list(CalcSolutionSpecies.objects.filter(Reaction__contains=master_calc.Species))
-    else:
-        objs_calc = []
+        objs_calc = list(CalcSolutionSpecies.objects.filter(eval(query_str_calc)))
+
+
+    # remove repeat obj
+    reactions = [i.Reaction for i in objs]
+    objs_calc_new = []
+    for j in objs_calc:
+        if j.Reaction not in reactions:
+            objs_calc_new.append(j)
 
     response_dict['master'] = master
-    response_dict['objs'] = objs
+    response_dict['objs'] = objs + objs_calc_new
     response_dict['master_calc'] = master_calc
-    response_dict['objs_calc'] = objs_calc
+    response_dict['objs_calc'] = objs_calc_new
     return render(request, 'hgspeci/solutionspecies.html', response_dict)
 
-def query_elements(request):
+def query_elements(request, JobID):
     #clientStatistics(request)
-    if request.is_ajax():
+    item = get_object_or_404(HgSpeciJob, JobID=JobID)
 
+    if request.is_ajax():
         ele = request.GET.get('term', '')
 
+        # genearte the query string.
+        phreeqc = PhreeqcPrepare()
+        query_str, query_str_calc = phreeqc.genQueryStr(item, type='Element', string=ele, string_calc=ele)
+
         masters = []
+        master_calc = []
         try:
-            master = SolutionMasterSpecies.objects.filter(Element__istartswith=ele)
+            master = list(SolutionMasterSpecies.objects.filter(eval(query_str)))
         except:
-            master = False
+            master = []
+
         try:
-            master_calc = CalcSolutionMasterSpecies.objects.filter(Element__istartswith=ele)
+            master_calc = list(CalcSolutionMasterSpecies.objects.filter(eval(query_str_calc)))
         except:
-            master_calc = False
+            master_calc = []
+
+        # remove repead species
+        master_species = [i.Species for i in master]
+        master_calc_new = []
+        for j in master_calc:
+            if j.Species not in master_species:
+                master_calc_new.append(j)
 
         if master:
-            masters += list(master)
+            masters += master
         if master_calc:
-            masters += list(master_calc)
+            masters += master_calc_new
 
         #response_data = [{'value': i.Element} for i in masters]
         response_data = [i.Element for i in masters]
@@ -548,6 +606,16 @@ def query_elements(request):
     else:
         json_data = 'fail'
     return HttpResponse(json_data, content_type="application/json")
+
+def save_db_selection(request, JobID, SelectedDB):
+    #clientStatistics(request)
+    try:
+        item = HgSpeciJob.objects.get(JobID=JobID)
+        item.SPDBtoUse = SelectedDB
+        item.save()
+        return HttpResponse('Saved')
+    except:
+        return HttpResponse('Not saved')
 
 # public functions
 def get_job_dir(JobID, JobType='hgspeci'):

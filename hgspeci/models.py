@@ -65,6 +65,13 @@ class HgSpeciJob(models.Model):
         ('H2S', 'H2S'),
     )
 
+    Databases = (
+        ('phreeqc', 'phreeqc'),
+        ('phreeqc+scb', 'phreeqc+scb'),
+        ('phreeqc+calc', 'phreeqc+calc'),
+        ('phreeqc+scb+calc', 'phreeqc+scb+calc'),
+    )
+
     # use self.id or self.pk as JobID
     JobID = models.PositiveIntegerField(blank=True, default=0)
     Name = models.CharField(max_length=50, blank=True, default='HgSpeci')
@@ -86,6 +93,7 @@ class HgSpeciJob(models.Model):
     SPDensity = models.FloatField(blank=False, default=1.0)
     SPTitrant = models.CharField(max_length=10, choices=Titrants, default='pe')
     SPTitrantConcentration = models.FloatField(max_length=20, default=10.0)
+    SPDBtoUse = models.CharField(max_length=20, choices=Databases, default='phreeqc')
 
     # do not use anymore
     SPpe = models.FloatField(blank=False, default=4.0)                   # not use anymore
@@ -112,6 +120,21 @@ class SPElements(models.Model):
     def __str__(self):
         return str(self.pk)
 
+class SPDBtoUseForm(ModelForm):
+    class Meta:
+        model = HgSpeciJob
+        fields = ['JobID', 'CurrentStep', 'Successful', 'SPDBtoUse']
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+        }
+        labels = {
+            'SPDBtoUse': _('Database to use'),
+        }
+
+
+
 
 class ParameterForm(ModelForm):
     """
@@ -136,6 +159,7 @@ class ParameterForm(ModelForm):
         }
         help_texts = {
             'SPTitle': _('(Title for this solution)'),
+            'SPpHIncrease': _('(For single pH solution, set pH (max) equal to pH (min))'),
             'SPRedoxMethod': _('(Select one of the methods to calculate redox state)'),
             'SPRedoxValue': _('(If using redox couple (e.g. O(-2)/O(0) ), make sure include one/both species in the Elements/Species section.)'),
             'SPDensity': _('(Density of the solution, kg/L)'),

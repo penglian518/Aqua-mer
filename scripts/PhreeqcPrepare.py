@@ -5,7 +5,8 @@ import shutil, os
 from phreeqcdb.models import SolutionMasterSpecies, SolutionSpecies, Phases, ExchangeMasterSpecies, ExchangeSpecies, \
     SurfaceMasterSpecies, SurfaceSpecies, Rates
 from calcdata.models import CalcSolutionMasterSpecies, CalcSolutionSpecies
-
+from django.db.models import Q
+from hgspeci.models import HgSpeciJob
 
 class PhreeqcPrepare:
     def __init__(self):
@@ -108,6 +109,94 @@ class PhreeqcPrepare:
         ss_line = '    %s\n        log_k\t%s\n' % (ss.Reaction, str(ss.LogK))
         return ss_line
 
+    def genQueryStr(self, obj, type='', string='', string_calc=''):
+        """
+        :param obj: HgSpeciJob object
+        :param type: ['Element', 'SolutionMasterSpecies', 'SolutionSpecies']
+        :param string: 'element', 'species' form phreeqcdb
+        :param string: 'element', 'species' form calcdatabase
+        :return: query_str (for phreeqcdb)
+        :return: query_str_calc (for calcdatabase)
+        """
+        query_str, query_str_calc = '', ''
+
+        SelectedDB = obj.SPDBtoUse
+
+        if type in ['Element']:
+            ele = string
+            # genearte the query string.
+            if SelectedDB in ['phreeqc']:
+                query_str = "Q(Ref__RefID='Phreeqc') & Q(Element__istartswith='%s')" % ele
+                query_str_calc = "Q(id__lt=0)"
+            elif SelectedDB in ['scb']:
+                query_str = "Q(Ref__RefID='SCB') & Q(Element__istartswith='%s')" % ele
+                query_str_calc = "Q(id__lt=0)"
+            elif SelectedDB in ['phreeqc+scb']:
+                query_str = "(Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')) & Q(Element__istartswith='%s')" % ele
+                query_str_calc = "Q(id__lt=0)"
+            elif SelectedDB in ['phreeqc+calc']:
+                query_str = "Q(Ref__RefID='Phreeqc') & Q(Element__istartswith='%s')" % ele
+                query_str_calc = "Q(Element__istartswith='%s')" % ele
+            elif SelectedDB in ['phreeqc+scb+calc']:
+                query_str = "(Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')) & Q(Element__istartswith='%s')" % ele
+                query_str_calc = "Q(Element__istartswith='%s')" % ele
+        elif type in ['SolutionMasterSpecies']:
+            ele = string
+            # genearte the query string.
+            if SelectedDB in ['phreeqc']:
+                query_str = "Q(Ref__RefID='Phreeqc') & Q(Element='%s')" % ele
+                query_str_calc = "Q(id__lt=0)"
+            elif SelectedDB in ['scb']:
+                query_str = "Q(Ref__RefID='SCB') & Q(Element='%s')" % ele
+                query_str_calc = "Q(id__lt=0)"
+            elif SelectedDB in ['phreeqc+scb']:
+                query_str = "(Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')) & Q(Element='%s')" % ele
+                query_str_calc = "Q(id__lt=0)"
+            elif SelectedDB in ['phreeqc+calc']:
+                query_str = "Q(Ref__RefID='Phreeqc') & Q(Element='%s')" % ele
+                query_str_calc = "Q(Element='%s')" % ele
+            elif SelectedDB in ['phreeqc+scb+calc']:
+                query_str = "(Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')) & Q(Element='%s')" % ele
+                query_str_calc = "Q(Element='%s')" % ele
+        elif type in ['SolutionSpecies']:
+            master_species = string
+            master_calc_species = string_calc
+            # genearte the query string.
+            if SelectedDB in ['phreeqc']:
+                query_str = "Q(Ref__RefID='Phreeqc') & Q(Reaction__contains='%s')" % master_species
+                query_str_calc = "Q(id__lt=0)"
+            elif SelectedDB in ['scb']:
+                query_str = "Q(Ref__RefID='SCB') & Q(Reaction__contains='%s')" % master_species
+                query_str_calc = "Q(id__lt=0)"
+            elif SelectedDB in ['phreeqc+scb']:
+                query_str = "(Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')) & Q(Reaction__contains='%s')" % master_species
+                query_str_calc = "Q(id__lt=0)"
+            elif SelectedDB in ['phreeqc+calc']:
+                query_str = "Q(Ref__RefID='Phreeqc') & Q(Reaction__contains='%s')" % master_species
+                query_str_calc = "Q(Reaction__contains='%s')" % master_calc_species
+            elif SelectedDB in ['phreeqc+scb+calc']:
+                query_str = "(Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')) & Q(Reaction__contains='%s')" % master_species
+                query_str_calc = "Q(Reaction__contains='%s')" % master_calc_species
+        elif type in ['ByDB']:
+            # genearte the query string.
+            if SelectedDB in ['phreeqc']:
+                query_str = "Q(Ref__RefID='Phreeqc')"
+                query_str_calc = "Q(id__lt=0)"
+            elif SelectedDB in ['scb']:
+                query_str = "Q(Ref__RefID='SCB')"
+                query_str_calc = "Q(id__lt=0)"
+            elif SelectedDB in ['phreeqc+scb']:
+                query_str = "Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')"
+                query_str_calc = "Q(id__lt=0)"
+            elif SelectedDB in ['phreeqc+calc']:
+                query_str = "Q(Ref__RefID='Phreeqc')"
+                query_str_calc = "Q(id__gt=0)"
+            elif SelectedDB in ['phreeqc+scb+calc']:
+                query_str = "Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')"
+                query_str_calc = "Q(id__gt=0)"
+
+        return query_str, query_str_calc
+
     def genpHRange(self, obj):
         if obj.SPpHMax <= obj.SPpHMin:
             pHrange = [round(obj.SPpHMin, 2)]
@@ -179,22 +268,23 @@ class PhreeqcPrepare:
     def genDatabaseFile(self, obj, outdir):
         # TODO, generate a sub-database according to user input.
 
-        #fout = open('%s/aqua-mer.dat' % outdir, 'w')
-        #fin = open(self.tempphreeqcdat).readlines()
-        #fout.writelines(fin)
-        #fout.close()
-
         # init output_line
         output_line = ''
+
         ## prepare Solution_master_species
-        # get all elements
+        # get all elements in this job
         elements = [ele.Element for ele in obj.spelements.all()]
         # get related solution master species objs
         #ms_obj_phreeqcdb = [ele for ele in SolutionMasterSpecies.objects.filter(Element__in=elements)]
         #### remove this exclued_ms, when added Solution_Species for this species!!!!
-        exclued_ms = ["U+4", "S2O3-2", "L-", "Co+2", "Ni+2", "Dom-4", "Citrate-3", "Rcoo-", "Edta-4", "UO2+2", "Co+3", "Cdta-4"]
-        ms_obj_phreeqcdb = [i for i in SolutionMasterSpecies.objects.all() if i.Species]
-        ms_obj_calcdata = [ele for ele in CalcSolutionMasterSpecies.objects.filter(Element__in=elements)]
+        #exclued_ms = ["U+4", "S2O3-2", "L-", "Co+2", "Ni+2", "Dom-4", "Citrate-3", "Rcoo-", "Edta-4", "UO2+2", "Co+3", "Cdta-4"]
+        #ms_obj_phreeqcdb = [i for i in SolutionMasterSpecies.objects.all() if i.Species]
+        #ms_obj_calcdata = [ele for ele in CalcSolutionMasterSpecies.objects.filter(Element__in=elements)]
+
+        query_str, query_str_calc = self.genQueryStr(obj, type='ByDB')
+        ms_obj_phreeqcdb = list(SolutionMasterSpecies.objects.filter(eval(query_str)))
+        ms_obj_calcdata = list(CalcSolutionMasterSpecies.objects.filter(eval(query_str_calc)))
+
         # generate the Solution_Master_Species data block
         output_line += 'SOLUTION_MASTER_SPECIES\n'
         for ms in ms_obj_phreeqcdb + ms_obj_calcdata:
@@ -206,7 +296,8 @@ class PhreeqcPrepare:
         #species_phreeqcdb = [ele.Species for ele in ms_obj_phreeqcdb]
         species_calcdata = [ele.Species for ele in ms_obj_calcdata]
         # get species objs
-        ss_obj_phreeqcdb = list(SolutionSpecies.objects.all())
+        #ss_obj_phreeqcdb = list(SolutionSpecies.objects.all())
+        ss_obj_phreeqcdb = list(SolutionSpecies.objects.filter(eval(query_str)))
         ss_obj_calcdata = []
         #for ele in species_phreeqcdb:
         #    ss_obj_phreeqcdb += list(SolutionSpecies.objects.filter(Reaction__contains = ele))
@@ -220,7 +311,7 @@ class PhreeqcPrepare:
 
         ## prepare PHASES
         # get phases objs
-        ps_obj_phreeqcdb = list(Phases.objects.all())
+        ps_obj_phreeqcdb = list(Phases.objects.filter(eval(query_str)))
         #for ele in species_phreeqcdb:
         #    ss_obj_phreeqcdb += list(Phases.objects.filter(Reaction__contains = ele))
         # genearte the PHASES data block
@@ -235,29 +326,29 @@ class PhreeqcPrepare:
 
         ## prepare Exchange_master_species
         output_line += 'EXCHANGE_MASTER_SPECIES\n'
-        for ex in ExchangeMasterSpecies.objects.all():
+        for ex in ExchangeMasterSpecies.objects.filter(eval(query_str)):
             output_line += '    %s  %s\n' % (ex.ExchangeName, ex.ExchangeMaster)
 
         ## prepare Exchange_species
         output_line += 'EXCHANGE_SPECIES\n'
-        for ex in ExchangeSpecies.objects.all():
+        for ex in ExchangeSpecies.objects.filter(eval(query_str)):
             ex_line = self.format_exchange_species(ex)
             output_line += ex_line
 
         ## prepare Surface_master_species
         output_line += 'SURFACE_MASTER_SPECIES\n'
-        for ex in SurfaceMasterSpecies.objects.all():
+        for ex in SurfaceMasterSpecies.objects.filter(eval(query_str)):
             output_line += '    %s  %s\n' % (ex.BindingSite, ex.SurfaceMaster)
 
         ## prepare Surface_species
         output_line += 'SURFACE_SPECIES\n'
-        for ex in SurfaceSpecies.objects.all():
+        for ex in SurfaceSpecies.objects.filter(eval(query_str)):
             ex_line = self.format_surface_species(ex)
             output_line += ex_line
 
         ## prepare RATES
         output_line += 'RATES\n'
-        for ex in Rates.objects.all():
+        for ex in Rates.objects.filter(eval(query_str)):
             ex_line = '%s\n%s\n' % (ex.Name, ex.BasicStatement)
             output_line += ex_line
 

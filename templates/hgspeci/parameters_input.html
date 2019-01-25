@@ -12,6 +12,15 @@
 <div id=main>
     <div class="col-md-4">
         <h3>SOLUTION 1</h3>
+        <h4>Thermodynamics constants database</h4>
+        <div>
+            <!-- Database selection -->
+            <form id="dbform" action="" method="POST">{% csrf_token %}
+                {{ dbform.as_p }}
+            </form>
+        </div>
+        <br>
+
         <h4>Environmental conditions for this solution</h4>
         <form id="para_input" action="" method="post">{% csrf_token %}
             <!-- {{ paraform.as_p }} -->
@@ -96,8 +105,8 @@
             <br>
             <div>
                 <table>
-                    <tr><td><b>NOTE</b></td><td>1. At least one of the species in this section should be specified for charge balance. (Input 'charge' as an additional keyword to that species.)</td></tr>
-                    <tr><td><b></b></td><td>2. If using redox couple (e.g. O(-2)/O(0)) to calculate the redox state, make sure include one/both species in the Elements/Species section.</td></tr>
+                    <tr><td><b>NOTE</b></td><td>1. At least one of the species in this section should be specified for <b>charge balance</b>. (Input 'charge' as an additional keyword to that species.)</td></tr>
+                    <tr><td><b></b></td><td>2. If using redox couple (e.g. O(-2)/O(0)) to calculate the <b>redox state</b>, make sure include one/both species in the Elements/Species section.</td></tr>
                 </table>
             </div>
             <button type="submit" class="btn btn-default" style="height:25px;width:90px">Next</button>
@@ -200,11 +209,11 @@ $(".dyn-input").click(function (){
     var focused = document.activeElement;
     console.log(focused.id);
 
-    //$( focused ).autocomplete({source: "/hgspeci/ajax/query_elements/", minLength: 1 });
+    //$( focused ).autocomplete({source: "/hgspeci/ajax/query_elements/{{ JobID }}/", minLength: 1 });
     $( focused ).autocomplete({
         source: function( request, response ) {
                     $.ajax( {
-                        url: "/hgspeci/ajax/query_elements/",
+                        url: "/hgspeci/ajax/query_elements/{{ JobID }}/",
                         dataType: "json",
                         data: { term: request.term },
                         success: function( data ) {
@@ -227,8 +236,8 @@ $(".dyn-input").click(function (){
         document.getElementById('parameters').style.display='block';
 
         $.ajax({
-        url: "/hgspeci/ajax/query_solutionmaster/" + ele +"/",
-        data: {action: 'query_solutionspecies', ele: ele},
+        url: "/hgspeci/ajax/query_solutionmaster/{{ JobID }}/" + ele +"/",
+        data: {action: 'query_solutionmaster', ele: ele},
         dataType: 'html',
         success: function(data){
             document.getElementById('id_solutionmastertbody').innerHTML += data;
@@ -236,7 +245,7 @@ $(".dyn-input").click(function (){
         });
 
         $.ajax({
-        url: "/hgspeci/ajax/query_solutionspecies/" + ele +"/",
+        url: "/hgspeci/ajax/query_solutionspecies/{{ JobID }}/" + ele +"/",
         data: {action: 'query_solutionspecies', ele: ele},
         dataType: 'html',
         success: function(data){
@@ -244,6 +253,23 @@ $(".dyn-input").click(function (){
             }
         });
 
+    });
+</script>
+<script>
+    $("#dbform").change(function (){
+        var formData = $("#dbform").serializeArray();
+        var db = document.getElementById('dbform').elements[1].value;
+        console.log('ajax is working! Selected is ' + db);
+
+        $.ajax({
+        url: "/hgspeci/ajax/save_db_selection/{{ JobID }}/" + db + "/",
+        type: 'post',
+        data: formData,
+        success: function(data){
+            console.log(data);
+            console.log('success');
+            },
+        });
     });
 </script>
 
