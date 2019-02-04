@@ -56,6 +56,7 @@
             <th align="left">Alkalinity</th>
             <th align="left">GFW_or_Formula</th>
             <th align="left">GFW_for_Element</th>
+            <th align="left">Database</th>
             <th align="left">Reference</th>
             <th align="left">Note</th>
         </tr>
@@ -72,6 +73,7 @@
             <td>{{ p.Alkalinity }}</td>
             <td>{{ p.GFWorFormula }}</td>
             <td>{{ p.GFWforElement | default_if_none:'' }}</td>
+            <td>{{ p.DBSource }}</td>
             <td>{{ p.Ref }}</td>
             <td>{{ p.Note }}</td>
         </tr>
@@ -98,6 +100,29 @@
             {% endif %}
             <td>{{ p.RefID }}</td>
             <td>{{ p.Reference }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    <br>
+<h3>Databases</h3>
+<table id="dbs" class="clean compact">
+    <thead>
+        <tr>
+            <th align="left">DatabaseID</th>
+            <th align="left">Notes</th>
+        </tr>
+    </thead>
+        <tbody>
+        {% for p in dbs %}
+            {% if forloop.counter|divisibleby:2 %}
+            <tr>
+            {% else %}
+            <tr class="pure-table-odd">
+            {% endif %}
+            <td>{{ p.DBID }}</td>
+            <td>{{ p.DBNote }}</td>
         </tr>
         {% endfor %}
     </tbody>

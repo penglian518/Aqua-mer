@@ -10,7 +10,7 @@ from hgspeci.models import HgSpeciJob
 
 class PhreeqcPrepare:
     def __init__(self):
-        self.phreeqc = "/home/p6n/tools/phreeqc-3.3.10-12220/bin/phreeqc"
+        self.phreeqc = "/home/p6n/tools/phreeqc-3.4.0-12927/bin/phreeqc"
         self.tempphreeqcdat = '/home/p6n/workplace/website/cyshg/scripts/Phreeqc-scb-lg.dat'
 
     def clean_default_values(self, obj, type='species'):
@@ -77,6 +77,14 @@ class PhreeqcPrepare:
         if sum([ss.AEA1, ss.AEA2, ss.AEA3, ss.AEA4, ss.AEA5]) > 0:
             ss_line += '        -a_e %s %s %s %s %s\n' % (
             str(ss.AEA1), str(ss.AEA2), str(ss.AEA3), str(ss.AEA4), str(ss.AEA5))
+        if sum([ss.DW1, ss.DW2, ss.DW3, ss.DW4]) > 0:
+            ss_line += '        -dw %s %s %s %s\n' % (
+            str(ss.DW1), str(ss.DW2), str(ss.DW3), str(ss.DW4))
+        if sum([ss.VM1, ss.VM2, ss.VM3, ss.VM4, ss.VM5, ss.VM6, ss.VM7, ss.VM8, ss.VM9, ss.VM10]) > 0:
+            ss_line += '        -Vm %s %s %s %s %s %s %s %s %s %s\n' % (
+            str(ss.VM1), str(ss.VM2), str(ss.VM3), str(ss.VM4), str(ss.VM5),
+            str(ss.VM6), str(ss.VM7), str(ss.VM8), str(ss.VM9), str(ss.VM10),
+            )
         if sum([ss.GammaA, ss.GammaB]) > 0 or ss.GammaB > 0:
             ss_line += '        -gamma\t%s %s\n' % (str(ss.GammaA), str(ss.GammaB))
         if ss.NoCheck:
@@ -93,6 +101,18 @@ class PhreeqcPrepare:
         if sum([ss.AEA1, ss.AEA2, ss.AEA3, ss.AEA4, ss.AEA5]) > 0:
             ss_line += '        -a_e %s %s %s %s %s\n' % (
             str(ss.AEA1), str(ss.AEA2), str(ss.AEA3), str(ss.AEA4), str(ss.AEA5))
+        if sum([ss.VM1, ss.VM2, ss.VM3, ss.VM4, ss.VM5, ss.VM6, ss.VM7, ss.VM8, ss.VM9, ss.VM10]) > 0:
+            ss_line += '        -Vm %s %s %s %s %s %s %s %s %s %s\n' % (
+            str(ss.VM1), str(ss.VM2), str(ss.VM3), str(ss.VM4), str(ss.VM5),
+            str(ss.VM6), str(ss.VM7), str(ss.VM8), str(ss.VM9), str(ss.VM10),
+            )
+        if sum([ss.TC]) > 0:
+            ss_line += '        -T_c\t%s\n' % str(ss.TC)
+        if sum([ss.PC]) > 0:
+            ss_line += '        -P_c\t%s\n' % str(ss.PC)
+        if sum([ss.OMEGA]) > 0:
+            ss_line += '        -Omega\t%s\n' % str(ss.OMEGA)
+
         return ss_line
 
     def format_exchange_species(self, ss):
@@ -126,73 +146,73 @@ class PhreeqcPrepare:
             ele = string
             # genearte the query string.
             if SelectedDB in ['phreeqc']:
-                query_str = "Q(Ref__RefID='Phreeqc') & Q(Element__istartswith='%s')" % ele
+                query_str = "Q(DBSource__DBID='Phreeqc_default') & Q(Element__istartswith='%s')" % ele
                 query_str_calc = "Q(id__lt=0)"
-            elif SelectedDB in ['scb']:
-                query_str = "Q(Ref__RefID='SCB') & Q(Element__istartswith='%s')" % ele
+            elif SelectedDB in ['aquamer']:
+                query_str = "Q(DBSource__DBID='Aquamer_default') & Q(Element__istartswith='%s')" % ele
                 query_str_calc = "Q(id__lt=0)"
-            elif SelectedDB in ['phreeqc+scb']:
-                query_str = "(Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')) & Q(Element__istartswith='%s')" % ele
+            elif SelectedDB in ['phreeqc+aquamer']:
+                query_str = "(Q(DBSource__DBID='Phreeqc_default') | Q(DBSource__DBID='Aquamer_default')) & Q(Element__istartswith='%s')" % ele
                 query_str_calc = "Q(id__lt=0)"
             elif SelectedDB in ['phreeqc+calc']:
-                query_str = "Q(Ref__RefID='Phreeqc') & Q(Element__istartswith='%s')" % ele
+                query_str = "Q(DBSource__DBID='Phreeqc_default') & Q(Element__istartswith='%s')" % ele
                 query_str_calc = "Q(Element__istartswith='%s')" % ele
-            elif SelectedDB in ['phreeqc+scb+calc']:
-                query_str = "(Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')) & Q(Element__istartswith='%s')" % ele
+            elif SelectedDB in ['phreeqc+aquamer+calc']:
+                query_str = "(Q(DBSource__DBID='Phreeqc_default') | Q(DBSource__DBID='Aquamer_default')) & Q(Element__istartswith='%s')" % ele
                 query_str_calc = "Q(Element__istartswith='%s')" % ele
         elif type in ['SolutionMasterSpecies']:
             ele = string
             # genearte the query string.
             if SelectedDB in ['phreeqc']:
-                query_str = "Q(Ref__RefID='Phreeqc') & Q(Element='%s')" % ele
+                query_str = "Q(DBSource__DBID='Phreeqc_default') & Q(Element='%s')" % ele
                 query_str_calc = "Q(id__lt=0)"
-            elif SelectedDB in ['scb']:
-                query_str = "Q(Ref__RefID='SCB') & Q(Element='%s')" % ele
+            elif SelectedDB in ['aquamer']:
+                query_str = "Q(DBSource__DBID='Aquamer_default') & Q(Element='%s')" % ele
                 query_str_calc = "Q(id__lt=0)"
-            elif SelectedDB in ['phreeqc+scb']:
-                query_str = "(Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')) & Q(Element='%s')" % ele
+            elif SelectedDB in ['phreeqc+aquamer']:
+                query_str = "(Q(DBSource__DBID='Phreeqc_default') | Q(DBSource__DBID='Aquamer_default')) & Q(Element='%s')" % ele
                 query_str_calc = "Q(id__lt=0)"
             elif SelectedDB in ['phreeqc+calc']:
-                query_str = "Q(Ref__RefID='Phreeqc') & Q(Element='%s')" % ele
+                query_str = "Q(DBSource__DBID='Phreeqc_default') & Q(Element='%s')" % ele
                 query_str_calc = "Q(Element='%s')" % ele
-            elif SelectedDB in ['phreeqc+scb+calc']:
-                query_str = "(Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')) & Q(Element='%s')" % ele
+            elif SelectedDB in ['phreeqc+aquamer+calc']:
+                query_str = "(Q(DBSource__DBID='Phreeqc_default') | Q(DBSource__DBID='Aquamer_default')) & Q(Element='%s')" % ele
                 query_str_calc = "Q(Element='%s')" % ele
         elif type in ['SolutionSpecies']:
             master_species = string
             master_calc_species = string_calc
             # genearte the query string.
             if SelectedDB in ['phreeqc']:
-                query_str = "Q(Ref__RefID='Phreeqc') & Q(Reaction__contains='%s')" % master_species
+                query_str = "Q(DBSource__DBID='Phreeqc_default') & Q(Reaction__contains='%s')" % master_species
                 query_str_calc = "Q(id__lt=0)"
-            elif SelectedDB in ['scb']:
-                query_str = "Q(Ref__RefID='SCB') & Q(Reaction__contains='%s')" % master_species
+            elif SelectedDB in ['aquamer']:
+                query_str = "Q(DBSource__DBID='Aquamer_default') & Q(Reaction__contains='%s')" % master_species
                 query_str_calc = "Q(id__lt=0)"
-            elif SelectedDB in ['phreeqc+scb']:
-                query_str = "(Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')) & Q(Reaction__contains='%s')" % master_species
+            elif SelectedDB in ['phreeqc+aquamer']:
+                query_str = "(Q(DBSource__DBID='Phreeqc_default') | Q(DBSource__DBID='Aquamer_default')) & Q(Reaction__contains='%s')" % master_species
                 query_str_calc = "Q(id__lt=0)"
             elif SelectedDB in ['phreeqc+calc']:
-                query_str = "Q(Ref__RefID='Phreeqc') & Q(Reaction__contains='%s')" % master_species
+                query_str = "Q(DBSource__DBID='Phreeqc_default') & Q(Reaction__contains='%s')" % master_species
                 query_str_calc = "Q(Reaction__contains='%s')" % master_calc_species
-            elif SelectedDB in ['phreeqc+scb+calc']:
-                query_str = "(Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')) & Q(Reaction__contains='%s')" % master_species
+            elif SelectedDB in ['phreeqc+aquamer+calc']:
+                query_str = "(Q(DBSource__DBID='Phreeqc_default') | Q(DBSource__DBID='Aquamer_default')) & Q(Reaction__contains='%s')" % master_species
                 query_str_calc = "Q(Reaction__contains='%s')" % master_calc_species
         elif type in ['ByDB']:
             # genearte the query string.
             if SelectedDB in ['phreeqc']:
-                query_str = "Q(Ref__RefID='Phreeqc')"
+                query_str = "Q(DBSource__DBID='Phreeqc_default')"
                 query_str_calc = "Q(id__lt=0)"
-            elif SelectedDB in ['scb']:
-                query_str = "Q(Ref__RefID='SCB')"
+            elif SelectedDB in ['aquamer']:
+                query_str = "Q(DBSource__DBID='Aquamer_default')"
                 query_str_calc = "Q(id__lt=0)"
-            elif SelectedDB in ['phreeqc+scb']:
-                query_str = "Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')"
+            elif SelectedDB in ['phreeqc+aquamer']:
+                query_str = "Q(DBSource__DBID='Phreeqc_default') | Q(DBSource__DBID='Aquamer_default')"
                 query_str_calc = "Q(id__lt=0)"
             elif SelectedDB in ['phreeqc+calc']:
-                query_str = "Q(Ref__RefID='Phreeqc')"
+                query_str = "Q(DBSource__DBID='Phreeqc_default')"
                 query_str_calc = "Q(id__gt=0)"
-            elif SelectedDB in ['phreeqc+scb+calc']:
-                query_str = "Q(Ref__RefID='Phreeqc') | Q(Ref__RefID='SCB')"
+            elif SelectedDB in ['phreeqc+aquamer+calc']:
+                query_str = "Q(DBSource__DBID='Phreeqc_default') | Q(DBSource__DBID='Aquamer_default')"
                 query_str_calc = "Q(id__gt=0)"
 
         return query_str, query_str_calc

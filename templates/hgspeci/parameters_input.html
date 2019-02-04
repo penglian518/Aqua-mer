@@ -19,6 +19,15 @@
                 {{ dbform.as_p }}
             </form>
         </div>
+        <p>
+        <table>
+            <tr><td>phreeqc</td><td>Use default Phreeqc database only</td></tr>
+            <tr><td>phreeqc+aquamer</td><td>Use default Phreeqc database and parameters from Aquamer</td></tr>
+            <tr><td>phreeqc+calc</td><td>Use default Phreeqc database and parameters <b>calculated</b> by Aquamer</td></tr>
+            <tr><td>phreeqc+aquamer+calc</td><td>Use default Phreeqc database, parameters from Aquamer, and parameters <b>calculated</b> by Aquamer</td></tr>
+        </table>
+        </p>
+
         <br>
 
         <h4>Environmental conditions for this solution</h4>

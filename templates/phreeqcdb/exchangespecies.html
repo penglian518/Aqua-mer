@@ -54,6 +54,7 @@
             <th align="left">Gamma (a)</th>
             <th align="left">Gamma (b)</th>
             <th align="left">Davies</th>
+            <th align="left">Database</th>
             <th align="left">Reference</th>
             <th align="left">Note</th>
         </tr>
@@ -72,6 +73,7 @@
             <td>{{ p.GammaA }}</td>
             <td>{{ p.GammaB }}</td>
             <td>{{ p.Davies }}</td>
+            <td>{{ p.DBSource }}</td>
             <td>{{ p.Ref }}</td>
             <td>{{ p.Note }}</td>
         </tr>
@@ -99,6 +101,29 @@
             {% endif %}
             <td>{{ p.RefID }}</td>
             <td>{{ p.Reference }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    <br>
+<h3>Databases</h3>
+<table id="dbs" class="clean compact">
+    <thead>
+        <tr>
+            <th align="left">DatabaseID</th>
+            <th align="left">Notes</th>
+        </tr>
+    </thead>
+        <tbody>
+        {% for p in dbs %}
+            {% if forloop.counter|divisibleby:2 %}
+            <tr>
+            {% else %}
+            <tr class="pure-table-odd">
+            {% endif %}
+            <td>{{ p.DBID }}</td>
+            <td>{{ p.DBNote }}</td>
         </tr>
         {% endfor %}
     </tbody>

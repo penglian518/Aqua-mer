@@ -62,14 +62,13 @@ class HgSpeciJob(models.Model):
         ('HCl', 'HCl'),
         ('HNO3', 'HNO3'),
         ('H2SO4', 'H2SO4'),
-        ('H2S', 'H2S'),
     )
 
     Databases = (
         ('phreeqc', 'phreeqc'),
-        ('phreeqc+scb', 'phreeqc+scb'),
+        ('phreeqc+aquamer', 'phreeqc+aquamer'),
         ('phreeqc+calc', 'phreeqc+calc'),
-        ('phreeqc+scb+calc', 'phreeqc+scb+calc'),
+        ('phreeqc+aquamer+calc', 'phreeqc+aquamer+calc'),
     )
 
     # use self.id or self.pk as JobID
@@ -93,7 +92,7 @@ class HgSpeciJob(models.Model):
     SPDensity = models.FloatField(blank=False, default=1.0)
     SPTitrant = models.CharField(max_length=10, choices=Titrants, default='pe')
     SPTitrantConcentration = models.FloatField(max_length=20, default=10.0)
-    SPDBtoUse = models.CharField(max_length=20, choices=Databases, default='phreeqc')
+    SPDBtoUse = models.CharField(max_length=20, choices=Databases, default='phreeqc+aquamer')
 
     # do not use anymore
     SPpe = models.FloatField(blank=False, default=4.0)                   # not use anymore

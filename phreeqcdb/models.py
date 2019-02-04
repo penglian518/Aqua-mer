@@ -19,6 +19,7 @@ class SolutionMasterSpecies(models.Model):
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
+    DBSource = models.ForeignKey('DBSources', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
     CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -43,11 +44,26 @@ class SolutionSpecies(models.Model):
     AEA5 = models.FloatField(blank=True, default=0.0)
     GammaA = models.FloatField(blank=True, default=0.0)
     GammaB = models.FloatField(blank=True, default=0.0)
+    DW1 = models.FloatField(blank=True, default=0.0, help_text='dw')
+    DW2 = models.FloatField(blank=True, default=0.0)
+    DW3 = models.FloatField(blank=True, default=0.0)
+    DW4 = models.FloatField(blank=True, default=0.0)
+    VM1 = models.FloatField(blank=True, default=0.0, help_text='Vm')
+    VM2 = models.FloatField(blank=True, default=0.0)
+    VM3 = models.FloatField(blank=True, default=0.0)
+    VM4 = models.FloatField(blank=True, default=0.0)
+    VM5 = models.FloatField(blank=True, default=0.0)
+    VM6 = models.FloatField(blank=True, default=0.0)
+    VM7 = models.FloatField(blank=True, default=0.0)
+    VM8 = models.FloatField(blank=True, default=0.0)
+    VM9 = models.FloatField(blank=True, default=0.0)
+    VM10 = models.FloatField(blank=True, default=0.0)
     NoCheck = models.BooleanField(blank=True, default=False)
     MoleBalance = models.CharField(max_length=50, blank=True, default='')
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
+    DBSource = models.ForeignKey('DBSources', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
     CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -71,9 +87,23 @@ class Phases(models.Model):
     AEA3 = models.FloatField(blank=True, default=0.0)
     AEA4 = models.FloatField(blank=True, default=0.0)
     AEA5 = models.FloatField(blank=True, default=0.0)
+    TC = models.FloatField(blank=True, default=0.0)
+    PC = models.FloatField(blank=True, default=0.0)
+    OMEGA = models.FloatField(blank=True, default=0.0)
+    VM1 = models.FloatField(blank=True, default=0.0, help_text='Vm')
+    VM2 = models.FloatField(blank=True, default=0.0)
+    VM3 = models.FloatField(blank=True, default=0.0)
+    VM4 = models.FloatField(blank=True, default=0.0)
+    VM5 = models.FloatField(blank=True, default=0.0)
+    VM6 = models.FloatField(blank=True, default=0.0)
+    VM7 = models.FloatField(blank=True, default=0.0)
+    VM8 = models.FloatField(blank=True, default=0.0)
+    VM9 = models.FloatField(blank=True, default=0.0)
+    VM10 = models.FloatField(blank=True, default=0.0)
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
+    DBSource = models.ForeignKey('DBSources', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
     CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -86,6 +116,7 @@ class SurfaceMasterSpecies(models.Model):
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
+    DBSource = models.ForeignKey('DBSources', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
     CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -98,6 +129,7 @@ class SurfaceSpecies(models.Model):
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
+    DBSource = models.ForeignKey('DBSources', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
     CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -110,6 +142,7 @@ class ExchangeMasterSpecies(models.Model):
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
+    DBSource = models.ForeignKey('DBSources', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
     CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -133,6 +166,7 @@ class ExchangeSpecies(models.Model):
 
     Note = models.CharField(max_length=200, blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
+    DBSource = models.ForeignKey('DBSources', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
     CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -145,6 +179,7 @@ class Rates(models.Model):
 
     Note = models.TextField(blank=True, default='')
     Ref = models.ForeignKey('Refs', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
+    DBSource = models.ForeignKey('DBSources', blank=True, null=True, on_delete=models.SET_NULL, related_name='+')
     CreatedDate = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -157,3 +192,13 @@ class Refs(models.Model):
 
     def __str__(self):
         return str(self.RefID)
+
+
+@python_2_unicode_compatible  # only if you need to support Python 2
+class DBSources(models.Model):
+    DBID = models.CharField(max_length=20, blank=True, null=True, unique=True)
+    DBNote = models.CharField(max_length=500, blank=True, null=True, unique=True)
+
+    def __str__(self):
+        return str(self.DBID)
+

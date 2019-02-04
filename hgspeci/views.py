@@ -527,15 +527,30 @@ def query_solutionspecies(request, JobID, ele):
 
     item = get_object_or_404(HgSpeciJob, JobID=JobID)
 
+    # genearte the query string.
+    phreeqc = PhreeqcPrepare()
+    query_str, query_str_calc = phreeqc.genQueryStr(item, type='SolutionMasterSpecies', string=ele, string_calc=ele)
+
+
     try:
-        master = SolutionMasterSpecies.objects.get(Element=ele)
-        master_species = master.Species
+        master = list(SolutionMasterSpecies.objects.filter(eval(query_str)))
+    except:
+        master = []
+
+    try:
+        master_calc = list(CalcSolutionMasterSpecies.objects.filter(eval(query_str_calc)))
+    except:
+        master_calc = []
+
+    try:
+        #master = SolutionMasterSpecies.objects.get(Element=ele)
+        master_species = master[0].Species
     except:
         master = ''
         master_species = False
     try:
-        master_calc = CalcSolutionMasterSpecies.objects.get(Element=ele)
-        master_calc_species = master_calc.Species
+        #master_calc = CalcSolutionMasterSpecies.objects.get(Element=ele)
+        master_calc_species = master_calc[0].Species
     except:
         master_calc = ''
         master_calc_species = False
