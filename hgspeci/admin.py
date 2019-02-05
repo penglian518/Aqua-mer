@@ -39,7 +39,8 @@ class SPMasterSpeciesAdmin(admin.ModelAdmin):
 class SPSolutionSpeciesAdmin(admin.ModelAdmin):
     model = SPSolutionSpecies
     list_display = ('SPJobID', 'JobID', 'Reaction', 'LogK', 'DeltaH', 'DeltaHUnits', 'AEA1', 'AEA2', 'AEA3', 'AEA4', 'AEA5',
-                  'GammaA', 'GammaB', 'NoCheck', 'MoleBalance', 'Note',)
+                    'DW1', 'DW2', 'DW3', 'DW4', 'VM1', 'VM2', 'VM3', 'VM4', 'VM5', 'VM6', 'VM7', 'VM8', 'VM9', 'VM10',
+                    'GammaA', 'GammaB', 'NoCheck', 'MoleBalance', 'Note',)
 
 
 

@@ -91,7 +91,7 @@ class HgSpeciJob(models.Model):
     SPRedoxValue = models.CharField(max_length=20, default='4.0')
     SPDensity = models.FloatField(blank=False, default=1.0)
     SPTitrant = models.CharField(max_length=10, choices=Titrants, default='pe')
-    SPTitrantConcentration = models.FloatField(max_length=20, default=10.0)
+    SPTitrantConcentration = models.FloatField(max_length=20, default=100.0)
     SPDBtoUse = models.CharField(max_length=20, choices=Databases, default='phreeqc+aquamer')
 
     # do not use anymore
@@ -256,6 +256,20 @@ class SPSolutionSpecies(models.Model):
     AEA3 = models.FloatField(blank=True, null=True, default=0.0)
     AEA4 = models.FloatField(blank=True, null=True, default=0.0)
     AEA5 = models.FloatField(blank=True, null=True, default=0.0)
+    DW1 = models.FloatField(blank=True, null=True, default=0.0)
+    DW2 = models.FloatField(blank=True, null=True, default=0.0)
+    DW3 = models.FloatField(blank=True, null=True, default=0.0)
+    DW4 = models.FloatField(blank=True, null=True, default=0.0)
+    VM1 = models.FloatField(blank=True, null=True, default=0.0)
+    VM2 = models.FloatField(blank=True, null=True, default=0.0)
+    VM3 = models.FloatField(blank=True, null=True, default=0.0)
+    VM4 = models.FloatField(blank=True, null=True, default=0.0)
+    VM5 = models.FloatField(blank=True, null=True, default=0.0)
+    VM6 = models.FloatField(blank=True, null=True, default=0.0)
+    VM7 = models.FloatField(blank=True, null=True, default=0.0)
+    VM8 = models.FloatField(blank=True, null=True, default=0.0)
+    VM9 = models.FloatField(blank=True, null=True, default=0.0)
+    VM10 = models.FloatField(blank=True, null=True, default=0.0)
     GammaA = models.FloatField(blank=True, null=True, default=0.0)
     GammaB = models.FloatField(blank=True, null=True, default=0.0)
     NoCheck = models.BooleanField(blank=True, default=False)
@@ -269,8 +283,10 @@ class SPSolutionSpecies(models.Model):
 class SPSolutionSpeciesForm(ModelForm):
     class Meta:
         model = SPSolutionSpecies
-        fields = ['JobID', 'Reaction', 'LogK', 'DeltaH', 'DeltaHUnits', 'AEA1', 'AEA2', 'AEA3', 'AEA4', 'AEA5',
-                  'GammaA', 'GammaB', 'NoCheck', 'MoleBalance', 'Note']
+        fields = ['JobID', 'Reaction', 'LogK', 'DeltaH', 'DeltaHUnits', 'GammaA', 'GammaB',
+                  'AEA1', 'AEA2', 'AEA3', 'AEA4', 'AEA5',
+                  'DW1', 'DW2', 'DW3', 'DW4', 'VM1', 'VM2', 'VM3', 'VM4', 'VM5', 'VM6', 'VM7', 'VM8', 'VM9', 'VM10',
+                  'NoCheck', 'MoleBalance', 'Note']
         widgets = {
             'JobID': forms.HiddenInput(),
             'LogK': forms.TextInput(attrs={'size': 7}),
@@ -280,6 +296,20 @@ class SPSolutionSpeciesForm(ModelForm):
             'AEA3': forms.TextInput(attrs={'size': 5}),
             'AEA4': forms.TextInput(attrs={'size': 5}),
             'AEA5': forms.TextInput(attrs={'size': 5}),
+            'DW1': forms.TextInput(attrs={'size': 5}),
+            'DW2': forms.TextInput(attrs={'size': 5}),
+            'DW3': forms.TextInput(attrs={'size': 5}),
+            'DW4': forms.TextInput(attrs={'size': 5}),
+            'VM1': forms.TextInput(attrs={'size': 5}),
+            'VM2': forms.TextInput(attrs={'size': 5}),
+            'VM3': forms.TextInput(attrs={'size': 5}),
+            'VM4': forms.TextInput(attrs={'size': 5}),
+            'VM5': forms.TextInput(attrs={'size': 5}),
+            'VM6': forms.TextInput(attrs={'size': 5}),
+            'VM7': forms.TextInput(attrs={'size': 5}),
+            'VM8': forms.TextInput(attrs={'size': 5}),
+            'VM9': forms.TextInput(attrs={'size': 5}),
+            'VM10': forms.TextInput(attrs={'size': 5}),
             'GammaA': forms.TextInput(attrs={'size': 7}),
             'GammaB': forms.TextInput(attrs={'size': 7}),
             'MoleBalance': forms.TextInput(attrs={'size': 10}),
@@ -292,6 +322,20 @@ class SPSolutionSpeciesForm(ModelForm):
             'AEA3': _('A3'),
             'AEA4': _('A4'),
             'AEA5': _('A5'),
+            'DW1': _('dw1'),
+            'DW2': _('dw2'),
+            'DW3': _('dw3'),
+            'DW4': _('dw4'),
+            'VM1': _('Vm1'),
+            'VM2': _('Vm2'),
+            'VM3': _('Vm3'),
+            'VM4': _('Vm4'),
+            'VM5': _('Vm5'),
+            'VM6': _('Vm6'),
+            'VM7': _('Vm7'),
+            'VM8': _('Vm8'),
+            'VM9': _('Vm9'),
+            'VM10': _('Vm10'),
         }
 
 

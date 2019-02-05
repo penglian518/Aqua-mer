@@ -46,11 +46,17 @@
                 {% if ms.DeltaH > 0 %}
                     <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;delta_h {{ ms.DeltaH }} {{ ms.DeltaHUnits }}</p>
                 {% endif %}
+                {% if ms.GammaA|folatadd:ms.GammaB  > 0 %}
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-gamma {{ ms.GammaA }} {{ ms.GammaB }}</p>
+                {% endif %}
                 {% if ms.AEA1|folatadd:ms.AEA2|folatadd:ms.AEA3|folatadd:ms.AEA4|folatadd:ms.AEA5 > 0 %}
                     <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-a_e {{ ms.AEA1 }} {{ ms.AEA2 }} {{ ms.AEA3 }} {{ ms.AEA4 }} {{ ms.AEA5 }}</p>
                 {% endif %}
-                {% if ms.GammaA|folatadd:ms.GammaB  > 0 %}
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-gamma {{ ms.GammaA }} {{ ms.GammaB }}</p>
+                {% if ms.DW1|folatadd:ms.DW2|folatadd:ms.DW3|folatadd:ms.DW4 > 0 %}
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-dw {{ ms.DW1 }} {{ ms.DW2 }} {{ ms.DW3 }} {{ ms.DW4 }}</p>
+                {% endif %}
+                {% if ms.VM1|folatadd:ms.VM2|folatadd:ms.VM3|folatadd:ms.VM4|folatadd:ms.VM5|folatadd:ms.VM6|folatadd:ms.VM7|folatadd:ms.VM8|folatadd:ms.VM9|folatadd:ms.VM10 > 0 %}
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Vm {{ ms.VM1 }} {{ ms.VM2 }} {{ ms.VM3 }} {{ ms.VM4 }} {{ ms.VM5 }} {{ ms.VM6 }} {{ ms.VM7 }} {{ ms.VM8 }} {{ ms.VM9 }} {{ ms.VM10 }}</p>
                 {% endif %}
                 {% if ms.NoCheck %}
                     <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-no_check</p>

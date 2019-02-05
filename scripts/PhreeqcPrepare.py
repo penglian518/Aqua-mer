@@ -71,22 +71,48 @@ class PhreeqcPrepare:
 
     def format_species(self, ss):
         ''' for solution species '''
-        ss_line = '    %s\n        log_k\t%s\n' % (ss.Reaction, str(ss.LogK))
-        if ss.DeltaH > 0:
-            ss_line += '        delta_h\t%s %s\n' % (str(ss.DeltaH), ss.DeltaHUnits)
-        if sum([ss.AEA1, ss.AEA2, ss.AEA3, ss.AEA4, ss.AEA5]) > 0:
-            ss_line += '        -a_e %s %s %s %s %s\n' % (
+        ss_line = '    %s\n        -log_k\t%s\n' % (ss.Reaction, str(ss.LogK))
+        try:
+            condition = abs(ss.DeltaH) > 0
+        except:
+            condition = False
+
+        if condition:
+            ss_line += '        -delta_h\t%s %s\n' % (str(ss.DeltaH), ss.DeltaHUnits)
+
+        try:
+            condition = sum(abs(i) for i in [ss.AEA1, ss.AEA2, ss.AEA3, ss.AEA4, ss.AEA5]) > 0
+        except:
+            condition = False
+        if condition:
+            ss_line += '        -analytical %s %s %s %s %s\n' % (
             str(ss.AEA1), str(ss.AEA2), str(ss.AEA3), str(ss.AEA4), str(ss.AEA5))
-        if sum([ss.DW1, ss.DW2, ss.DW3, ss.DW4]) > 0:
+
+        try:
+            condition = sum(abs(i) for i in [ss.DW1, ss.DW2, ss.DW3, ss.DW4]) > 0
+        except:
+            condition = False
+        if condition:
             ss_line += '        -dw %s %s %s %s\n' % (
             str(ss.DW1), str(ss.DW2), str(ss.DW3), str(ss.DW4))
-        if sum([ss.VM1, ss.VM2, ss.VM3, ss.VM4, ss.VM5, ss.VM6, ss.VM7, ss.VM8, ss.VM9, ss.VM10]) > 0:
+
+        try:
+            condition = sum(abs(i) for i in [ss.VM1, ss.VM2, ss.VM3, ss.VM4, ss.VM5, ss.VM6, ss.VM7, ss.VM8, ss.VM9, ss.VM10]) > 0
+        except:
+            condition = False
+        if condition:
             ss_line += '        -Vm %s %s %s %s %s %s %s %s %s %s\n' % (
             str(ss.VM1), str(ss.VM2), str(ss.VM3), str(ss.VM4), str(ss.VM5),
             str(ss.VM6), str(ss.VM7), str(ss.VM8), str(ss.VM9), str(ss.VM10),
             )
-        if sum([ss.GammaA, ss.GammaB]) > 0 or ss.GammaB > 0:
+
+        try:
+            condition = sum(abs(i) for i in [ss.GammaA, ss.GammaB]) > 0 or ss.GammaB > 0
+        except:
+            condition = False
+        if condition:
             ss_line += '        -gamma\t%s %s\n' % (str(ss.GammaA), str(ss.GammaB))
+
         if ss.NoCheck:
             ss_line += '        -no_check\n'
         if ss.MoleBalance:
