@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^ajax/query_elements/(?P<JobID>[0-9]+)/$', views.query_elements, name='query_elements'),
     url(r'^elements/$', views.elements, name='elements'),
     url(r'^review/(?P<JobID>[0-9]+)/$', views.review, name='review'),
+    url(r'^revise/(?P<JobID>[0-9]+)/$', views.revise, name='revise'),
     url(r'^review/$', views.review_doc, name='review_doc'),
     url(r'^results/(?P<JobID>[0-9]+)$', views.results, name='results'),
     url(r'^results/$', views.results_doc, name='results_doc'),

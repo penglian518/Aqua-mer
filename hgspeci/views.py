@@ -231,6 +231,15 @@ def review(request, JobID):
     item = get_object_or_404(HgSpeciJob, JobID=JobID)
     return render(request, 'hgspeci/review.html', {'JobID': JobID, 'Item': item})
 
+def revise(request, JobID):
+    clientStatistics(request)
+    item = get_object_or_404(HgSpeciJob, JobID=JobID)
+
+    jobmanger = JobManagement()
+    jobmanger.HgspeciJobClean(obj=item)
+
+    return redirect('/hgspeci/parameters/%d/' % int(JobID))
+
 def review_doc(request):
     clientStatistics(request)
     return render(request, 'hgspeci/review_doc.html')

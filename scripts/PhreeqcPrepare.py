@@ -246,7 +246,7 @@ class PhreeqcPrepare:
     def genpHRange(self, obj):
         if obj.SPpHMax <= obj.SPpHMin:
             pHrange = [round(obj.SPpHMin, 2)]
-        elif obj.SPpHIncrease == 0 :
+        elif obj.SPpHIncrease == 0:
             pHrange = [round(obj.SPpHMin, 2), round(obj.SPpHMax, 2)]
         else:
             pHrange = list(np.arange(obj.SPpHMin, obj.SPpHMax, obj.SPpHIncrease)) + [obj.SPpHMax]
@@ -270,6 +270,7 @@ class PhreeqcPrepare:
                 fout.write('    pH %s\n' % str(obj.SPpHMin))
             elif obj.SPTitrant in ['HCl', 'HNO3', 'H2SO4', 'H2S']:
                 fout.write('    pH %s\n' % str(obj.SPpHMax))
+
             if obj.SPRedoxMethod in ['pe']:
                 fout.write('    pe %s\n' % str(obj.SPRedoxValue))
             elif obj.SPRedoxMethod in ['couple', 'Redox Couple']:

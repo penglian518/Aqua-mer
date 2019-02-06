@@ -712,6 +712,26 @@ echo "Reclustering Job is Done!"
         obj.save()
         return
 
+    def HgspeciJobClean(self, obj, JobType='hgspeci'):
+        # get basic info
+        JobLocation = '%s/%s/jobs' % (self.JobLocation, JobType)
+        job_dir = '%s/%s/%s' % (self.DjangoHome, JobLocation, obj.JobID)
+
+        try:
+            shutil.rmtree(job_dir)
+        except:
+            pass
+
+        try:
+            obj.CurrentStatus = '0'
+            obj.Successful = True
+        except Exception as e:
+            obj.FailedReason += 'Failed to change Job status. Reason:%s' % e
+            obj.Successful = False
+
+        obj.save()
+        return
+
     #### Gsolv ####
     def GsolvJobPrepare(self, obj, JobType='gsolv'):
         # get basic info
