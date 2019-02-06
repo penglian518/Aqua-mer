@@ -21,7 +21,11 @@
     }
     </style>
 
-    <p>Job {{ Item.JobID }} is finished, click <a href="/hgspeci/download/{{ Item.JobID }}">HERE</a> to download the results.</p>
+    <p>
+        Job {{ Item.JobID }} is finished.<br><br>
+        To DOWNLOAD the results, click <a href="/hgspeci/download/{{ Item.JobID }}">HERE</a>. <br>
+        To REVISE the input parameters, click <a href="/hgspeci/revise/{{ Item.JobID }}">HERE</a>.
+    </p>
     <p><center><h2>Speciation plot of {{ Item.SPTitle }}</h2></center></p>
     <p><center>
         <button id="bn_molality">Molality</button>

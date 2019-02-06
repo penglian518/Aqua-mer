@@ -14,8 +14,9 @@
     <div>Something is wrong with this job.
         <p>JobID: {{ JobID }}</p> </div>
         <p>Error: {{ Item.FailedReason }}</p>
-        <p>Please double check the input and output files and make sure all the calculations CAN be finished correctly!<br>
-        Click <a href="/hgspeci/download/{{ Item.JobID }}">HERE</a> to download the input and output files.
+        <p>Please double check the input and output files and make sure all the calculations CAN be finished correctly!<br><br>
+        To DOWNLOAD the input and output files, click <a href="/hgspeci/download/{{ Item.JobID }}">HERE</a>. <br><br>
+        To REVISE the input parameters, click <a href="/hgspeci/revise/{{ Item.JobID }}">HERE</a>.
         </p>
 
 
