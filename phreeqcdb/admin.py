@@ -10,13 +10,13 @@ class SolutionMasterSpeciesAdmin(admin.ModelAdmin):
 
 class SolutionSpeciesAdmin(admin.ModelAdmin):
     model = SolutionSpecies
-    list_display = ('Reaction', 'LogK', 'DeltaH', 'DeltaHUnits', 'AEA1', 'AEA2', 'AEA3', 'AEA4', 'AEA5',
+    list_display = ('Reaction', 'LogK', 'DeltaH', 'DeltaHUnits', 'AEA1', 'AEA2', 'AEA3', 'AEA4', 'AEA5', 'AEA6',
                     'DW1', 'DW2', 'DW3', 'DW4', 'VM1', 'VM2', 'VM3', 'VM4', 'VM5', 'VM6', 'VM7', 'VM8', 'VM9', 'VM10',
                     'GammaA', 'GammaB', 'NoCheck', 'MoleBalance', 'DBSource', 'Ref', 'CreatedDate', 'Note')
 
 class PhasesAdmin(admin.ModelAdmin):
     model = Phases
-    list_display = ('PhaseName', 'Reaction', 'LogK', 'DeltaH', 'DeltaHUnits', 'AEA1', 'AEA2', 'AEA3', 'AEA4', 'AEA5',
+    list_display = ('PhaseName', 'Reaction', 'LogK', 'DeltaH', 'DeltaHUnits', 'AEA1', 'AEA2', 'AEA3', 'AEA4', 'AEA5', 'AEA6',
                     'TC', 'PC', 'OMEGA', 'VM1', 'VM2', 'VM3', 'VM4', 'VM5', 'VM6', 'VM7', 'VM8', 'VM9', 'VM10',
                     'DBSource', 'Ref', 'CreatedDate', 'Note')
 

@@ -30,6 +30,8 @@ class PhreeqcPrepare:
                     ss.AEA4 = 0.0
                 if ss.AEA5 == None:
                     ss.AEA5 = 0.0
+                if ss.AEA6 == None:
+                    ss.AEA6 = 0.0
                 if ss.GammaA == None:
                     ss.GammaA = 0.0
                 if ss.GammaB == None:
@@ -71,7 +73,78 @@ class PhreeqcPrepare:
 
     def format_species(self, ss):
         ''' for solution species '''
-        ss_line = '    %s\n        -log_k\t%s\n' % (ss.Reaction, str(ss.LogK))
+        ss_line = '%s\n' % ss.Reaction
+        # log K
+        try:
+            condition = abs(ss.LogK) > 0
+        except:
+            condition = False
+
+        if condition:
+            #ss_line += '        -delta_h\t%s %s\n' % (str(ss.DeltaH), ss.DeltaHUnits)
+            ss_line += '    -log_k\t%s\n' % str(ss.LogK)
+        # delta
+        try:
+            condition = abs(ss.DeltaH) > 0
+        except:
+            condition = False
+
+        if condition:
+            ss_line += '    -delta_h\t%s %s\n' % (str(ss.DeltaH), ss.DeltaHUnits)
+        # AE
+        try:
+            condition = sum(abs(i) for i in [ss.AEA1, ss.AEA2, ss.AEA3, ss.AEA4, ss.AEA5, ss.AEA6]) > 0
+        except:
+            condition = False
+        if condition:
+            ss_line += '    -analytical %s %s %s %s %s %s\n' % (
+            str(ss.AEA1), str(ss.AEA2), str(ss.AEA3), str(ss.AEA4), str(ss.AEA5), str(ss.AEA6))
+        # gamma
+        try:
+            condition = sum(abs(i) for i in [ss.GammaA, ss.GammaB]) > 0 or ss.GammaB > 0
+        except:
+            condition = False
+        if condition:
+            ss_line += '    -gamma\t%s %s\n' % (str(ss.GammaA), str(ss.GammaB))
+        # dw
+        try:
+            condition = sum(abs(i) for i in [ss.DW1, ss.DW2, ss.DW3, ss.DW4]) > 0
+        except:
+            condition = False
+        if condition:
+            ss_line += '    -dw %s %s %s %s\n' % (
+            str(ss.DW1), str(ss.DW2), str(ss.DW3), str(ss.DW4))
+        # Vm
+        try:
+            condition = sum(abs(i) for i in [ss.VM1, ss.VM2, ss.VM3, ss.VM4, ss.VM5, ss.VM6, ss.VM7, ss.VM8, ss.VM9, ss.VM10]) > 0
+        except:
+            condition = False
+        if condition:
+            ss_line += '    -Vm %s %s %s %s %s %s %s %s %s %s\n' % (
+            str(ss.VM1), str(ss.VM2), str(ss.VM3), str(ss.VM4), str(ss.VM5),
+            str(ss.VM6), str(ss.VM7), str(ss.VM8), str(ss.VM9), str(ss.VM10),
+            )
+
+        if ss.NoCheck:
+            ss_line += '    -no_check\n'
+        if ss.MoleBalance:
+            ss_line += '    -mole_balance\t%s\n' % str(ss.MoleBalance)
+        return ss_line
+
+    def format_phases(self, ss):
+        ss_line = '%s\n' % ss.PhaseName
+
+        ss_line += '    %s\n' % ss.Reaction
+        # log K
+        try:
+            condition = abs(ss.LogK) > 0
+        except:
+            condition = False
+
+        if condition:
+            #ss_line += '        -delta_h\t%s %s\n' % (str(ss.DeltaH), ss.DeltaHUnits)
+            ss_line += '        -log_k\t%s\n' % str(ss.LogK)
+        # delta
         try:
             condition = abs(ss.DeltaH) > 0
         except:
@@ -79,15 +152,22 @@ class PhreeqcPrepare:
 
         if condition:
             ss_line += '        -delta_h\t%s %s\n' % (str(ss.DeltaH), ss.DeltaHUnits)
-
+        # AE
         try:
-            condition = sum(abs(i) for i in [ss.AEA1, ss.AEA2, ss.AEA3, ss.AEA4, ss.AEA5]) > 0
+            condition = sum(abs(i) for i in [ss.AEA1, ss.AEA2, ss.AEA3, ss.AEA4, ss.AEA5, ss.AEA6]) > 0
         except:
             condition = False
         if condition:
-            ss_line += '        -analytical %s %s %s %s %s\n' % (
-            str(ss.AEA1), str(ss.AEA2), str(ss.AEA3), str(ss.AEA4), str(ss.AEA5))
-
+            ss_line += '        -analytical %s %s %s %s %s %s\n' % (
+            str(ss.AEA1), str(ss.AEA2), str(ss.AEA3), str(ss.AEA4), str(ss.AEA5), str(ss.AEA6))
+        # gamma
+        try:
+            condition = sum(abs(i) for i in [ss.GammaA, ss.GammaB]) > 0 or ss.GammaB > 0
+        except:
+            condition = False
+        if condition:
+            ss_line += '        -gamma\t%s %s\n' % (str(ss.GammaA), str(ss.GammaB))
+        # dw
         try:
             condition = sum(abs(i) for i in [ss.DW1, ss.DW2, ss.DW3, ss.DW4]) > 0
         except:
@@ -95,7 +175,7 @@ class PhreeqcPrepare:
         if condition:
             ss_line += '        -dw %s %s %s %s\n' % (
             str(ss.DW1), str(ss.DW2), str(ss.DW3), str(ss.DW4))
-
+        # Vm
         try:
             condition = sum(abs(i) for i in [ss.VM1, ss.VM2, ss.VM3, ss.VM4, ss.VM5, ss.VM6, ss.VM7, ss.VM8, ss.VM9, ss.VM10]) > 0
         except:
@@ -106,37 +186,26 @@ class PhreeqcPrepare:
             str(ss.VM6), str(ss.VM7), str(ss.VM8), str(ss.VM9), str(ss.VM10),
             )
 
+        # Tc
         try:
-            condition = sum(abs(i) for i in [ss.GammaA, ss.GammaB]) > 0 or ss.GammaB > 0
+            condition = sum(abs(i) for i in [ss.TC]) > 0
         except:
             condition = False
         if condition:
-            ss_line += '        -gamma\t%s %s\n' % (str(ss.GammaA), str(ss.GammaB))
-
-        if ss.NoCheck:
-            ss_line += '        -no_check\n'
-        if ss.MoleBalance:
-            ss_line += '        -mole_balance\t%s\n' % str(ss.MoleBalance)
-        return ss_line
-
-    def format_phases(self, ss):
-        ss_line = '%s\n' % ss.PhaseName
-        ss_line += '    %s\n        log_k\t%s\n' % (ss.Reaction, str(ss.LogK))
-        if ss.DeltaH > 0:
-            ss_line += '        delta_h\t%s %s\n' % (str(ss.DeltaH), ss.DeltaHUnits)
-        if sum([ss.AEA1, ss.AEA2, ss.AEA3, ss.AEA4, ss.AEA5]) > 0:
-            ss_line += '        -a_e %s %s %s %s %s\n' % (
-            str(ss.AEA1), str(ss.AEA2), str(ss.AEA3), str(ss.AEA4), str(ss.AEA5))
-        if sum([ss.VM1, ss.VM2, ss.VM3, ss.VM4, ss.VM5, ss.VM6, ss.VM7, ss.VM8, ss.VM9, ss.VM10]) > 0:
-            ss_line += '        -Vm %s %s %s %s %s %s %s %s %s %s\n' % (
-            str(ss.VM1), str(ss.VM2), str(ss.VM3), str(ss.VM4), str(ss.VM5),
-            str(ss.VM6), str(ss.VM7), str(ss.VM8), str(ss.VM9), str(ss.VM10),
-            )
-        if sum([ss.TC]) > 0:
             ss_line += '        -T_c\t%s\n' % str(ss.TC)
-        if sum([ss.PC]) > 0:
+        # Pc
+        try:
+            condition = sum(abs(i) for i in [ss.PC]) > 0
+        except:
+            condition = False
+        if condition:
             ss_line += '        -P_c\t%s\n' % str(ss.PC)
-        if sum([ss.OMEGA]) > 0:
+        # Omega
+        try:
+            condition = sum(abs(i) for i in [ss.OMEGA]) > 0
+        except:
+            condition = False
+        if condition:
             ss_line += '        -Omega\t%s\n' % str(ss.OMEGA)
 
         return ss_line
@@ -266,6 +335,7 @@ class PhreeqcPrepare:
             fout.write('SOLUTION 1\n')
             fout.write('    units %s\n' % obj.SPUnit)
             #fout.write('    pH %s\n' % str(ph))
+            #fout.write('    pH %s\n' % str(7.0))
             if obj.SPTitrant in ['NaOH']:
                 fout.write('    pH %s\n' % str(obj.SPpHMin))
             elif obj.SPTitrant in ['HCl', 'HNO3', 'H2SO4', 'H2S']:
@@ -349,7 +419,7 @@ class PhreeqcPrepare:
         #for ele in species_phreeqcdb:
         #    ss_obj_phreeqcdb += list(SolutionSpecies.objects.filter(Reaction__contains = ele))
         for ele in species_calcdata:
-            ss_obj_calcdata += list(CalcSolutionSpecies.objects.filter(Reaction__contains = ele))
+            ss_obj_calcdata += list(CalcSolutionSpecies.objects.filter(Reaction__contains=ele))
         # generate the Solution_Species data block
         output_line += 'SOLUTION_SPECIES\n'
         for ss in ss_obj_phreeqcdb + ss_obj_calcdata:

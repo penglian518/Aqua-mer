@@ -130,7 +130,7 @@ class PhreeqcDB:
                 logk = 0.0
                 deltah = 0.0
                 deltaunit = 'kJ/mol'
-                a1 = a2 = a3 = a4 = a5 = 0.0
+                a1 = a2 = a3 = a4 = a5 = a6 = 0.0
                 dw1 = dw2 = dw3 = dw4 = 0.0
                 vm1 = vm2 = vm3 = vm4 = vm5 = vm6 = vm7 = vm8 = vm9 = vm10 = 0.0
                 gammaA = 0.0
@@ -167,6 +167,10 @@ class PhreeqcDB:
                             a5 = subline.strip().split()[5]
                         except:
                             a5 = 0.0
+                        try:
+                            a6 = subline.strip().split()[6]
+                        except:
+                            a6 = 0.0
                     if subline.strip().startswith('-dw'):
                         dw1 = subline.strip().split()[1]
                         try:
@@ -238,6 +242,7 @@ class PhreeqcDB:
                 d['a3'] = a3
                 d['a4'] = a4
                 d['a5'] = a5
+                d['a6'] = a6
                 d['dw1'] = dw1
                 d['dw2'] = dw2
                 d['dw3'] = dw3
@@ -280,7 +285,7 @@ class PhreeqcDB:
                 logk = 0.0
                 deltah = 0.0
                 deltaunit = 'kJ/mol'
-                a1 = a2 = a3 = a4 = a5 = 0.0
+                a1 = a2 = a3 = a4 = a5 = a6 = 0.0
                 vm1 = vm2 = vm3 = vm4 = vm5 = vm6 = vm7 = vm8 = vm9 = vm10 = 0.0
                 Tc = 0.0
                 Pc = 0.0
@@ -329,6 +334,10 @@ class PhreeqcDB:
                             a5 = subline.strip().split()[5]
                         except:
                             a5 = 0.0
+                        try:
+                            a6 = subline.strip().split()[6]
+                        except:
+                            a6 = 0.0
                     if subline.strip().startswith('-Vm'):
                         vm1 = float(subline.strip().split()[1])
                         try:
@@ -382,6 +391,7 @@ class PhreeqcDB:
                 d['a3'] = a3
                 d['a4'] = a4
                 d['a5'] = a5
+                d['a6'] = a6
 
                 d['Tc'] = Tc
                 d['Pc'] = Pc
@@ -603,6 +613,7 @@ class PhreeqcDB:
             inst.AEA3 = d['a3']
             inst.AEA4 = d['a4']
             inst.AEA5 = d['a5']
+            inst.AEA6 = d['a6']
             inst.DW1 = d['dw1']
             inst.DW2 = d['dw2']
             inst.DW3 = d['dw3']
@@ -666,6 +677,7 @@ class PhreeqcDB:
             inst.AEA3 = d['a3']
             inst.AEA4 = d['a4']
             inst.AEA5 = d['a5']
+            inst.AEA6 = d['a6']
             inst.TC = d['Tc']
             inst.PC = d['Pc']
             inst.OMEGA = d['Omega']
@@ -831,8 +843,8 @@ if __name__ == '__main__':
 
     # which db to use
     #db = 'minteq.v4.dat.dat'
-    db = 'Additions_SCB.dat'
-    #db = 'phreeqc.dat'
+    #db = 'Additions_SCB.dat'
+    db = 'phreeqc.dat'
 
     if db in ['phreeqc.dat']:
         DBID = 'Phreeqc_default'
@@ -856,7 +868,7 @@ if __name__ == '__main__':
     #l = phDB.getSpecies('%s/%s/SOLUTION_SPECIES.txt' % (tmpDir, db))
     #phDB.inputSpecies(SolutionSpecies, l, DBID=DBID, RefID=RefID)
 
-    #l = phDB.getPhases('%s/%s/PHASES.txt' % (tmpDir, db))
+    l = phDB.getPhases('%s/%s/PHASES.txt' % (tmpDir, db))
     #phDB.inputPhases(Phases, l, DBID=DBID, RefID=RefID)
 
     #l = phDB.getSurfaceMaster('%s/%s/SURFACE_MASTER_SPECIES.txt' % (tmpDir, db))
@@ -881,11 +893,12 @@ if __name__ == '__main__':
     #l = phDB.getSpecies('%s/%s/SOLUTION_SPECIES.txt' % (tmpDir, db))
     #phDB.inputSpecies(SolutionSpecies, l, DBID=DBID, RefID=RefID)
 
-    l = phDB.getPhases('%s/%s/PHASES.txt' % (tmpDir, db))
-    phDB.inputPhases(Phases, l, DBID=DBID, RefID=RefID)
+    #l = phDB.getPhases('%s/%s/PHASES.txt' % (tmpDir, db))
+    #phDB.inputPhases(Phases, l, DBID=DBID, RefID=RefID)
 
 
-    #for i in range(len(l)):
-    #    print(l[i])
+    for i in range(len(l)):
+        if l[i]['a6'] != 0:
+            print(l[i])
 
 

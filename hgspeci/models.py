@@ -91,7 +91,7 @@ class HgSpeciJob(models.Model):
     SPRedoxValue = models.CharField(max_length=20, default='4.0')
     SPDensity = models.FloatField(blank=False, default=1.0)
     SPTitrant = models.CharField(max_length=10, choices=Titrants, default='pe')
-    SPTitrantConcentration = models.FloatField(max_length=20, default=100.0)
+    SPTitrantConcentration = models.FloatField(max_length=20, default=10.0)
     SPDBtoUse = models.CharField(max_length=20, choices=Databases, default='phreeqc+aquamer')
 
     # do not use anymore
@@ -256,6 +256,7 @@ class SPSolutionSpecies(models.Model):
     AEA3 = models.FloatField(blank=True, null=True, default=0.0)
     AEA4 = models.FloatField(blank=True, null=True, default=0.0)
     AEA5 = models.FloatField(blank=True, null=True, default=0.0)
+    AEA6 = models.FloatField(blank=True, null=True, default=0.0)
     DW1 = models.FloatField(blank=True, null=True, default=0.0)
     DW2 = models.FloatField(blank=True, null=True, default=0.0)
     DW3 = models.FloatField(blank=True, null=True, default=0.0)
@@ -284,7 +285,7 @@ class SPSolutionSpeciesForm(ModelForm):
     class Meta:
         model = SPSolutionSpecies
         fields = ['JobID', 'Reaction', 'LogK', 'DeltaH', 'DeltaHUnits', 'GammaA', 'GammaB',
-                  'AEA1', 'AEA2', 'AEA3', 'AEA4', 'AEA5',
+                  'AEA1', 'AEA2', 'AEA3', 'AEA4', 'AEA5', 'AEA6',
                   'DW1', 'DW2', 'DW3', 'DW4', 'VM1', 'VM2', 'VM3', 'VM4', 'VM5', 'VM6', 'VM7', 'VM8', 'VM9', 'VM10',
                   'NoCheck', 'MoleBalance', 'Note']
         widgets = {
@@ -296,6 +297,7 @@ class SPSolutionSpeciesForm(ModelForm):
             'AEA3': forms.TextInput(attrs={'size': 5}),
             'AEA4': forms.TextInput(attrs={'size': 5}),
             'AEA5': forms.TextInput(attrs={'size': 5}),
+            'AEA6': forms.TextInput(attrs={'size': 5}),
             'DW1': forms.TextInput(attrs={'size': 5}),
             'DW2': forms.TextInput(attrs={'size': 5}),
             'DW3': forms.TextInput(attrs={'size': 5}),
@@ -322,6 +324,7 @@ class SPSolutionSpeciesForm(ModelForm):
             'AEA3': _('A3'),
             'AEA4': _('A4'),
             'AEA5': _('A5'),
+            'AEA6': _('A6'),
             'DW1': _('dw1'),
             'DW2': _('dw2'),
             'DW3': _('dw3'),
