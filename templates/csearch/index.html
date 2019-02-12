@@ -37,22 +37,22 @@
     <i>Algorithms of conformational search that are available in this module:</i><p>
     <p><b>A. Random sampling with MM optimization</b><p>
     <p>This algorithm searches the conformational space by rotating single bonds in the molecule randomly.
-    Geometry optimization using molecular forcefields will performed after the rotation. This method is fast and
+    Geometry optimization using molecular forcefields will be performed after the rotation. This method is fast and
     the accuracy is moderated. The drawbacks of this method include 1. it cannot deal with bonds breaking and forming;
     2. the results for compounds with heavy metal atoms may not correct.<p>
     <p><b>B. Random sampling with QM optimization </b> <p>
     <p>Similar to the Random sampling algorithm, except that semi-empirical QM methods will be applied to
-    perform the geometry optimization. QM calculations are time consuming, therefore, this method is slow compared to
+    perform the geometry optimization. QM calculations are time-consuming, therefore, this method is slow compared to
     the first one. This method is supposed to be better than the MM method above, but it is not absolutely true.
-    However, the users are suggested to try the MM method before jump to this one.<p>
+    However, the users are suggested to try the MM method before jumping to this one.<p>
     <p><b>C. MD simulation with replica exchange sampling</b> <p>
     <p>Different from the random searching methods, this algorithm will run MD simulations to sampling the conformations.
     It provides explicit solvent, generalized Born implicit solvent (GBIS), and gas phase simulations.
     Because the simulation is based on MM level theory, it cannot deal with chemical reactions,
-    neither compounds with heavy metal atoms.<p>
+    either compounds with heavy metal atoms.<p>
 
     <br>
-    <h3>Flowchart of conformational search module</h3>
+    <h3>Flowchart of Conformational Search module</h3>
     <div style="max-width:90%">
         <div class="mxgraph" style="max-width:100%;" data-mxgraph="{&quot;highlight&quot;:&quot;#0000ff&quot;,&quot;lightbox&quot;:false,&quot;nav&quot;:true,&quot;edit&quot;:&quot;_blank&quot;,&quot;xml&quot;:&quot;&lt;mxfile userAgent=\&quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:62.0) Gecko/20100101 Firefox/62.0\&quot; version=\&quot;9.3.0\&quot; editor=\&quot;www.draw.io\&quot; type=\&quot;device\&quot;&gt;&lt;diagram name=\&quot;Page-1\&quot; id=\&quot;efa7a0a1-bf9b-a30e-e6df-94a7791c09e9\&quot;&gt;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&lt;/diagram&gt;&lt;/mxfile&gt;&quot;}"></div>
     </div>

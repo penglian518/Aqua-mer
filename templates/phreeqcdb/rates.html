@@ -23,8 +23,14 @@
         </tr>
     </thead>
         <tbody>
-            <tr><td>Rate expression</td><td>Alphanumeric character string that identifies the rate expression, no spaces are allowed.</td></tr>
-            <tr><td>Numbered Basic statement</td><td>A valid Basic language statement that must be numbered. The statements are evaluated in numerical order. The sequence of statements must extrapolate the rate of reaction over the time subinterval given by the internally defined variable TIME. The last statement must be " SAVE expression ", where the value of expression is the moles of reaction that occur during time subinterval TIME. Statements and functions that are available through the Basic interpreter are listed in tables 8 and 9. Parameters defined in the KINETICS data block are also available through the array PARM.</td></tr>
+            <tr><td>Rate expression</td><td>An alphanumeric character string that identifies the rate expression, no spaces are allowed.</td></tr>
+            <tr><td>Numbered Basic statement</td><td>A valid Basic language statement that must be numbered.
+                The statements are evaluated in numerical order.
+                The sequence of statements must extrapolate the rate of reaction over the time subinterval
+                given by the internally defined variable TIME. The last statement must be " SAVE expression ",
+                where the value of the expression is the moles of reaction that occur during time subinterval TIME.
+                Statements and functions that are available through the Basic interpreter are listed in tables 8 and 9.
+                Parameters defined in the KINETICS data block are also available through the array PARM.</td></tr>
         </tbody>
 </table>
 

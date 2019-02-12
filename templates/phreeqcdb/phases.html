@@ -10,7 +10,7 @@
 <div id="content">
 <div id="title">PHASES</div>
 <div id=main>
-<div><p>This keyword data block is used to define a name, chemical reaction, log K , and temperature dependence of
+<div><p>This keyword data block is used to define a name, chemical reaction, log K, and temperature dependence of
     log K for each gas component and mineral that is used for speciation, batch-reaction, transport, or inverse-modeling
     calculations. Normally, this data block is included in the database file and only additions and modifications are
     included in the input file.</p></div>
@@ -25,12 +25,12 @@
     </thead>
         <tbody>
             <tr><td>Phase Name</td><td>Alphanumeric name of phase, no spaces are allowed.</td></tr>
-            <tr><td>Reaction</td><td>Dissolution reaction for phase to aqueous species. Any aqueous species, including
-                e<sup>-</sup> , may be used in the dissolution reaction. The chemical formula for the defined phase must be the first chemical formula on the left-hand side of the equation. The dissolution reaction must precede any identifiers related to the phase. The stoichiometric coefficient for the phase in the chemical reaction must be 1.0.</td></tr>
+            <tr><td>Reaction</td><td>Dissolution reaction for the phase to aqueous species. Any aqueous species, including
+                e<sup>-</sup>, may be used in the dissolution reaction. The chemical formula for the defined phase must be the first chemical formula on the left-hand side of the equation. The dissolution reaction must precede any identifiers related to the phase. The stoichiometric coefficient for the phase in the chemical reaction must be 1.0.</td></tr>
             <tr><td>log <i>K</i></td><td>log <i>K</i> at 25 C for the reaction. Log K must be 0.0 for primary master species.</td></tr>
             <tr><td>&#916;H</td><td>Enthalpy of reaction at 25 C for the reaction.</td></tr>
             <tr><td>Units</td><td>Units for &#916;H.</td></tr>
-            <tr><td>A1 - A5</td><td>Parameters used in the analytical expression that defines log <i>K</i> as a functino of temperature,
+            <tr><td>A1 - A5</td><td>Parameters used in the analytical expression that defines log <i>K</i> as a function of temperature,
                     e.g. log<sub>10</sub><i>K</i> = A1 + A2*T + A3/T + A4*log<sub>10</sub><i>T</i> + A5/T<sup>2</sup>, where T is in Kelvin.</td></tr>
         </tbody>
 </table>
