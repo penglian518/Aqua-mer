@@ -169,10 +169,10 @@ class RandomSearchForm(ModelForm):
         fields = ['JobID', 'CurrentStep', 'Successful',
                   'RandomForcefield', 'RandomNRotamers', 'RandomNSteps', 'RandomEPS', 'RandomNMinSamples']
         labels = {
-            'RandomForcefield': _('Forcefield used for minimization'),
+            'RandomForcefield': _('Force field used for minimization'),
             'RandomNRotamers': _('Total number of rotamers to generate'),
             'RandomNSteps': _('Max minimization steps for each rotamer'),
-            'RandomEPS': _('eps value used by DBScan clustering'),
+            'RandomEPS': _('epsilon value used by DBScan clustering'),
             'RandomNMinSamples': _('Minimum number of samples allowed for a cluster'),
         }
         widgets = {
@@ -187,7 +187,7 @@ class ReclusteringForm(ModelForm):
         fields = ['JobID', 'CurrentStep', 'Successful', 'RandomReclustering',
                   'RandomEPS', 'RandomNMinSamples']
         labels = {
-            'RandomEPS': _('eps value used by DBScan clustering'),
+            'RandomEPS': _('epsilon value used by DBScan clustering'),
             'RandomNMinSamples': _('Minimum number of samples allowed for a cluster'),
         }
         widgets = {
@@ -225,7 +225,7 @@ class DFTSearchForm(ModelForm):
             'DFTSteps': _('Maximum number of optimization steps for each structure.'),
             'DFTFmax': _('Maximum force of the optimized structure.'),
 
-            'RandomEPS': _('eps value used by DBScan clustering'),
+            'RandomEPS': _('epsilon value used by DBScan clustering'),
             'RandomNMinSamples': _('Minimum number of samples allowed for a cluster'),
         }
         widgets = {
@@ -251,7 +251,7 @@ class MPSearchForm(ModelForm):
             'MPSteps': _('Maximum number of optimization steps for each structure.'),
             'MPFmax': _('Maximum force of the optimized structure.'),
 
-            'RandomEPS': _('eps value used by DBScan clustering'),
+            'RandomEPS': _('epsilon value used by DBScan clustering'),
             'RandomNMinSamples': _('Minimum number of samples allowed for a cluster'),
         }
         widgets = {

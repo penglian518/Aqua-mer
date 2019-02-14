@@ -37,12 +37,12 @@
     <i>Algorithms of conformational search that are available in this module:</i><p>
     <p><b>A. Random sampling with MM optimization</b><p>
     <p>This algorithm searches the conformational space by rotating single bonds in the molecule randomly.
-    Geometry optimization using molecular forcefields will be performed after the rotation. This method is fast and
+    Geometry optimization using molecular force fields will be performed after the rotation. This method is fast and
     the accuracy is moderated. The drawbacks of this method include 1. it cannot deal with bonds breaking and forming;
     2. the results for compounds with heavy metal atoms may not correct.<p>
     <p><b>B. Random sampling with QM optimization </b> <p>
     <p>Similar to the Random sampling algorithm, except that semi-empirical QM methods will be applied to
-    perform the geometry optimization. QM calculations are time-consuming, therefore, this method is slow compared to
+    perform the geometry optimization. QM calculations are time-consuming. Therefore, this method is slow compared to
     the first one. This method is supposed to be better than the MM method above, but it is not absolutely true.
     However, the users are suggested to try the MM method before jumping to this one.<p>
     <p><b>C. MD simulation with replica exchange sampling</b> <p>

@@ -2,7 +2,7 @@
 #!/usr/bin/env python
 #
 # @purpose
-#   to perform a conformation search with randomly single bond rotation and DBScan clustering
+#   to perform a conformational search with randomly single bond rotation and DBScan clustering
 #
 # @Author Peng Lian
 # @Email penglian518@gmail.com
@@ -593,7 +593,7 @@ class CSearchRand:
 if __name__ == '__main__':
     # parse the arguments
     parser = argparse.ArgumentParser(
-        description='Perform conformation search by randomly assign the dihedral angle of single bonds.')
+        description='Perform conformational search by randomly assign the dihedral angle of single bonds.')
     parser.add_argument("--NRotamers", nargs='?', type=int, default=1000, help="Number of rotamers to generate")
     parser.add_argument("--Forcefield", nargs='?', type=str, default="UFF", help="Force filed to use")
     parser.add_argument("--NStep", nargs='?', type=int, default=2500, help="Max minimization steps for each rotamer")

@@ -44,10 +44,10 @@
 
     {% if Item.CSearchType == 'Random' %}
         <tr><td>Method</td><td>Random Search</td></tr>
-        <tr><td>Forcefield</td><td>{{ Item.RandomForcefield }}</td></tr>
+        <tr><td>Force field</td><td>{{ Item.RandomForcefield }}</td></tr>
         <tr><td>Total number of rotamers to generate</td><td>{{ Item.RandomNRotamers }}</td></tr>
         <tr><td>Max minimization steps for each rotamer</td><td>{{ Item.RandomNSteps }}</td></tr>
-        <tr><td>eps value used by DBScan clustering</td><td>{{ Item.RandomEPS }}</td></tr>
+        <tr><td>epsilon value used by DBScan clustering</td><td>{{ Item.RandomEPS }}</td></tr>
         <tr><td>Minimum number of samples allowed for a cluster</td><td>{{ Item.RandomNMinSamples }}</td></tr>
     {% endif %}
 
@@ -62,7 +62,7 @@
         <tr><td>Maximum number of optimization steps for each structure</td><td>{{ Item.MPSteps }}</td></tr>
         <tr><td>Maximum force of the optimized structure</td><td>{{ Item.MPFmax }}</td></tr>
 
-        <tr><td>eps value used by DBScan clustering</td><td>{{ Item.RandomEPS }}</td></tr>
+        <tr><td>epsilon value used by DBScan clustering</td><td>{{ Item.RandomEPS }}</td></tr>
         <tr><td>Minimum number of samples allowed for a cluster</td><td>{{ Item.RandomNMinSamples }}</td></tr>
     {% endif %}
 
