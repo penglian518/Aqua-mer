@@ -1,6 +1,6 @@
-# [*AQUA-MER* : Mercury Aqueous Speciation Database](https://aquamer.ornl.gov/)
+# [*AQUA-MER* : Databases and Aqueous Speciation Server](https://aquamer.ornl.gov/)
 
-*AQUA-MER* is the first online resource that realizes multi-scale modeling of Hg biogeochemistry in the environmental water systems. It has four modules, a speciation calculator for mesoscale modeling, a computational chemistry toolkit for atomic-scale and quantum-scale modeling, a calculated stability constants database and an experimental measured stability constants database.
+*AQUA-MER* is the first online resource that realizes multiscale modeling of Hg biogeochemistry in the environmental water systems. It has four modules, a speciation calculator for mesoscale modeling, a computational chemistry toolkit for atomic-scale and quantum-scale modeling, a calculated stability constants database and an experimental measured stability constants database.
 
 ## Getting Started
 
