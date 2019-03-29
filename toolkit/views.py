@@ -77,9 +77,9 @@ def reviewcoors(request, JobID):
             model_instance.Successful = True
             model_instance.save()
             if model_instance.Name == 'csearch':
-                return redirect('/toolkit/trans/csearch/%s/' % JobID)
+                return redirect('/toolkit/trans/csearch/%s' % JobID)
             elif model_instance.Name == 'gsolv':
-                return redirect('/toolkit/trans/gsolv/%s/' % JobID)
+                return redirect('/toolkit/trans/gsolv/%s' % JobID)
             elif model_instance.Name == 'pka':
                 return redirect('/toolkit/trans/pka/%s' % JobID)
             elif model_instance.Name == 'logk':
@@ -95,6 +95,7 @@ def trans(request, JobType, JobID):
     '''to transfer the job from toolkit to other modules'''
     item = get_object_or_404(ToolkitJob, JobID=JobID)
     item_dict = model_to_dict(item)
+    item_dict.pop('id', None)
 
     # copy the job infor to the module
     if JobType in ['csearch']:

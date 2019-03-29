@@ -7,7 +7,7 @@ from .models import ToolkitJob
 class ToolkitJobAdmin(admin.ModelAdmin):
     model = ToolkitJob
 
-    list_display = ('JobID', 'Name', 'CurrentStep', 'CurrentStatus', 'Successful', 'FailedReason', 'CreatedDate',
+    list_display = ('id', 'JobID', 'Name', 'CurrentStep', 'CurrentStatus', 'Successful', 'FailedReason', 'CreatedDate',
                     'SmilesStr', 'UploadedFile', 'UploadedFileType', 'Note')
 
 admin.site.register(ToolkitJob, ToolkitJobAdmin)

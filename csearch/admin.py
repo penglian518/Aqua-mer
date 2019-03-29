@@ -7,7 +7,7 @@ from .models import CSearchJob
 class CSearchJobAdmin(admin.ModelAdmin):
     model = CSearchJob
 
-    list_display = ('JobID', 'Name', 'CurrentStep', 'CurrentStatus', 'Successful', 'FailedReason', 'CreatedDate',
+    list_display = ('id', 'JobID', 'Name', 'CurrentStep', 'CurrentStatus', 'Successful', 'FailedReason', 'CreatedDate',
                     'SmilesStr', 'UploadedFile', 'UploadedFileType', 'CSearchType',
 
                     'RandomForcefield', 'RandomNRotamers', 'RandomNSteps', 'RandomEPS', 'RandomNMinSamples',

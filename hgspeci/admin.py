@@ -24,7 +24,7 @@ class HgSpeciJobAdmin(admin.ModelAdmin):
                SPMasterSpeciesInline,
                SPSolutionSpeciesInline
                ]
-    list_display = ('JobID', 'Name', 'CurrentStep', 'CurrentStatus', 'Successful', 'FailedReason', 'CreatedDate',
+    list_display = ('id', 'JobID', 'Name', 'CurrentStep', 'CurrentStatus', 'Successful', 'FailedReason', 'CreatedDate',
                     'SPUnit', 'SPTemperature', 'SPpHMin', 'SPpHMax', 'SPpHIncrease', 'SPRedoxMethod', 'SPRedoxValue',
                     'SPDensity', 'SPTitrant', 'SPTitrantConcentration', 'SPDBtoUse', 'SPpe', 'SPRedox')
 
