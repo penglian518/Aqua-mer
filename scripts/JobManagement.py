@@ -428,8 +428,15 @@ class JobManagement:
 
             uploaded_file = '%s/%s' % (job_dir, file_name)
             input_file = '%s/%s-%d.%s' % (job_dir, JobType, job_id, file_type)
-            # copy input file to input.file_type
-            shutil.copy(uploaded_file, input_file)
+            try:
+                # copy input file to input.file_type
+                shutil.copy(uploaded_file, input_file)
+            except:
+                obj.FailedReason += 'Could not find the uploaded file (%s)' % uploaded_file
+                obj.CurrentStatus = '3'
+                obj.Successful = False
+                obj.save()
+                return
         else:
             file_type = 'smi'
 
