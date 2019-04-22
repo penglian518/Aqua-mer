@@ -202,9 +202,35 @@ def input_solutionspecies(request, JobID):
 
 def elements(request):
     '''This function displays all avaialbe elemetns in the database'''
+    ele = ''
+
+    # genearte the query string.
+    query_str = "(Q(DBSource__DBID='Phreeqc_default') | Q(DBSource__DBID='Aquamer_default')) & Q(Element__istartswith='%s')" % ele
+    query_str_calc = "Q(Element__istartswith='%s')" % ele
+
+    masters = []
+    master_calc = []
+    try:
+        master = list(SolutionMasterSpecies.objects.filter(eval(query_str)))
+    except:
+        master = []
+
+    try:
+        master_calc = list(CalcSolutionMasterSpecies.objects.filter(eval(query_str_calc)))
+    except:
+        master_calc = []
+
+    # remove repeat species
+    master_species = [i.Species for i in master]
+    master_calc_new = []
+    for j in master_calc:
+        if j.Species not in master_species:
+            master_calc_new.append(j)
+
     #clientStatistics(request)
     # from phreeqcdb
-    all_master = SolutionMasterSpecies.objects.all()
+    #all_master = SolutionMasterSpecies.objects.all()
+    all_master = master
     all_master = sorted(all_master, key=lambda x: x.Element)
     # get refs
     all_refs = []
@@ -212,7 +238,8 @@ def elements(request):
         all_refs.append(p.Ref)
 
     # from calcdata
-    all_master_calc = CalcSolutionMasterSpecies.objects.all()
+    #all_master_calc = CalcSolutionMasterSpecies.objects.all()
+    all_master_calc = master_calc_new
     all_master_calc = sorted(all_master_calc, key=lambda x: x.Element)
     # get refs
     all_refs_calc = []

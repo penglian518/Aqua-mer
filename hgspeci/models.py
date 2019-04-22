@@ -25,30 +25,30 @@ class HgSpeciJob(models.Model):
     )
 
     Units = (
-        ('ppt', 'parts per thousand (ppt)'),
-        ('ppm', 'parts per million (ppm)'),
-        ('ppb', 'parts per billion (ppb)'),
+        ('ppt', 'ppt (parts per thousand)'),
+        ('ppm', 'ppm (parts per million)'),
+        ('ppb', 'ppb (parts per billion)'),
 
-        ('mol/L', 'mole per liter (mol/L)'),
-        ('umol/L', 'micromoles per liter (umol/L)'),
-        ('mmol/L', 'millimoles per liter (mmol/L)'),
-        ('g/L', 'gram per liter (g/L)'),
-        ('ug/L', 'micrograms per liter (ug/L)'),
-        ('mg/L', 'milligrams per liter (mg/L)'),
+        ('mol/L', 'mol/L (mole per liter)'),
+        ('umol/L', 'umol/L (micromoles per liter)'),
+        ('mmol/L', 'mmol/L (millimoles per liter)'),
+        ('g/L', 'g/L (gram per liter)'),
+        ('ug/L', 'ug/L (micrograms per liter)'),
+        ('mg/L', 'mg/L (milligrams per liter)'),
 
-        ('mol/kgw', 'mole per kilogram water (mol/kgw)'),
-        ('umol/kgw', 'micromoles per kilogram water (umol/kgw)'),
-        ('mmol/kgw', 'millimoles per kilogram water (mmol/kgw)'),
-        ('g/kgw', 'gram per kilogram water (g/kgw)'),
-        ('ug/kgw', 'micrograms per kilogram water (ug/kgw)'),
-        ('mg/kgw', 'milligrams per kilogram water (mg/kgw)'),
+        ('mol/kgw', 'mol/kgw (mole per kilogram water)'),
+        ('umol/kgw', 'umol/kgw (micromoles per kilogram water)'),
+        ('mmol/kgw', 'mmol/kgw (millimoles per kilogram water)'),
+        ('g/kgw', 'g/kgw (gram per kilogram water)'),
+        ('ug/kgw', 'ug/kgw (micrograms per kilogram water)'),
+        ('mg/kgw', 'mg/kgw (milligrams per kilogram water)'),
 
-        ('mol/kgs', 'mole per kilogram solution (mol/kgs)'),
-        ('umol/kgs', 'micromoles per kilogram solution (umol/kgs)'),
-        ('mmol/kgs', 'millimoles per kilogram solution (mmol/kgs)'),
-        ('g/kgs', 'gram per kilogram solution (g/kgs)'),
-        ('ug/kgs', 'micrograms per kilogram solution (ug/kgs)'),
-        ('mg/kgs', 'milligrams per kilogram solution (mg/kgs)'),
+        ('mol/kgs', 'mol/kgs (mole per kilogram solution)'),
+        ('umol/kgs', 'umol/kgs (micromoles per kilogram solution)'),
+        ('mmol/kgs', 'mmol/kgs (millimoles per kilogram solution)'),
+        ('g/kgs', 'g/kgs (gram per kilogram solution)'),
+        ('ug/kgs', 'ug/kgs (micrograms per kilogram solution)'),
+        ('mg/kgs', 'mg/kgs (milligrams per kilogram solution)'),
 
     )
 
