@@ -48,7 +48,7 @@ for {set j 0} {$j <= 2} {incr j} {
                     exec mv temp.dcd temp$m.dcd
                     exec rm temp$l.dcd
                 }
-                exec mv temp$m.dcd clusters_gbis/cluster$j.$h.dcd
+                exec mv temp$m.dcd clusters/cluster$j.$h.dcd
             }
         incr h
     }
