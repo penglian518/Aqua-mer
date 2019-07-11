@@ -1,6 +1,6 @@
 # [*AQUA-MER* : Databases and Aqueous Speciation Server](https://aquamer.ornl.gov/)
 
-*AQUA-MER* is the first online resource that realizes multiscale modeling of Hg biogeochemistry in the environmental water systems. It has four modules, a speciation calculator for mesoscale modeling, a computational chemistry toolkit for atomic-scale and quantum-scale modeling, a calculated stability constants database and an experimental measured stability constants database.
+*AQUA-MER* is the first online resource that realizes multiscale modeling of Hg speciation analysis in the environmental water systems with high-performance computing (HPC) clusters. It has four modules, a speciation calculator for mesoscale modeling, a computational chemistry toolkit for atomic-scale and quantum-scale modeling, a calculated stability constants database and an experimental measured stability constants database. These modules can be used independently. For example, computational chemistry toolkit is also useful in computer-aided drug design studies. With proper configurations, it can run time-consuming jobs, such as conformational search, pKa, and log K calculations, on large-scale HPC clusters in a parallel manner.
 
 ## Getting Started
 
