@@ -2,7 +2,10 @@ from ipware import get_client_ip
 from datetime import datetime
 from cyshg.models import StatisticsData
 
-#TODO: get the remote IP from the user, instead of the load balacer's IP. Given the current structure, may not possible.
+####
+#    Get the remote IP through X-Forwarded-For Header(XFF) of Apache.
+#    http://www.loadbalancer.org/blog/apache-and-x-forwarded-for-headers/
+####
 
 def clientStatistics(request):
     white_list_IPs = [
@@ -18,12 +21,11 @@ def clientStatistics(request):
 
     browser_info = '%s (%s); %s (%s); %s' % (browser_family, browser_version, os_family, os_version, device_family)
 
-    if IP[0] in white_list_IPs and browser_family == 'Other':
+    #if IP[0] in white_list_IPs and browser_family == 'Other':
+    if IP[0] in white_list_IPs:
         pass
     else:
         url = vistingPage(request)
-
-
 
         u = StatisticsData.objects.create()
         u.IP = IP[0]
