@@ -26,7 +26,7 @@ class HgSpeciJobAdmin(admin.ModelAdmin):
                ]
     list_display = ('id', 'JobID', 'Name', 'CurrentStep', 'CurrentStatus', 'Successful', 'FailedReason', 'CreatedDate',
                     'SPUnit', 'SPTemperature', 'SPpHMin', 'SPpHMax', 'SPpHIncrease', 'SPRedoxMethod', 'SPRedoxValue',
-                    'SPDensity', 'SPTitrant', 'SPTitrantConcentration', 'SPDBtoUse', 'SPpe', 'SPRedox')
+                    'SPDensity', 'SPTitrant', 'SPTitrantConcentration', 'SPDBtoUse', 'SPUserDefinedInput', 'SPpe', 'SPRedox')
 
 class SPElementsAdmin(admin.ModelAdmin):
     model = SPElements

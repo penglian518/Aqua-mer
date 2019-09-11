@@ -326,6 +326,15 @@ class PhreeqcPrepare:
         '''
         Requires not null in database!
         '''
+
+        if str(obj.SPUserDefinedInput) != '':
+            fout = open('%s/userdefined.phrq' % outdir, 'w')
+            fout.write(obj.SPUserDefinedInput)
+            fout.write('\n')
+            fout.close()
+            return
+
+
         pHrange = self.genpHRange(obj=obj)
 
         for ph in pHrange:
@@ -477,8 +486,15 @@ class PhreeqcPrepare:
         return
 
     def genJobScript(self, obj, outdir):
-        pHrange = self.genpHRange(obj=obj)
+        if str(obj.SPUserDefinedInput) != '':
+            fout = open('%s/runPhreeqc.sh' % outdir, 'w')
+            cmd = '''if [ -f userdefined.phrq -a -f aqua-mer.dat ]; then %s userdefined.phrq userdefined.out aqua-mer.dat; fi''' \
+                  % (self.phreeqc)
+            fout.write('%s\n' % cmd)
+            fout.close()
+            return
 
+        pHrange = self.genpHRange(obj=obj)
         fout = open('%s/runPhreeqc.sh' % outdir, 'w')
         for ph in pHrange:
             #cmd = '%s pH-%s.phrq pH-%s.out aqua-mer.dat' % (self.phreeqc, str(ph), str(ph))
@@ -559,6 +575,13 @@ class PhreeqcPrepare:
             except:
                 pass
 
+        if str(obj.SPUserDefinedInput) != '':
+            for f in os.listdir(outdir):
+                if f not in ['aqua-mer.dat', 'phreeqc.log', 'runPhreeqc.sh']:
+                    try:
+                        shutil.copy('%s/%s' % (outdir, f), '%s/%s/' % (outdir, dir_download))
+                    except:
+                        pass
         return
 
 

@@ -1,0 +1,44 @@
+{% extends 'base_index.html' %}
+{% load static %}
+
+
+{% block content %}
+<!-- nav box on the left -->
+{% include 'hgspeci/memu.html' %}
+
+<!-- content on the right -->
+<div id="content">
+<div id="title">Step 3. Results</div>
+<div id=main>
+
+    <div>This is an user-defined-input calculation. The output cannot be displayed.
+        <p>JobID: {{ JobID }}</p> </div>
+        To DOWNLOAD the input and output files, click <a href="/hgspeci/download/{{ Item.JobID }}">HERE</a>. <br><br>
+        To REVISE the input parameters, click <a href="/hgspeci/revise/{{ Item.JobID }}">HERE</a>.
+        </p>
+
+        <br>
+        <b>Your input file is:</b>
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_inp" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/hgspeci/displayfile/{{ Item.JobID }}/input/" ></iframe>
+        </p>
+
+        <b>Your output file is:</b>
+        <p>
+            <hr width="40%" color="#000000" size="1" style="float:left"><br>
+            <iframe id="ifm_out" seamless onload=resizeIframe(this) frameborder="0" width="80%" src="/hgspeci/displayfile/{{ Item.JobID }}/output/" ></iframe>
+        </p>
+
+</div></div>
+
+
+
+<script type="text/javascript">
+  function resizeIframe(iframe) {
+    iframe.height = 300 + "px";
+  }
+
+}
+</script>
+{% endblock %}

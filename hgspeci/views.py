@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
 from django.db.models import Q
 from django.forms import inlineformset_factory
-from .models import HgSpeciJob, SPElements, SPElementsForm, ParameterForm, SPDBtoUseForm
+from .models import HgSpeciJob, SPElements, SPElementsForm, ParameterForm, SPDBtoUseForm, UserDefineForm
 from .models import SPMasterSpecies, SPMasterSpeciesForm, SPSolutionSpecies, SPSolutionSpeciesForm, QueryForm
 from phreeqcdb.models import SolutionMasterSpecies, SolutionSpecies
 from calcdata.models import CalcSolutionMasterSpecies, CalcSolutionSpecies
@@ -199,6 +199,35 @@ def input_solutionspecies(request, JobID):
     return render(request, 'hgspeci/input_solutionspecies.html',
                   {'paraform': paraform, 'speciesformset': speciesformset, 'success': success})
 
+def userdefine(request, JobID):
+    #clientStatistics(request)
+    # get the job handle
+    try:
+        SPJob = HgSpeciJob.objects.get(JobID=JobID)
+    except:
+        SPJob = HgSpeciJob(JobID=JobID)
+
+
+    if request.method == 'POST':
+        paraform = UserDefineForm(request.POST, request.FILES, instance=SPJob, prefix='userdefine')
+
+        if paraform.is_valid():
+            model_instance = paraform.save(commit=False)
+            model_instance.JobID = JobID
+            model_instance.CurrentStep = "0"
+            model_instance.Successful = True
+            model_instance.save()
+            paraform.save()
+
+            return redirect('/hgspeci/results/%d' % int(SPJob.JobID))
+    else:
+        paraform = UserDefineForm(instance=SPJob, prefix='userdefine')
+
+    return render(request, 'hgspeci/input_userdefine.html',
+                  {'paraform': paraform, 'Item': SPJob})
+
+
+
 
 def elements(request):
     '''This function displays all avaialbe elemetns in the database'''
@@ -309,6 +338,9 @@ def results(request, JobID, JobType='hgspeci'):
     if item.CurrentStatus == '2':
         clientStatistics(request)
         # the job is finished, display the results.
+
+        if str(item.SPUserDefinedInput) != '':
+            return render(request, 'hgspeci/results_userdefine.html', {'JobID': JobID, 'Item': item})
 
 
         # get data for plotting the results
@@ -516,6 +548,25 @@ def download(request, JobID, JobType='hgspeci'):
 
     raise Http404
 
+
+def displayfile(request, JobID, Type='input'):
+    """
+    display the input files
+    """
+    #clientStatistics(request)
+    item = get_object_or_404(HgSpeciJob, JobID=JobID)
+    # read xyz file
+    job_dir = get_job_dir(JobID)
+
+    if Type in ['input']:
+        inputfile = '%s/userdefined.phrq' % (job_dir)
+    elif Type in ['output']:
+        inputfile = '%s/userdefined.out' % (job_dir)
+
+    fcon = ''.join(open(inputfile).readlines())
+
+    #return HttpResponse(inputfile, content_type='text/plain')
+    return HttpResponse(fcon, content_type='text/plain')
 
 # function for ajax query
 def query_solutionmaster(request, JobID, ele):

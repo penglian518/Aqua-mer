@@ -93,6 +93,7 @@ class HgSpeciJob(models.Model):
     SPTitrant = models.CharField(max_length=10, choices=Titrants, default='pe')
     SPTitrantConcentration = models.FloatField(max_length=20, default=10.0)
     SPDBtoUse = models.CharField(max_length=20, choices=Databases, default='phreeqc+aquamer')
+    SPUserDefinedInput = models.TextField(blank=True, default='')
 
     # do not use anymore
     SPpe = models.FloatField(blank=False, default=4.0)                   # not use anymore
@@ -169,7 +170,27 @@ class ParameterForm(ModelForm):
             'CurrentStep': forms.HiddenInput(),
             'Successful': forms.HiddenInput(),
             'SPTitle': forms.TextInput(attrs={'size': 40}),
+        }
 
+class UserDefineForm(ModelForm):
+    """
+    for build up input file, excluding elements & concentrations which are handled by a separate formset
+    """
+    class Meta:
+        model = HgSpeciJob
+        fields = ['JobID', 'CurrentStep', 'Successful', 'SPUserDefinedInput']
+        labels = {
+            'SPUserDefinedInput': _('User-defined input file'),
+        }
+        help_texts = {
+            'SPUserDefinedInput': _('Please provide a complete input file.'),
+
+        }
+        widgets = {
+            'JobID': forms.HiddenInput(),
+            'CurrentStep': forms.HiddenInput(),
+            'Successful': forms.HiddenInput(),
+            'SPUserDefinedInput': forms.Textarea(attrs={'style': 'width: 80%;'}),
         }
 
 
