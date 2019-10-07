@@ -22,7 +22,7 @@ def clientStatistics(request):
     browser_info = '%s (%s); %s (%s); %s' % (browser_family, browser_version, os_family, os_version, device_family)
 
     #if IP[0] in white_list_IPs and browser_family == 'Other':
-    if IP[0] in white_list_IPs:
+    if IP[0] in white_list_IPs or device_family.strip().lower() in ['spider']:
         pass
     else:
         url = vistingPage(request)
