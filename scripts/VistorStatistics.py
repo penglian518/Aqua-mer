@@ -10,6 +10,7 @@ from cyshg.models import StatisticsData
 def clientStatistics(request):
     white_list_IPs = [
         '128.219.164.9',  # netscaler load balancer
+        '34.201.223.224', # scanners
     ]
 
     IP = clientIP(request)
