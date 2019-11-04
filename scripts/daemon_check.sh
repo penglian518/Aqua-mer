@@ -3,7 +3,7 @@
 # used by ROOT to check if the daemon.py is running or not.
 
 # find daemon process
-Num_proc=`ps -f -u p6n | grep daemon.py | wc -l`
+Num_proc=`ps -f -u p6n | grep daemon.py | grep -v grep | wc -l`
 checking_log="/home/p6n/workplace/website/cyshg/daemon_checking.log"
 
 if [ $Num_proc -eq 1 ]; then
