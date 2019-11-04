@@ -55,7 +55,7 @@ https://aquamer.ornl.gov/faq/
 ## Citations
 
 For the web site please cite:
-* paper is in preparation.
+* Peng Lian, Luanjing Guo, Deepa Devarajan, Jerry M. Parks, Scott L. Painter, Scott C. Brooks, and Jeremy C. Smith. The AQUA-MER Databases and Aqueous Speciation Server: A Web Resource for Multiscale Modeling of Mercury Speciation. (2019) Journal of Computational Chemistry. DOI: 10.1002/jcc.26081
 
 For calculation of ΔGsolv, pKa, and log K, please cite:
 * Peng Lian, Ryne C. Johnston, Jerry M. Parks, Jeremy C. Smith. Quantum Chemical Calculation of pKas of Environmentally Relevant Functional Groups: Carboxylic Acids, Amines and Thiols in Aqueous Solution. (2018) The Journal of Physical Chemistry A. 122 (17), pp 4366–4374. DOI: 10.1021/acs.jpca.8b01751
