@@ -14,6 +14,10 @@ else
     su p6n -c 'cd /home/p6n/workplace/website/cyshg; /home/p6n/anaconda2/bin/python ./daemon.py > log 2>&1 &'
 fi
 
+
+chmod 664 /home/p6n/workplace/website/cyshg/debug.log
+
+
 # Check pbs daemons
 Check_pbs(){
     Num_proc=`ps -f -u root | grep $1 | grep -v grep | wc -l`
